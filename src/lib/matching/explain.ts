@@ -20,30 +20,30 @@ export function eligibilityFlags(profile: Profile, opp: Opportunity, criteria: C
       const own = profile.languages.find((x) => normalizeText(x.name) === normalizeText(l.name));
       flags.push({
         kind: "critical",
-        message: `Requires ${l.name} at ${l.level} level — your profile shows ${own ? own.level : "no " + l.name}`,
+        message: `Requires ${l.name} at ${l.level} level; your profile lists ${own ? `${own.level} ${l.name}` : `no ${l.name}`}`,
       });
     }
   }
 
   if (opp.enrolledStudentRequired) {
     if (profile.enrolledStudent === false) {
-      flags.push({ kind: "critical", message: "Open only to currently enrolled students — your profile says you are not an enrolled student" });
+      flags.push({ kind: "critical", message: "Open only to currently enrolled students; your profile states that you are not enrolled" });
     } else if (profile.enrolledStudent === null) {
-      flags.push({ kind: "missing", message: "Enrolment status not provided — this role is open only to enrolled students" });
+      flags.push({ kind: "missing", message: "Enrolment status not provided; this role is open only to enrolled students" });
     }
   }
 
   if (opp.localWorkAuthRequired) {
     const auth = workAuthFor(profile, opp.country);
     if (auth === "no") {
-      flags.push({ kind: "critical", message: `Requires authorisation to work in ${opp.country} — you indicated you do not have it` });
+      flags.push({ kind: "critical", message: `Requires the right to work in ${opp.country}; you indicated that you do not have it` });
     } else if (auth === "unknown") {
       flags.push({ kind: "verify", message: VERIFY_WORK_AUTH_MESSAGE });
     }
   }
 
   for (const c of criteria) {
-    if (c.score === null) flags.push({ kind: "missing", message: `${c.label}: ${c.detail} — scored as neutral (50%)` });
+    if (c.score === null) flags.push({ kind: "missing", message: `${c.label}: ${c.detail}. Scored as neutral (50%)` });
   }
 
   return flags;

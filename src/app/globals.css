@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/*
+ * Pathway tokens. Teal = action and positive state, navy ink = text and structure.
+ * Status colours (emerald / amber / red / slate) carry fixed meanings: met, partial or needs
+ * verification, blocked, unknown.
+ */
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -8,15 +13,65 @@
   --color-brand-600: #0f766e;
   --color-brand-700: #115e59;
   --color-ink: #13293d;
+  --color-canvas: #f6f8fa;
+  --color-line: #e2e8f0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: #f7f9fb;
+  background: var(--color-canvas);
   color: #1e293b;
+  font-size: 1rem;
+  line-height: 1.55;
+  accent-color: #0f766e;
+  caret-color: #0f766e;
+}
+
+::selection {
+  background: #d5f2ed;
+  color: #13293d;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a,
+button,
+select,
+[role="button"] {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  text-underline-offset: 3px;
 }
 
 /* Visible keyboard focus everywhere. */
 :focus-visible {
   outline: 2px solid #0f766e;
   outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

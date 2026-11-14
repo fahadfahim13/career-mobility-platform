@@ -14,12 +14,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen font-sans antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col font-sans antialiased`}>
         <Nav />
-        <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
-        <footer className="mx-auto max-w-5xl px-4 pb-10 text-xs text-slate-500">
-          Prototype with fictional data. Your profile is stored only in this browser. Match results are guidance, not
-          legal or immigration advice.
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">{children}</main>
+        <footer className="border-t border-line">
+          <p className="mx-auto max-w-5xl px-4 py-6 text-xs text-slate-600">
+            Prototype using fictional data. Your profile is stored only in this browser. Match results are guidance and
+            do not constitute legal or immigration advice.
+          </p>
         </footer>
       </body>
     </html>

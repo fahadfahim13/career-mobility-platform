@@ -1,3 +1,4 @@
+import { EDUCATION_LABEL, formatLanguage, formatLocation } from "../format";
 import { EDUCATION_LEVELS, LANGUAGE_LEVELS } from "../schemas";
 import type { Opportunity, Profile } from "../types";
 import { normalizeCountry, normalizeSkill, normalizeText } from "./normalize";
@@ -67,18 +68,18 @@ function requiredYears(opp: Opportunity): string {
 export function scoreExperience(profile: Profile, opp: Opportunity): CriterionEval {
   const req = requiredYears(opp);
   const y = profile.yearsExperience;
-  if (y === null) return evalOf(null, `Role asks for ${req}; your experience is not provided`);
+  if (y === null) return evalOf(null, `Role requires ${req}; your experience is not provided`);
   if (y < opp.minYears) {
     const short = opp.minYears - y;
     const score = short <= 1 ? 0.5 : 0;
-    const msg = `Role asks for ${req}; you have ${y} (${short} short)`;
+    const msg = `Role requires ${req}; you have ${y} (${short} ${short === 1 ? "year" : "years"} short)`;
     return evalOf(score, msg, { gap: msg });
   }
   if (opp.maxYears !== null && y > opp.maxYears) {
-    const msg = `Role asks for ${req}; you have ${y}, so you may be overqualified`;
-    return evalOf(0.8, msg, { strength: `Experience exceeds the ${req} asked for`, gap: msg });
+    const msg = `Role requires ${req}; with ${y} years you may be overqualified`;
+    return evalOf(0.8, msg, { strength: `Experience exceeds the ${req} required`, gap: msg });
   }
-  const msg = `You have ${y} years; role asks for ${req}`;
+  const msg = `${y} years of experience is within the required ${req}`;
   return evalOf(1, msg, { strength: msg });
 }
 
@@ -87,9 +88,9 @@ const levelRank = (l: (typeof EDUCATION_LEVELS)[number]) => EDUCATION_LEVELS.ind
 export function scoreEducation(profile: Profile, opp: Opportunity): CriterionEval {
   if (!opp.education) return evalOf(1, "No formal education requirement stated");
   const { minLevel, relevantFields } = opp.education;
-  if (profile.educationLevel === null) return evalOf(null, `Role asks for at least ${minLevel}; your education is not provided`);
+  if (profile.educationLevel === null) return evalOf(null, `Role requires at least a ${EDUCATION_LABEL[minLevel].toLowerCase()}; your education level is not provided`);
   if (levelRank(profile.educationLevel) < levelRank(minLevel)) {
-    const msg = `Role asks for at least a ${minLevel} degree; you have ${profile.educationLevel}`;
+    const msg = `Role requires at least a ${EDUCATION_LABEL[minLevel].toLowerCase()}; your highest level is ${EDUCATION_LABEL[profile.educationLevel].toLowerCase()}`;
     return evalOf(0, msg, { gap: msg });
   }
   const field = normalizeText(profile.educationField);
@@ -100,10 +101,10 @@ export function scoreEducation(profile: Profile, opp: Opportunity): CriterionEva
       return field !== "" && (field.includes(rf) || rf.includes(field));
     });
   if (relevant) {
-    const msg = `${profile.educationLevel} in ${profile.educationField || "an unrestricted field"} meets the ${minLevel} requirement`;
+    const msg = `${EDUCATION_LABEL[profile.educationLevel]}${profile.educationField ? ` in ${profile.educationField}` : ""} meets the requirement for a ${EDUCATION_LABEL[minLevel].toLowerCase()} in a relevant field`;
     return evalOf(1, msg, { strength: msg });
   }
-  const msg = `Degree level met, but ${profile.educationField || "your field"} is not one of: ${list(relevantFields)}`;
+  const msg = `Education level met, but ${profile.educationField || "your field of study"} is not one of the preferred fields: ${list(relevantFields)}`;
   return evalOf(0.6, msg, { gap: msg });
 }
 
@@ -111,12 +112,12 @@ export function scoreLocation(profile: Profile, opp: Opportunity): CriterionEval
   if (profile.preferredCountries.length === 0) return evalOf(null, "No preferred countries provided");
   const preferred = new Set(profile.preferredCountries.map(normalizeCountry));
   if (preferred.has(normalizeCountry(opp.country))) {
-    const msg = `${opp.city}, ${opp.country} is one of your preferred countries`;
+    const msg = `${formatLocation(opp)} is in one of your preferred countries`;
     return evalOf(1, msg, { strength: msg });
   }
   if (opp.remote) {
-    const msg = `Remote role (organisation based in ${opp.country}, not in your preferred list)`;
-    return evalOf(0.7, msg, { strength: "Remote role, so it can be done from your current location" });
+    const msg = `Remote role; the organisation is based in ${opp.country}, which is not one of your preferred countries`;
+    return evalOf(0.7, msg, { strength: "Remote role that can be performed from your current location" });
   }
   const msg = `${opp.country} is not in your preferred countries`;
   return evalOf(0, msg, { gap: msg });
@@ -134,15 +135,15 @@ export function unmetLanguages(profile: Profile, opp: Opportunity) {
 
 export function scoreLanguage(profile: Profile, opp: Opportunity): CriterionEval {
   if (opp.languages.length === 0) return evalOf(1, "No language requirement stated");
-  const required = list(opp.languages.map((l) => `${l.name} (${l.level})`));
-  if (profile.languages.length === 0) return evalOf(null, `Role asks for ${required}; no languages provided`);
+  const required = list(opp.languages.map(formatLanguage));
+  if (profile.languages.length === 0) return evalOf(null, `Role requires ${required}; no languages provided`);
   const unmet = unmetLanguages(profile, opp);
   const score = (opp.languages.length - unmet.length) / opp.languages.length;
   if (unmet.length === 0) {
-    const msg = `Meets language requirement: ${required}`;
+    const msg = `Meets the language requirement: ${required}`;
     return evalOf(score, msg, { strength: msg });
   }
-  const msg = `Does not meet: ${list(unmet.map((l) => `${l.name} (${l.level})`))}`;
+  const msg = `Does not meet the language requirement: ${list(unmet.map(formatLanguage))}`;
   return evalOf(score, msg, { gap: msg });
 }
 
@@ -154,10 +155,10 @@ export function scoreInterests(profile: Profile, opp: Opportunity): CriterionEva
     return terms.some((t) => t === n || t.includes(n) || n.includes(t));
   });
   if (hits.length) {
-    const msg = `Matches your interest in ${list(hits.map((h) => h.toLowerCase()))}`;
+    const msg = `Aligns with your interest in ${list(hits.map((h) => h.toLowerCase()))}`;
     return evalOf(1, msg, { strength: msg });
   }
-  return evalOf(0, `Role area (${opp.category}) is outside your stated interests`);
+  return evalOf(0, `The role area (${opp.category}) is outside your stated career interests`);
 }
 
 export const EVALUATORS: Record<CriterionKey, (p: Profile, o: Opportunity) => CriterionEval> = {

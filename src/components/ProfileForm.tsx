@@ -1,13 +1,15 @@
 "use client";
 
+import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { sampleProfile } from "../data/sampleProfile";
 import { notifyStorageChange, useProfile } from "../hooks/useLocalState";
 import { EDUCATION_LEVELS, LANGUAGE_LEVELS, profileFormSchema } from "../lib/schemas";
 import { clearAll } from "../lib/storage";
 import type { Profile, WorkAuth } from "../lib/types";
 import { TagInput } from "./TagInput";
+import { btnGhost, btnOutline, btnPrimary, field, fieldError, fieldHint, fieldLabel, panel } from "./ui";
 
 const EMPTY: Profile = {
   educationLevel: null,
@@ -24,17 +26,29 @@ const EMPTY: Profile = {
 
 const COUNTRY_SUGGESTIONS = ["Germany", "Canada", "Singapore", "United Kingdom", "Netherlands", "United Arab Emirates"];
 const LEVEL_LABEL: Record<string, string> = {
-  none: "No formal education",
+  none: "No formal qualification",
   secondary: "Secondary school",
   diploma: "Diploma",
   bachelor: "Bachelor's degree",
   master: "Master's degree",
-  phd: "PhD",
+  phd: "Doctorate (PhD)",
+};
+const LANGUAGE_LABEL: Record<string, string> = {
+  basic: "Basic",
+  conversational: "Conversational",
+  professional: "Professional",
+  native: "Native",
 };
 
-type Errors = Partial<Record<keyof Profile | "form", string>>;
+type Errors = Partial<Record<keyof Profile, string>>;
 
-const inputCls = "mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm";
+const FRIENDLY: Partial<Record<keyof Profile, string>> = {
+  educationLevel: "Select your highest level of education.",
+  yearsExperience: "Enter your years of work experience (0–50).",
+};
+
+const sectionCls = `${panel} grid gap-5 p-5 sm:p-6`;
+const legendCls = "float-left mb-1 w-full text-base font-semibold text-ink";
 
 export function ProfileForm() {
   const router = useRouter();
@@ -42,10 +56,14 @@ export function ProfileForm() {
   const [p, setP] = useState<Profile>(EMPTY);
   const [years, setYears] = useState("");
   const [errors, setErrors] = useState<Errors>({});
+  const [notice, setNotice] = useState<string | null>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const loadedRef = useRef(false);
 
-  // Load the saved profile once storage has been read.
+  // Populate the form once from the saved profile, without overwriting edits on later storage events.
   useEffect(() => {
-    if (ready && stored) {
+    if (ready && stored && !loadedRef.current) {
+      loadedRef.current = true;
       setP(stored);
       setYears(stored.yearsExperience === null ? "" : String(stored.yearsExperience));
     }
@@ -57,14 +75,17 @@ export function ProfileForm() {
     setP(sampleProfile);
     setYears(String(sampleProfile.yearsExperience));
     setErrors({});
+    setNotice("Sample profile loaded. Review the details, then save to see your matches.");
   }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setNotice(null);
     const candidate = {
       ...p,
+      languages: p.languages.map((l) => ({ ...l, name: l.name.trim() })),
       yearsExperience: years.trim() === "" ? null : Number(years),
-      // Only keep authorisation answers for countries still in the list.
+      // Keep authorisation answers only for countries that are still listed.
       workAuthorisation: Object.fromEntries(
         p.preferredCountries.map((c) => [c, p.workAuthorisation[c] ?? "unknown"]),
       ) as Record<string, WorkAuth>,
@@ -73,12 +94,14 @@ export function ProfileForm() {
     if (!parsed.success) {
       const next: Errors = {};
       for (const issue of parsed.error.issues) {
-        const key = (issue.path[0] as keyof Profile) ?? "form";
-        if (!next[key]) next[key] = key === "yearsExperience" && candidate.yearsExperience === null ? "Enter your years of experience" : key === "educationLevel" ? "Select your highest education level" : issue.message;
+        const key = issue.path[0] as keyof Profile;
+        if (!next[key]) next[key] = FRIENDLY[key] ?? issue.message;
       }
       setErrors(next);
+      requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
+    setErrors({});
     save(parsed.data);
     router.push("/matches");
   }
@@ -89,49 +112,61 @@ export function ProfileForm() {
     setP(EMPTY);
     setYears("");
     setErrors({});
+    setNotice("Your profile and shortlist have been removed from this browser.");
   }
 
+  const errorCount = Object.keys(errors).length;
+
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-8">
-      <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={loadSample} className="rounded-md border border-brand-600 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">
+    <form onSubmit={onSubmit} noValidate className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" onClick={loadSample} className={btnOutline}>
           Load sample profile
         </button>
-        <button type="button" onClick={onClear} className="rounded-md px-4 py-2 text-sm text-slate-600 hover:text-red-700">
+        <button type="button" onClick={onClear} className={btnGhost}>
+          <Trash2 className="size-4" aria-hidden />
           Clear my data
         </button>
       </div>
 
-      {Object.keys(errors).length > 0 && (
-        <p role="alert" className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-800">
-          Please fix the highlighted fields.
-        </p>
+      <div aria-live="polite">
+        {notice && <p className="rounded-md border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-700">{notice}</p>}
+      </div>
+
+      {errorCount > 0 && (
+        <div ref={summaryRef} tabIndex={-1} role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+          <p className="font-semibold">Please correct {errorCount === 1 ? "1 field" : `${errorCount} fields`} before saving:</p>
+          <ul className="mt-1 list-disc pl-5">
+            {Object.values(errors).map((m) => <li key={m}>{m}</li>)}
+          </ul>
+        </div>
       )}
 
-      <fieldset className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5 sm:grid-cols-2">
-        <legend className="px-1 text-sm font-semibold text-ink">Education and experience</legend>
+      <fieldset className={`${sectionCls} sm:grid-cols-2`}>
+        <legend className={legendCls}>Education and experience</legend>
         <div>
-          <label htmlFor="educationLevel" className="block text-sm font-medium text-ink">Highest education level</label>
+          <label htmlFor="educationLevel" className={fieldLabel}>Highest level of education</label>
           <select
             id="educationLevel"
-            className={inputCls}
+            className={field}
             value={p.educationLevel ?? ""}
             aria-invalid={!!errors.educationLevel}
+            aria-describedby={errors.educationLevel ? "educationLevel-err" : undefined}
             onChange={(e) => set("educationLevel", e.target.value === "" ? null : (e.target.value as Profile["educationLevel"]))}
           >
-            <option value="">Select…</option>
+            <option value="">Select a level</option>
             {EDUCATION_LEVELS.map((l) => (
               <option key={l} value={l}>{LEVEL_LABEL[l]}</option>
             ))}
           </select>
-          {errors.educationLevel && <p role="alert" className="mt-1 text-sm text-red-700">{errors.educationLevel}</p>}
+          {errors.educationLevel && <p id="educationLevel-err" className={fieldError}>{errors.educationLevel}</p>}
         </div>
         <div>
-          <label htmlFor="educationField" className="block text-sm font-medium text-ink">Field of study</label>
-          <input id="educationField" className={inputCls} value={p.educationField} placeholder="e.g. Business Administration" onChange={(e) => set("educationField", e.target.value)} />
+          <label htmlFor="educationField" className={fieldLabel}>Field of study</label>
+          <input id="educationField" className={field} value={p.educationField} placeholder="For example, Business Administration" onChange={(e) => set("educationField", e.target.value)} />
         </div>
         <div>
-          <label htmlFor="years" className="block text-sm font-medium text-ink">Years of work experience</label>
+          <label htmlFor="years" className={fieldLabel}>Years of professional experience</label>
           <input
             id="years"
             type="number"
@@ -139,86 +174,116 @@ export function ProfileForm() {
             max={50}
             step={0.5}
             inputMode="decimal"
-            className={inputCls}
+            className={`${field} tabular-nums`}
             value={years}
             aria-invalid={!!errors.yearsExperience}
+            aria-describedby={errors.yearsExperience ? "years-err" : undefined}
             onChange={(e) => setYears(e.target.value)}
           />
-          {errors.yearsExperience && <p role="alert" className="mt-1 text-sm text-red-700">{errors.yearsExperience}</p>}
+          {errors.yearsExperience && <p id="years-err" className={fieldError}>{errors.yearsExperience}</p>}
         </div>
-        <div>
-          <span className="block text-sm font-medium text-ink">Currently an enrolled student?</span>
-          <div className="mt-2 flex gap-4 text-sm">
+        <fieldset>
+          <legend className={fieldLabel}>Are you currently enrolled as a student?</legend>
+          <p className={fieldHint}>Some internships are open only to enrolled students.</p>
+          <div className="mt-1 flex flex-wrap gap-x-5 text-sm">
             {([["Yes", true], ["No", false], ["Prefer not to say", null]] as const).map(([label, value]) => (
-              <label key={label} className="flex items-center gap-1">
-                <input type="radio" name="enrolled" checked={p.enrolledStudent === value} onChange={() => set("enrolledStudent", value)} />
+              <label key={label} className="flex min-h-11 items-center gap-2">
+                <input type="radio" name="enrolled" className="size-4" checked={p.enrolledStudent === value} onChange={() => set("enrolledStudent", value)} />
                 {label}
               </label>
             ))}
           </div>
-        </div>
+        </fieldset>
         <div className="sm:col-span-2">
-          <label htmlFor="summary" className="block text-sm font-medium text-ink">Experience summary (optional)</label>
-          <textarea id="summary" rows={2} maxLength={500} className={inputCls} value={p.experienceSummary} onChange={(e) => set("experienceSummary", e.target.value)} />
+          <label htmlFor="summary" className={fieldLabel}>Experience summary <span className="font-normal text-slate-500">(optional)</span></label>
+          <textarea id="summary" rows={3} maxLength={500} className={`${field} py-2`} value={p.experienceSummary} onChange={(e) => set("experienceSummary", e.target.value)} />
         </div>
       </fieldset>
 
-      <fieldset className="grid gap-5 rounded-lg border border-slate-200 bg-white p-5">
-        <legend className="px-1 text-sm font-semibold text-ink">Skills and interests</legend>
-        <TagInput label="Skills" hint="Press Enter or comma after each skill." values={p.skills} onChange={(v) => set("skills", v)} error={errors.skills} placeholder="e.g. Excel" />
-        <TagInput label="Career interests" values={p.interests} onChange={(v) => set("interests", v)} placeholder="e.g. Project coordination" />
+      <fieldset className={sectionCls}>
+        <legend className={legendCls}>Skills and career interests</legend>
+        <TagInput
+          label="Skills"
+          hint="Press Enter or type a comma after each skill."
+          values={p.skills}
+          onChange={(v) => set("skills", v)}
+          error={errors.skills}
+          placeholder="For example, Excel"
+        />
+        <TagInput
+          label="Career interests"
+          hint="Areas of work you would like to pursue."
+          values={p.interests}
+          onChange={(v) => set("interests", v)}
+          placeholder="For example, Project coordination"
+        />
       </fieldset>
 
-      <fieldset className="grid gap-3 rounded-lg border border-slate-200 bg-white p-5">
-        <legend className="px-1 text-sm font-semibold text-ink">Languages</legend>
+      <fieldset className={sectionCls}>
+        <legend className={legendCls}>Languages</legend>
+        {p.languages.length === 0 && <p className="text-sm text-slate-600">Add each language you can work in and your level.</p>}
         {p.languages.map((l, i) => (
-          <div key={i} className="flex flex-wrap items-end gap-2">
-            <div className="grow">
-              <label htmlFor={`lang-${i}`} className="block text-xs text-slate-600">Language</label>
+          <div key={i} className="grid gap-3 sm:grid-cols-[1fr_200px_auto] sm:items-end">
+            <div>
+              <label htmlFor={`lang-${i}`} className={fieldLabel}>Language</label>
               <input
                 id={`lang-${i}`}
-                className={inputCls}
+                className={field}
                 value={l.name}
+                aria-invalid={!!errors.languages && l.name.trim() === ""}
                 onChange={(e) => set("languages", p.languages.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))}
               />
             </div>
             <div>
-              <label htmlFor={`lang-level-${i}`} className="block text-xs text-slate-600">Level</label>
+              <label htmlFor={`lang-level-${i}`} className={fieldLabel}>Proficiency</label>
               <select
                 id={`lang-level-${i}`}
-                className={inputCls}
+                className={field}
                 value={l.level}
                 onChange={(e) => set("languages", p.languages.map((x, j) => (j === i ? { ...x, level: e.target.value as typeof l.level } : x)))}
               >
                 {LANGUAGE_LEVELS.map((lv) => (
-                  <option key={lv} value={lv}>{lv}</option>
+                  <option key={lv} value={lv}>{LANGUAGE_LABEL[lv]}</option>
                 ))}
               </select>
             </div>
-            <button type="button" aria-label={`Remove language ${l.name || i + 1}`} className="mb-2 text-sm text-slate-500 hover:text-red-700" onClick={() => set("languages", p.languages.filter((_, j) => j !== i))}>
-              Remove
+            <button type="button" aria-label={`Remove ${l.name || `language ${i + 1}`}`} className={btnGhost} onClick={() => set("languages", p.languages.filter((_, j) => j !== i))}>
+              <Trash2 className="size-4" aria-hidden />
+              <span className="sm:sr-only">Remove</span>
             </button>
           </div>
         ))}
-        <button type="button" className="justify-self-start text-sm font-medium text-brand-700" onClick={() => set("languages", [...p.languages, { name: "", level: "professional" }])}>
-          + Add language
-        </button>
-        {errors.languages && <p role="alert" className="text-sm text-red-700">{errors.languages}</p>}
+        <div>
+          <button type="button" className={btnOutline} onClick={() => set("languages", [...p.languages, { name: "", level: "professional" }])}>
+            <Plus className="size-4" aria-hidden />
+            Add language
+          </button>
+        </div>
+        {errors.languages && <p className={fieldError}>{errors.languages}</p>}
       </fieldset>
 
-      <fieldset className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-        <legend className="px-1 text-sm font-semibold text-ink">Locations and work authorisation</legend>
-        <TagInput label="Preferred countries" values={p.preferredCountries} onChange={(v) => set("preferredCountries", v)} error={errors.preferredCountries} suggestions={COUNTRY_SUGGESTIONS} placeholder="e.g. Germany" />
+      <fieldset className={sectionCls}>
+        <legend className={legendCls}>Preferred locations and work authorisation</legend>
+        <TagInput
+          label="Preferred countries"
+          values={p.preferredCountries}
+          onChange={(v) => set("preferredCountries", v)}
+          error={errors.preferredCountries}
+          suggestions={COUNTRY_SUGGESTIONS}
+          placeholder="For example, Germany"
+        />
         {p.preferredCountries.length > 0 && (
           <div>
-            <p className="text-sm font-medium text-ink">Do you have the right to work in each country?</p>
-            <p className="text-xs text-slate-500">We do not determine visa status. &quot;Not sure&quot; is shown on matches as needing verification.</p>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <p className={fieldLabel}>Do you have the right to work in each country?</p>
+            <p className={fieldHint}>
+              Pathway does not assess visa or immigration status. If you are unsure, matching roles will be marked as requiring verification.
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {p.preferredCountries.map((c) => (
-                <label key={c} className="flex items-center justify-between gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm">
+                <label key={c} className="flex items-center justify-between gap-3 rounded-md border border-line px-3 py-2 text-sm text-ink">
                   {c}
                   <select
-                    className="rounded border border-slate-300 px-2 py-1"
+                    className="min-h-10 rounded-md border border-slate-300 bg-white px-2 text-sm"
                     value={p.workAuthorisation[c] ?? "unknown"}
                     onChange={(e) => set("workAuthorisation", { ...p.workAuthorisation, [c]: e.target.value as WorkAuth })}
                   >
@@ -233,9 +298,10 @@ export function ProfileForm() {
         )}
       </fieldset>
 
-      <button type="submit" className="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700">
-        Save profile and see matches
-      </button>
+      <div className="flex flex-wrap items-center gap-4">
+        <button type="submit" className={btnPrimary}>Save profile and view matches</button>
+        <p className="text-xs text-slate-600">Your profile is stored only in this browser.</p>
+      </div>
     </form>
   );
 }
