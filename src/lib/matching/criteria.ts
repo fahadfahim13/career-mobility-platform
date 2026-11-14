@@ -1,7 +1,7 @@
 import { EDUCATION_LABEL, formatLanguage, formatLocation } from "../format";
 import { EDUCATION_LEVELS, LANGUAGE_LEVELS } from "../schemas";
 import type { Opportunity, Profile } from "../types";
-import { normalizeCountry, normalizeSkill, normalizeText } from "./normalize";
+import { normalizeCountry, normalizeSkill, normalizeText, phrasesOverlap } from "./normalize";
 import type { CriterionKey, CriterionStatus } from "./types";
 
 export const WEIGHTS: Record<CriterionKey, number> = {
@@ -93,13 +93,7 @@ export function scoreEducation(profile: Profile, opp: Opportunity): CriterionEva
     const msg = `Role requires at least a ${EDUCATION_LABEL[minLevel].toLowerCase()}; your highest level is ${EDUCATION_LABEL[profile.educationLevel].toLowerCase()}`;
     return evalOf(0, msg, { gap: msg });
   }
-  const field = normalizeText(profile.educationField);
-  const relevant =
-    relevantFields.length === 0 ||
-    relevantFields.some((f) => {
-      const rf = normalizeText(f);
-      return field !== "" && (field.includes(rf) || rf.includes(field));
-    });
+  const relevant = relevantFields.length === 0 || relevantFields.some((f) => phrasesOverlap(profile.educationField, f));
   if (relevant) {
     const msg = `${EDUCATION_LABEL[profile.educationLevel]}${profile.educationField ? ` in ${profile.educationField}` : ""} meets the requirement for a ${EDUCATION_LABEL[minLevel].toLowerCase()} in a relevant field`;
     return evalOf(1, msg, { strength: msg });
@@ -149,11 +143,8 @@ export function scoreLanguage(profile: Profile, opp: Opportunity): CriterionEval
 
 export function scoreInterests(profile: Profile, opp: Opportunity): CriterionEval {
   if (profile.interests.length === 0) return evalOf(null, "No career interests provided");
-  const terms = [opp.category, ...opp.tags].map(normalizeText);
-  const hits = profile.interests.filter((i) => {
-    const n = normalizeText(i);
-    return terms.some((t) => t === n || t.includes(n) || n.includes(t));
-  });
+  const terms = [opp.category, ...opp.tags];
+  const hits = profile.interests.filter((i) => terms.some((t) => phrasesOverlap(i, t)));
   if (hits.length) {
     const msg = `Aligns with your interest in ${list(hits.map((h) => h.toLowerCase()))}`;
     return evalOf(1, msg, { strength: msg });

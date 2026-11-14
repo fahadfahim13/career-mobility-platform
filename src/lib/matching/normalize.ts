@@ -42,3 +42,20 @@ export function normalizeCountry(s: string): string {
   const base = normalizeText(s);
   return COUNTRY_ALIASES[base] ?? base;
 }
+
+/** Whole-word tokens of 3+ characters; shorter fragments ("it", "a") are too ambiguous to match on. */
+function tokens(s: string): Set<string> {
+  return new Set(normalizeText(s).split(/[^a-z0-9]+/).filter((t) => t.length >= 3));
+}
+
+/**
+ * True when every meaningful word of one phrase appears as a whole word in the other,
+ * e.g. "Business" ~ "Business Administration", but "IT" never matches "monitoring".
+ */
+export function phrasesOverlap(a: string, b: string): boolean {
+  const ta = tokens(a);
+  const tb = tokens(b);
+  if (ta.size === 0 || tb.size === 0) return false;
+  const [small, large] = ta.size <= tb.size ? [ta, tb] : [tb, ta];
+  return [...small].every((t) => large.has(t));
+}

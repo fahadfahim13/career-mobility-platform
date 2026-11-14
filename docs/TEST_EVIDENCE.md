@@ -2,7 +2,7 @@
 
 Run date: 2026-11-15. Commands: `npm test` (unit), `npm run test:e2e` (end-to-end), `npm run report` (ranking).
 
-**Result: 37/37 unit tests passed. 12/12 end-to-end runs passed (6 journeys × desktop and mobile).**
+**Result: 46/46 unit tests passed. 12/12 end-to-end runs passed (6 journeys × desktop and mobile).**
 
 ## 1. The three required cases (sample profile from the brief)
 
@@ -36,14 +36,15 @@ Unit tests: `strong match: Programme Assistant NGO`, `partial match: Junior Data
 
 The remote research role has no `verify` flag because it does not require local work authorisation.
 
-## 3. Unit tests (Vitest) — 37 passed
+## 3. Unit tests (Vitest) — 46 passed
 
 | Area | Tests |
 |---|---|
 | Data (5) | at least 10 valid opportunities; unique ids; at least two hard constraints; lookup by id and unknown id; sample profile passes schema |
-| Criteria (5) | skill normalisation and synonyms; experience in range / overqualified / slightly short / far short / unknown; education relevant / unrelated / level not met; location preferred / remote / other; language met / below level |
+| Criteria (9) | skill normalisation and synonyms; experience in range / overqualified / slightly short / far short / unknown; education relevant / unrelated / level not met; location preferred / remote / other; language met / below level; whole-word matching ("IT" does not match "monitoring"; one-letter interests or fields match nothing; multi-word interests still match) |
 | Engine (13) | the four required cases above; unknown work authorisation never treated as satisfied ("yes" removes the flag, "no" makes it critical); no flag for roles without the requirement; empty profile fields give finite scores and "missing" flags; unknown enrolment flagged; synonyms; weights sum to 100; points sum to score; deterministic ranking; NGO role ranks first |
-| AI summary (8) | template mentions band and top gap; template mentions verification; no key → template; client error → template; non-JSON → template; too short or invented numbers → template; timeout → template; valid output → AI, and no free-text profile data in the prompt |
+| AI summary (9) | template mentions band and top gap; template mentions verification; no key → template; client error → template; non-JSON → template; too short or invented numbers → template; timeout → template; valid output → AI, and no free-text profile data in the prompt; output that drops the verification caveat → template |
+| Summary API (4) | server recomputes the match from the profile; client-supplied results rejected (400); malformed JSON 400 and unknown opportunity 404; rate limit returns 429 after 20 requests per minute per client, other clients unaffected |
 | Storage (6) | profile round-trip; empty storage; corrupt JSON ignored; schema-invalid profile ignored; shortlist toggle; clear all data |
 
 ## 4. End-to-end tests (Playwright) — 12 passed
@@ -51,7 +52,7 @@ The remote research role has no `verify` flag because it does not require local 
 Each journey runs on Desktop Chrome and on a Pixel 7 viewport against the production build in mock mode.
 
 1. **Profile to shortlist:** load the sample profile → save → 12 ranked cards, Programme Assistant first
-   with "Strong match" and the verification notice → German Client Associate shows "Critical gap" and the
+   with "Strong match", the "Eligibility to verify" badge and the verification notice → German Client Associate shows "Critical gap" and the
    German requirement → detail page shows the 6-row breakdown and summary → shortlist → persists after
    reload → remove → empty state.
 2. **Filter by band:** "Critical gap" filter shows 3 cards.

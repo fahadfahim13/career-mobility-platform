@@ -6,7 +6,7 @@
 |---|---|---|
 | Frontend | Next.js 15 (App Router), React 19, Tailwind CSS 4 | Server-rendered pages for opportunity data; client components for profile, matches and shortlist. |
 | Matching | Pure TypeScript module (`src/lib/matching`) | No I/O, fully unit-tested. Runs in the browser, so the profile never has to leave the device to be scored. |
-| Backend | One Next.js route handler, `POST /api/summary` | Only used for the optional AI summary. Input validated with zod; returns 400/404 on bad input. |
+| Backend | One Next.js route handler, `POST /api/summary` | Only used for the optional AI summary. Receives the profile (validated with zod), recomputes the match on the server, rate-limited per client (20/min). Returns 400/404/429 on bad input or abuse. |
 | Data storage | Opportunities: versioned JSON file validated by zod at load. Profile and shortlist: browser `localStorage` under versioned keys (`cm.profile.v1`, `cm.shortlist.v1`). | No database is needed for the brief's scope. Corrupt or out-of-date stored data is discarded, not trusted. |
 | External service | Anthropic API (Claude Haiku 5.5), optional | Mock mode when no key is set. |
 
@@ -34,7 +34,7 @@ A transparent weighted score. Each criterion returns a value from 0 to 1, or `nu
 | Education | 15 | Level met and relevant field = 1; level met, other field = 0.6; level not met = 0. |
 | Location | 15 | Country in preferences = 1; remote role = 0.7; otherwise 0. |
 | Language | 10 | Share of required languages met at the required level. |
-| Career interests | 10 | Any interest overlaps the role category or tags = 1, else 0. |
+| Career interests | 10 | Any interest matches the role category or a tag on whole words (3+ letters) = 1, else 0. |
 
 **Missing data** receives 50% of the weight (neutral), is labelled "Not provided" and raises a
 `missing` flag. It is never counted as a match.
@@ -48,7 +48,8 @@ A transparent weighted score. Each criterion returns a value from 0 to 1, or `nu
   "Work authorisation not confirmed — needs verification". No score penalty is applied, and the platform
   never presents an inferred visa or work status as a legal determination.
 
-Bands: Strong ≥ 75, Partial 50–74, Weak < 50. Ranking is by score, then id, so it is deterministic.
+Bands: Strong ≥ 75, Partial 50–74, Weak < 50. Any role with a `verify` flag also shows an
+"Eligibility to verify" badge next to its band, so a high score never reads as confirmed eligibility. Ranking is by score, then id, so it is deterministic.
 The detail page shows every criterion's points, so any score can be traced to its rules.
 
 ## 4. AI design
@@ -56,10 +57,11 @@ The detail page shows every criterion's points, so any score can be traced to it
 - **What the model does:** Claude Haiku 5.5 rewrites the engine's output (band, strengths, gaps, flags)
   into a two-sentence summary. It does not score, rank or decide eligibility.
 - **What is sent:** role facts (title, organisation, country, type) and the rule output only. No free-text
-  profile fields, names or contact details.
+  profile summary, names or contact details. The browser sends the structured profile; the server
+  recomputes the match itself, so a client cannot inject its own strengths, gaps or flags into the prompt.
 - **Unreliable output:** structured output (zod schema) is requested; the response is then re-validated
   (40–600 characters) and rejected if it contains any number not present in the input (for example an
-  invented score). The system prompt forbids new facts and any visa or immigration conclusion.
+  invented score) or if it leaves out the work-authorisation verification the rules raised. The system prompt forbids new facts and any visa or immigration conclusion.
 - **Service unavailable:** no key, a 6-second timeout, an API error, a refusal or invalid output all
   return the rule-based template summary. The page shows the template immediately and replaces it only
   if a valid AI summary arrives. The label states which source produced the text.
@@ -82,7 +84,7 @@ The detail page shows every criterion's points, so any score can be traced to it
   AI provider, and use a provider agreement with no training on customer data and a defined retention.
 - GDPR (the platform targets EU roles): lawful basis and consent, a privacy notice, data export and
   deletion (the prototype already offers "Clear my data"), retention limits and audit logging.
-- Rate limiting and abuse protection on the AI endpoint; secrets only in server-side environment
+- Replace the prototype's in-memory, per-instance rate limit with a shared store or the platform firewall; secrets only in server-side environment
   variables; dependency and security scanning in CI.
 
 ## 7. Key trade-offs
@@ -98,7 +100,7 @@ The detail page shows every criterion's points, so any score can be traced to it
 
 ## 8. Known limitations and next steps
 
-- Skill matching is lexical. Next: embeddings or a curated skills taxonomy (e.g. ESCO) for semantic matching.
+- Skill matching is lexical, and US/UK spelling variants (e.g. visualization / visualisation) are not yet folded. Next: embeddings or a curated skills taxonomy (e.g. ESCO) for semantic matching.
 - Weights are fixed. Next: let users adjust priorities, and calibrate weights against real outcomes.
 - The live AI call was tested only with mocks (no API key in the build environment); all fallback paths
   are covered by unit tests.

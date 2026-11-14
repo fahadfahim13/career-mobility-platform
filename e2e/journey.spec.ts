@@ -13,6 +13,8 @@ test("profile to shortlist journey", async ({ page }) => {
   const first = cards.first();
   await expect(first).toContainText("Programme Assistant");
   await expect(first).toContainText("Strong match");
+  // A top score must still read as conditional while work authorisation is unknown.
+  await expect(first.getByTestId("verify-badge")).toHaveText("Eligibility to verify");
   await expect(first).toContainText("Work authorisation not confirmed — needs verification");
 
   // Language constraint is surfaced as a critical gap.

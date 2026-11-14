@@ -68,4 +68,11 @@ describe("aiSummary", () => {
     expect(prompt).not.toContain(sampleProfile.experienceSummary);
     expect(prompt).toContain("Programme Assistant");
   });
+
+  it("drops AI output that leaves out the work-authorisation verification", async () => {
+    const generate: SummaryGenerator = async () => ({
+      summary: "This programme assistant role in Toronto is an excellent fit for your reporting and coordination background.",
+    });
+    expect((await aiSummary(ngo, ngoResult, { generate })).source).toBe("template");
+  });
 });

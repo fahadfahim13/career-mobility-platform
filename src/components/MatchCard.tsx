@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { MatchResult } from "../lib/matching/types";
 import { formatLocation } from "../lib/format";
 import type { Opportunity } from "../lib/types";
-import { BandBadge, ScorePill } from "./badges";
+import { BandBadge, ScorePill, VerifyBadge } from "./badges";
 import { FlagList } from "./FlagList";
 import { ShortlistButton } from "./ShortlistButton";
 import { btnDark, panel } from "./ui";
@@ -28,6 +28,7 @@ export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: Mat
         <div className="flex flex-col items-end gap-1.5">
           <ScorePill score={result.score} />
           <BandBadge band={result.band} />
+          <VerifyBadge show={result.flags.some((f) => f.kind === "verify")} />
         </div>
       </div>
 

@@ -22,6 +22,16 @@ export function BandBadge({ band }: { band: Band }) {
   );
 }
 
+/** Shown beside the band whenever eligibility is unconfirmed, so a high score never reads as "eligible". */
+export function VerifyBadge({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <span data-testid="verify-badge" className="inline-flex whitespace-nowrap rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-900 ring-1 ring-inset ring-amber-200">
+      Eligibility to verify
+    </span>
+  );
+}
+
 export function ScorePill({ score }: { score: number }) {
   return (
     <span className="text-2xl font-semibold tabular-nums text-ink" aria-label={`Match score ${score} out of 100`}>

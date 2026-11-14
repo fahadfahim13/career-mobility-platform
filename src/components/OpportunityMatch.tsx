@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useProfile } from "../hooks/useLocalState";
 import { matchOne } from "../lib/matching/engine";
 import type { Opportunity } from "../lib/types";
-import { BandBadge, ScorePill } from "./badges";
+import { BandBadge, ScorePill, VerifyBadge } from "./badges";
 import { FlagList } from "./FlagList";
 import { panel } from "./ui";
 import { ScoreBreakdown } from "./ScoreBreakdown";
@@ -29,12 +29,13 @@ export function OpportunityMatch({ opp }: { opp: Opportunity }) {
     <section aria-labelledby="match-h" className={`${panel} space-y-5 p-5 sm:p-6`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="match-h" className="text-lg font-semibold text-ink">Your match assessment</h2>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <ScorePill score={result.score} />
           <BandBadge band={result.band} />
+          <VerifyBadge show={result.flags.some((f) => f.kind === "verify")} />
         </div>
       </div>
-      <SummaryPanel opp={opp} result={result} />
+      <SummaryPanel opp={opp} result={result} profile={profile!} />
       <FlagList flags={result.flags} />
       <div>
         <h3 className="mb-2 text-sm font-semibold text-ink">Score breakdown</h3>

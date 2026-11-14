@@ -98,6 +98,8 @@ export async function aiSummary(
     const raw = await withTimeout(generate(prompt), timeoutMs);
     const parsed = acceptedSchema.safeParse(raw);
     if (!parsed.success || hasInventedNumbers(parsed.data.summary, prompt)) return fallback;
+    // A summary must never drop the work-authorisation caveat the rules raised.
+    if (r.flags.some((f) => f.kind === "verify") && !/verif/i.test(parsed.data.summary)) return fallback;
     return { text: parsed.data.summary, source: "ai" };
   } catch (err) {
     console.warn("[summary] falling back to template:", err instanceof Error ? err.message : err);

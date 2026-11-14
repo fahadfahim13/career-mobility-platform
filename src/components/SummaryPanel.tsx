@@ -5,19 +5,20 @@ import { useEffect, useState } from "react";
 import type { MatchResult } from "../lib/matching/types";
 import type { SummaryResult } from "../lib/summary/ai";
 import { templateSummary } from "../lib/summary/template";
-import type { Opportunity } from "../lib/types";
+import type { Opportunity, Profile } from "../lib/types";
 
 /**
  * Shows the rule-based summary immediately, then swaps in the AI-written version if the server
  * returns one. Any network or server failure keeps the rule-based text.
  */
-export function SummaryPanel({ opp, result }: { opp: Opportunity; result: MatchResult }) {
+export function SummaryPanel({ opp, result, profile }: { opp: Opportunity; result: MatchResult; profile: Profile }) {
   const [summary, setSummary] = useState<SummaryResult>(() => ({ text: templateSummary(opp, result), source: "template" }));
   const [loading, setLoading] = useState(true);
 
   // Keyed on content, not object identity: storage re-syncs (e.g. a shortlist toggle) create a new
   // but identical result object and must not trigger another AI request.
   const resultKey = JSON.stringify(result);
+  const profileKey = JSON.stringify(profile);
 
   useEffect(() => {
     const current = JSON.parse(resultKey) as MatchResult;
@@ -27,7 +28,8 @@ export function SummaryPanel({ opp, result }: { opp: Opportunity; result: MatchR
     fetch("/api/summary", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ opportunityId: opp.id, result: current }),
+      // The server recomputes the match from the profile; the free-text summary is never sent.
+      body: JSON.stringify({ opportunityId: opp.id, profile: { ...(JSON.parse(profileKey) as Profile), experienceSummary: "" } }),
       signal: controller.signal,
     })
       .then((res) => (res.ok ? (res.json() as Promise<SummaryResult>) : null))
@@ -41,7 +43,7 @@ export function SummaryPanel({ opp, result }: { opp: Opportunity; result: MatchR
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [opp, resultKey]);
+  }, [opp, resultKey, profileKey]);
 
   return (
     <div className="rounded-md border border-brand-100 bg-brand-50 p-4" data-testid="summary" aria-busy={loading}>
