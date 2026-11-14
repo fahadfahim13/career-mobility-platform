@@ -1,0 +1,67 @@
+# Test evidence
+
+Run date: 2026-11-15. Commands: `npm test` (unit), `npm run test:e2e` (end-to-end), `npm run report` (ranking).
+
+**Result: 37/37 unit tests passed. 12/12 end-to-end runs passed (6 journeys × desktop and mobile).**
+
+## 1. The three required cases (sample profile from the brief)
+
+| Case | Opportunity | Score | Band | Why |
+|---|---|---|---|---|
+| Strong match | Programme Assistant – International NGO (Toronto) | 100 | Strong | All 4 required skills; 2 years within the 1–2 year range; Business Administration degree in a relevant field; Canada is preferred; English met; matches "programme support". Flag: work authorisation needs verification (unknown, not assumed). |
+| Partial match | Junior Data Analyst (Amsterdam) | 57 | Partial | Skills 12/30 (has Excel and Reporting; missing SQL, Python, Data visualisation); Netherlands not preferred (0/15); interests 0/10; experience, education and language met. |
+| Critical requirement gap | German-speaking Client Associate (Frankfurt) | 35 (raw 65) | Critical gap | Requires professional German; the profile lists none. Critical flag raised, score capped at 35. Also flagged: work authorisation needs verification. |
+| Critical requirement gap (2nd) | Business Analyst Intern (Berlin) | 35 | Critical gap | Open only to enrolled students; the profile states not enrolled. Local work eligibility required and unknown, so it is flagged for verification. |
+
+Unit tests: `strong match: Programme Assistant NGO`, `partial match: Junior Data Analyst`,
+`critical gap: German-speaking Client Associate`, `critical gap: Business Analyst Intern`
+(`src/lib/matching/engine.test.ts`).
+
+## 2. Full ranking for the sample profile (`npm run report`)
+
+| Rank | Opportunity | Score | Band | Flags |
+|---|---|---|---|---|
+| 1 | programme-assistant-ngo | 100 | Strong | verify |
+| 2 | operations-coordinator-singapore | 88 | Strong | verify |
+| 3 | project-coordinator-toronto | 88 | Strong | verify |
+| 4 | research-assistant-remote | 79 | Strong | — |
+| 5 | operations-specialist-munich | 72 | Partial | verify |
+| 6 | marketing-coordinator-vancouver | 68 | Partial | verify |
+| 7 | junior-data-analyst-amsterdam | 57 | Partial | verify |
+| 8 | programme-officer-berlin | 53 | Partial | verify |
+| 9 | business-analyst-intern-berlin | 35 | Critical gap | critical, verify |
+| 10 | german-client-associate-frankfurt | 35 | Critical gap | critical, verify |
+| 11 | sales-executive-dubai | 35 | Critical gap | critical, verify |
+| 12 | software-engineer-london | 19 | Weak | verify |
+
+The remote research role has no `verify` flag because it does not require local work authorisation.
+
+## 3. Unit tests (Vitest) — 37 passed
+
+| Area | Tests |
+|---|---|
+| Data (5) | at least 10 valid opportunities; unique ids; at least two hard constraints; lookup by id and unknown id; sample profile passes schema |
+| Criteria (5) | skill normalisation and synonyms; experience in range / overqualified / slightly short / far short / unknown; education relevant / unrelated / level not met; location preferred / remote / other; language met / below level |
+| Engine (13) | the four required cases above; unknown work authorisation never treated as satisfied ("yes" removes the flag, "no" makes it critical); no flag for roles without the requirement; empty profile fields give finite scores and "missing" flags; unknown enrolment flagged; synonyms; weights sum to 100; points sum to score; deterministic ranking; NGO role ranks first |
+| AI summary (8) | template mentions band and top gap; template mentions verification; no key → template; client error → template; non-JSON → template; too short or invented numbers → template; timeout → template; valid output → AI, and no free-text profile data in the prompt |
+| Storage (6) | profile round-trip; empty storage; corrupt JSON ignored; schema-invalid profile ignored; shortlist toggle; clear all data |
+
+## 4. End-to-end tests (Playwright) — 12 passed
+
+Each journey runs on Desktop Chrome and on a Pixel 7 viewport against the production build in mock mode.
+
+1. **Profile to shortlist:** load the sample profile → save → 12 ranked cards, Programme Assistant first
+   with "Strong match" and the verification notice → German Client Associate shows "Critical gap" and the
+   German requirement → detail page shows the 6-row breakdown and summary → shortlist → persists after
+   reload → remove → empty state.
+2. **Filter by band:** "Critical gap" filter shows 3 cards.
+3. **Validation:** submitting an empty form shows "Please correct 5 fields" with field messages and does not navigate.
+4. **No profile:** /matches prompts the user to create a profile.
+5. **Unknown opportunity:** /opportunities/does-not-exist returns 404 with a not-found page.
+6. **API validation:** POST /api/summary with an invalid body returns 400.
+
+## 5. Manual checks
+
+- Visual review of profile, matches and detail pages at 1280 px and 390 px.
+- Keyboard: visible focus ring on every control; error summary receives focus on failed submit.
+- Not verified: the live Claude API call (no API key in the build environment). All failure paths are unit-tested.

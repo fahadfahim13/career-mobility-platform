@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pathway — International Career Matching (MVP)
 
-## Getting Started
+A working prototype of an AI-assisted international career mobility platform. A user creates a career
+profile, the system scores 12 sample opportunities across six countries, and the user receives a ranked
+list with the reasons for each score, the gaps, and any eligibility concerns. Opportunities can be
+opened in detail and saved to a shortlist.
 
-First, run the development server:
+- **Live demo:** _to be added after deployment_
+- **Technical note:** [docs/TECHNICAL_NOTE.md](docs/TECHNICAL_NOTE.md)
+- **Test evidence:** [docs/TEST_EVIDENCE.md](docs/TEST_EVIDENCE.md)
+
+## Quick start
+
+Requirements: Node.js 20 or later, npm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open **Profile → Load sample profile → Save profile and view matches**. The sample profile is the
+fictional candidate from the assessment brief.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Configuration
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Required | Purpose |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | No | Enables the AI-written summary on the opportunity detail page (Claude Haiku 5.5). |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Without a key the app runs in **mock mode**: every feature works, and the detail page shows a
+rule-based summary instead. Copy `.env.example` to `.env.local` to set the key. The score, ranking,
+gaps and flags never depend on the AI.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Command | What it does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` / `npm start` | Production build and server |
+| `npm test` | Unit tests (Vitest) — matching engine, data, storage, AI fallback |
+| `npm run test:e2e` | End-to-end tests (Playwright, desktop and mobile). First run: `npx playwright install chromium` |
+| `npm run typecheck` / `npm run lint` | TypeScript and ESLint |
+| `npm run report` | Prints the ranked results for the sample profile |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To run the end-to-end suite against a deployed URL: `BASE_URL=https://… npm run test:e2e`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project structure
+
+```
+src/
+  data/opportunities.json      12 fictional opportunities (validated by zod at load)
+  data/sampleProfile.ts        the brief's sample candidate
+  lib/schemas.ts               zod schemas: profile, form rules, opportunity
+  lib/matching/                the scoring engine (pure functions, no I/O)
+    criteria.ts                six weighted criteria
+    explain.ts                 eligibility flags, strengths and gaps
+    engine.ts                  matchOne / rankOpportunities
+  lib/summary/                 template summary + optional AI summary with fallback
+  lib/storage.ts               versioned localStorage for profile and shortlist
+  app/                         pages: /, /profile, /matches, /opportunities, /opportunities/[id], /shortlist
+  app/api/summary/route.ts     POST endpoint for the optional AI summary
+  components/                  UI components
+e2e/journey.spec.ts            end-to-end user journeys
+docs/                          technical note, test evidence, plan and design spec
+```
+
+## AI and tool disclosure
+
+| Tool | Used for |
+|---|---|
+| **Claude Code (Anthropic, model Claude Opus 5.5)** | AI coding assistant used throughout development, under my direction: turning the brief into a design spec and task plan, writing code and tests (test-first), UI polish, and drafting this documentation. I reviewed the code, decided the matching approach, weights and data, and can explain and change every part of it. |
+| **Claude Haiku 5.5 via the Anthropic API** | Runtime, optional: rewrites the rule engine's output into a two-sentence summary. Details and safeguards are in the technical note. |
+| Next.js 15, React 19, TypeScript, Tailwind CSS 4 | Application framework and styling |
+| zod | Validation of profile input, sample data, stored data, API input and AI output |
+| lucide-react | Icon set |
+| Vitest, Playwright, jsdom | Unit and end-to-end testing |
+| `@anthropic-ai/sdk` | Official Anthropic SDK for the optional summary call |
+
+No real personal data is used. All organisations, roles and the candidate are fictional.
+
+## Known limitations
+
+See the technical note for the full list. In short: no authentication or server-side storage (by
+design, per the brief), keyword-and-synonym skill matching rather than semantic matching, and the
+live AI path was tested with mocks only because no API key was available in the build environment.
