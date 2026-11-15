@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { allowRequest } from "../../../lib/rateLimit";
 import { extractResume, isPdf } from "../../../lib/resume/extract";
 import { storeResume } from "../../../lib/resume/store";
+import { readSession } from "../../../lib/server/session";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -18,7 +19,7 @@ const fail = (status: number, error: string) => NextResponse.json({ error }, { s
 export async function POST(req: Request) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return fail(503, "Resume reading is not available right now. Please fill in the form by hand.");
-  if (!allowRequest(clientId(req))) return fail(429, "Too many requests. Please try again in a minute.");
+  if (!allowRequest(`resume:${clientId(req)}`)) return fail(429, "Too many requests. Please try again in a minute.");
 
   let file: FormDataEntryValue | null;
   try {
@@ -33,13 +34,15 @@ export async function POST(req: Request) {
   if (!isPdf(bytes)) return fail(415, "This file is not a PDF. Save your resume as a PDF and try again.");
 
   // Storage runs alongside extraction; a storage failure never blocks the form from filling.
-  const stored = storeResume(bytes).catch((err: unknown) => {
+  const owner = readSession(req)?.id ?? "anon";
+  const stored = storeResume(bytes, owner).catch((err: unknown) => {
     console.warn("[resume] storage failed:", err instanceof Error ? err.message : err);
-    return false;
+    return null;
   });
   try {
     const fields = await extractResume(bytes, { apiKey });
-    return NextResponse.json({ fields, stored: await stored });
+    const resumeId = await stored;
+    return NextResponse.json({ fields, stored: resumeId !== null, resumeId });
   } catch (err) {
     console.warn("[resume] extraction failed:", err instanceof Error ? err.message : err);
     await stored;

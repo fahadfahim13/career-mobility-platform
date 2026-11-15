@@ -1,19 +1,19 @@
 import { expect, test } from "@playwright/test";
 
-test("employer signs up and sees candidates ranked by fit", async ({ page }) => {
+test("employer signs up and sees candidates ranked by fit", async ({ page }, info) => {
   await page.goto("/");
   await page.getByRole("link", { name: "I’m hiring" }).first().click();
   await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
   await page.getByLabel("Full name").fill("Lena Vogel");
-  await page.getByLabel("Organisation").fill("Northwind Logistics");
-  await page.getByLabel("Work email").fill("lena@northwind.example");
+  await page.getByLabel("Organisation").selectOption("Harbourline Logistics");
+  await page.getByLabel("Work email").fill(`lena.${info.project.name}.${Date.now()}@harbourline.example`);
   await page.getByLabel("Password").fill("hiring-2026");
   await page.getByRole("button", { name: "Create employer account" }).click();
 
   await expect(page.getByRole("heading", { name: "Candidates", level: 1 })).toBeVisible();
+  await expect(page.getByText(/Applicants for Operations coordinator/i)).toBeVisible();
   const rows = page.getByTestId("candidate-row");
   await expect(rows).toHaveCount(8);
-  await page.getByLabel("Open role").selectOption("operations-coordinator-singapore");
   await expect(rows.first()).toContainText("Amira Haddad");
   await expect(rows.first()).toContainText("Strong match");
 

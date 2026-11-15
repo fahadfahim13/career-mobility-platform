@@ -5,13 +5,13 @@ import { textLink, wrap } from "../../components/ui";
 export const metadata = { title: "Privacy and terms — Pathway" };
 
 const PRIVACY = [
-  ["What is stored", "Your account, profile, shortlist, stages and notes, plus any resume you upload."],
-  ["Where", "Your account and profile stay in this browser’s local storage. An uploaded resume is kept in private file storage (Vercel Blob). It has no public link."],
-  ["Passwords", "Stored only as a salted SHA-256 hash, never in plain text."],
+  ["What is stored", "Your account, profile, shortlist, stages and notes, any resume you upload, and the applications you send."],
+  ["Where", "Accounts and applications are kept in private server storage (Vercel Blob), with no public links. Your profile, shortlist and notes stay in this browser until you apply."],
+  ["Passwords", "Stored only as a salted scrypt hash, never in plain text. You stay signed in with a signed, HttpOnly cookie."],
   ["What leaves your browser", "An uploaded resume, which an AI model (Gemini 2.5 Flash Lite via OpenRouter) reads to fill your profile. The structured profile sent for the AI match summary, with your free-text summary removed first."],
   ["Work authorisation", "Never read from a resume. Only you can answer it."],
-  ["Sharing", "Nothing is shared with employers or third parties."],
-  ["Deleting", "Use “Clear my data” on the profile page, or clear this site’s data in your browser."],
+  ["Sharing", "When you apply, the employer that posted the role sees your profile, match score and attached resume. Other employers do not."],
+  ["Deleting", "“Clear my data” on the profile page removes what this browser holds. In this prototype, server records (account, resume, applications) cannot yet be deleted by the user."],
 ];
 
 const TERMS = [
@@ -24,8 +24,8 @@ const TERMS = [
 export default function LegalPage() {
   return (
     <>
-      <PageHero eyebrow="Legal" title="Privacy and terms" intro="Short version: your profile stays in your browser. A resume you upload is stored privately." compact>
-        <HeroStats items={[{ value: "0", label: "Profiles on a server" }, { value: "0", label: "Data shared" }, { value: "100%", label: "Fictional roles" }]} />
+      <PageHero eyebrow="Legal" title="Privacy and terms" intro="Short version: only the employer you apply to sees your profile and resume." compact>
+        <HeroStats items={[{ value: "1", label: "Employer per application" }, { value: "scrypt", label: "Password hashing" }, { value: "100%", label: "Fictional roles" }]} />
       </PageHero>
       <div className={`${wrap} space-y-14 py-14 sm:py-20`}>
 

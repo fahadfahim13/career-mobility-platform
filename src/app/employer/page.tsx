@@ -2,8 +2,9 @@
 
 import { Check, ChevronDown, Minus } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BandBadge, EligibilityTag, ScoreFigure } from "../../components/badges";
+import { ApplicantList, type ApplicantView } from "../../components/ApplicantList";
 import { ScoreBreakdown } from "../../components/ScoreBreakdown";
 import { ScoreStrip } from "../../components/ScoreStrip";
 import { HeroStats, PageHero } from "../../components/PageHero";
@@ -17,11 +18,32 @@ import { rankCandidates, type CandidateSort } from "../../lib/rankCandidates";
 
 export default function EmployerPage() {
   const { account, ready } = useAccount();
-  const roles = getOpportunities();
-  const [roleId, setRoleId] = useState(roles[1]?.id ?? roles[0].id);
+  const all = getOpportunities();
+  // Employers see only their own organisation's roles (one per organisation in this dataset).
+  const roles = account?.organisation ? all.filter((r) => r.organisation === account.organisation) : [];
+  const [roleId, setRoleId] = useState<string | null>(null);
   const [sort, setSort] = useState<CandidateSort>("fit");
-  const role = roles.find((r) => r.id === roleId) ?? roles[0];
+  const role = roles.find((r) => r.id === roleId) ?? roles[0] ?? all[0];
   const rows = useMemo(() => rankCandidates(role, candidates, sort), [role, sort]);
+  const [applicants, setApplicants] = useState<Record<string, ApplicantView[]> | null>(null);
+  const [loadError, setLoadError] = useState(false);
+
+  const isEmployer = account?.role === "employer";
+  useEffect(() => {
+    if (!isEmployer) return;
+    let live = true;
+    fetch("/api/employer/applicants", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json() as Promise<{ roles: { opportunityId: string; applicants: ApplicantView[] }[] }>;
+      })
+      .then((d) => live && setApplicants(Object.fromEntries(d.roles.map((r) => [r.opportunityId, r.applicants]))))
+      .catch(() => live && setLoadError(true));
+    return () => {
+      live = false;
+    };
+  }, [isEmployer]);
+  const roleApplicants = applicants?.[role.id] ?? [];
 
   if (!ready) {
     return (
@@ -48,50 +70,71 @@ export default function EmployerPage() {
     );
   }
 
-  const strong = rows.filter((r) => r.result.band === "Strong").length;
-  const stated = rows.filter((r) => r.result.eligibility === "clear").length;
+  const strong = roleApplicants.filter((r) => r.result.band === "Strong").length;
+  const withResume = roleApplicants.filter((r) => r.resumeName).length;
 
   return (
     <>
     <PageHero
       eyebrow={account.organisation}
       title="Candidates"
-      intro="Ranked by fit for the selected role. Right to work is shown separately."
+      intro={`Applicants for ${role.title}, ${role.city}. Ranked by fit. Right to work is shown separately.`}
       photo={team}
       photoAlt="A hiring team reviewing candidates around a table"
     >
       <HeroStats
         items={[
-          { value: rows.length, label: "Candidates" },
-          { value: strong, label: "Strong matches" },
-          { value: stated, label: "Right to work stated" },
+          { value: applicants ? roleApplicants.length : "–", label: "Applicants" },
+          { value: applicants ? strong : "–", label: "Strong matches" },
+          { value: applicants ? withResume : "–", label: "With resume" },
         ]}
       />
     </PageHero>
     <div className={`${wrap} space-y-8 py-12 sm:py-16`}>
 
-      <div className="grid gap-4 border-y-2 border-ink py-4 sm:grid-cols-12 sm:items-end">
-        <div className="sm:col-span-7">
+      {roles.length > 1 && (
+        <div>
           <label htmlFor="role" className={fieldLabel}>Open role</label>
-          <select id="role" className={field} value={roleId} onChange={(e) => setRoleId(e.target.value)}>
+          <select id="role" className={field} value={role.id} onChange={(e) => setRoleId(e.target.value)}>
             {roles.map((r) => (
               <option key={r.id} value={r.id}>{r.title} · {r.city}</option>
             ))}
           </select>
         </div>
-        <div className="sm:col-span-5">
-          <label htmlFor="sort" className={fieldLabel}>Sort by</label>
-          <select id="sort" className={field} value={sort} onChange={(e) => setSort(e.target.value as CandidateSort)}>
-            <option value="fit">Fit score</option>
-            <option value="eligibility">Right to work first</option>
-          </select>
-        </div>
-      </div>
+      )}
 
       <p className="text-sm text-muted">
         Ref. {refCode(role)} · {role.country} · {formatSalary(role)} ·{" "}
         <Link href={`/opportunities/${role.id}`} className="font-semibold text-field underline">View role</Link>
       </p>
+
+      <section aria-labelledby="applicants-h" className="space-y-4">
+        <h2 id="applicants-h" className="text-2xl font-extrabold tracking-tight">
+          Applicants{applicants && <span className="text-muted"> ({roleApplicants.length})</span>}
+        </h2>
+        {loadError ? (
+          <p role="alert" className="bg-blocked-tint px-4 py-3 text-sm">Could not load applicants. Refresh the page to try again.</p>
+        ) : applicants ? (
+          <ApplicantList role={role} applicants={roleApplicants} />
+        ) : (
+          <p role="status" className="text-sm text-muted">Loading applicants…</p>
+        )}
+      </section>
+
+      <section aria-labelledby="pool-h" className="space-y-4 pt-6">
+        <div className="grid gap-4 sm:grid-cols-12 sm:items-end">
+          <div className="sm:col-span-7">
+            <h2 id="pool-h" className="text-2xl font-extrabold tracking-tight">Suggested from the talent pool</h2>
+            <p className="text-sm text-muted">Fictional sample candidates who have not applied, ranked for this role.</p>
+          </div>
+          <div className="sm:col-span-5">
+            <label htmlFor="sort" className={fieldLabel}>Sort by</label>
+            <select id="sort" className={field} value={sort} onChange={(e) => setSort(e.target.value as CandidateSort)}>
+              <option value="fit">Fit score</option>
+              <option value="eligibility">Right to work first</option>
+            </select>
+          </div>
+        </div>
 
       <ol className="border-b-2 border-ink">
         {rows.map(({ candidate, result }, i) => {
@@ -104,7 +147,7 @@ export default function EmployerPage() {
                     <span className="sr-only">Rank </span>{i + 1}
                   </span>
                   <div className="min-w-0">
-                    <h2 className="text-xl font-bold tracking-tight">{candidate.name}</h2>
+                    <h3 className="text-xl font-bold tracking-tight">{candidate.name}</h3>
                     <p className="text-sm text-muted">{candidate.headline}</p>
                     <p className="mt-1 text-xs font-semibold text-muted">Based in {candidate.basedIn}</p>
                     <p className="mt-3 text-sm"><strong>{matched.length} of {matched.length + missing.length}</strong> required skills</p>
@@ -143,9 +186,10 @@ export default function EmployerPage() {
           );
         })}
       </ol>
+      </section>
 
       <p className="text-xs text-muted">
-        All candidates are fictional. Scores are guidance, not a hiring decision. Right to work is self-stated and must be verified.
+        Talent-pool candidates are fictional. Scores are guidance, not a hiring decision. Right to work is self-stated and must be verified.
       </p>
       <div className="flex flex-wrap gap-3">
         <Link href="/how-it-works" className={btnSecondary}>How scoring works</Link>

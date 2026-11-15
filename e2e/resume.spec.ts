@@ -52,11 +52,11 @@ test("profile: a non-PDF file is refused in the browser", async ({ page }) => {
   expect(called).toBe(false);
 });
 
-test("candidate sign-up with a resume opens a pre-filled profile", async ({ page }) => {
+test("candidate sign-up with a resume opens a pre-filled profile", async ({ page }, info) => {
   await mockResumeApi(page, { status: 200, body: { fields: FIELDS, stored: true } });
   await page.goto("/signup");
   await page.getByLabel("Full name").fill("Priya Raman");
-  await page.getByLabel("Email").fill("priya@example.com");
+  await page.getByLabel("Email").fill(`priya.${info.project.name}.${Date.now()}@example.com`);
   await page.getByLabel("Password").fill("resume-2026");
   await page.getByLabel("Upload resume (PDF)").setInputFiles(RESUME);
   await expect(page.getByText(/Filled 8 fields/)).toBeVisible();

@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { opportunityMeta } from "../../../components/MatchCard";
+import { ApplyButton } from "../../../components/ApplyButton";
 import { OpportunityMatch } from "../../../components/OpportunityMatch";
 import { ShortlistButton } from "../../../components/ShortlistButton";
 import { VerifySteps } from "../../../components/VerifySteps";
@@ -45,7 +46,8 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
         photo={photo?.img}
         photoAlt={photo ? `${photo.city}, ${opp.country}` : ""}
       >
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-start gap-3">
+          <ApplyButton id={opp.id} title={opp.title} />
           <ShortlistButton id={opp.id} title={opp.title} />
           <Link href="/matches" className={btnOnFieldOutline}>
             <ArrowLeft className="size-4" aria-hidden />

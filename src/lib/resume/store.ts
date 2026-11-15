@@ -1,17 +1,13 @@
-import { put } from "@vercel/blob";
+import { resumeKeyFor } from "../server/applications";
+import { getStore } from "../server/store";
 
 /**
- * Saves the uploaded resume to the private Vercel Blob store under a random name. The file is never
- * public: reading it back needs the store token. Returns false when no store is configured
- * (local development), so the upload still fills the form.
+ * Saves the uploaded resume privately under the uploader's account id ("anon" before sign-up) and
+ * returns its key. The key is later attached to applications; only employers of the role's
+ * organisation can download it.
  */
-export async function storeResume(pdf: Uint8Array): Promise<boolean> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return false;
-  const date = new Date().toISOString().slice(0, 10);
-  await put(`resumes/${date}/${crypto.randomUUID()}.pdf`, Buffer.from(pdf), {
-    access: "private",
-    contentType: "application/pdf",
-    addRandomSuffix: false,
-  });
-  return true;
+export async function storeResume(pdf: Uint8Array, owner: string): Promise<string> {
+  const key = resumeKeyFor(owner);
+  await getStore().putBytes(key, pdf, "application/pdf");
+  return key;
 }

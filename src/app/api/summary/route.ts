@@ -18,7 +18,7 @@ function clientId(req: Request): string {
 }
 
 export async function POST(req: Request) {
-  if (!allowRequest(clientId(req))) {
+  if (!allowRequest(`summary:${clientId(req)}`)) {
     return NextResponse.json({ error: "Too many requests. Please try again in a minute." }, { status: 429 });
   }
 

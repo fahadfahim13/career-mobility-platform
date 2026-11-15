@@ -2,7 +2,9 @@
 
 import { FileText, LoaderCircle } from "lucide-react";
 import { useId, useState, type ChangeEvent } from "react";
+import { notifyStorageChange } from "../hooks/useLocalState";
 import type { ResumeFields } from "../lib/resume/fields";
+import { saveResumeRef } from "../lib/storage";
 import { btnOutline } from "./ui";
 
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -31,9 +33,14 @@ export function ResumeUpload({ onFields, title = "Fill from your resume" }: { on
       const body = new FormData();
       body.append("resume", file);
       const res = await fetch("/api/resume", { method: "POST", body });
-      const data = (await res.json().catch(() => ({}))) as { fields?: ResumeFields; error?: string };
+      const data = (await res.json().catch(() => ({}))) as { fields?: ResumeFields; resumeId?: string | null; error?: string };
       if (!res.ok || !data.fields) {
         return setStatus({ kind: "error", message: data.error ?? "We could not read this resume. Please fill in the form by hand." });
+      }
+      if (data.resumeId) {
+        // Kept so the resume can be attached when the candidate applies.
+        saveResumeRef({ id: data.resumeId, name: file.name });
+        notifyStorageChange();
       }
       const filled = onFields(data.fields);
       setStatus(

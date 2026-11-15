@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { loadProfile, loadTracker, saveProfile, setNote as storeNote, setStage as storeStage, toggleShortlist, type Stage, type TrackedItem } from "../lib/storage";
-import { currentAccount, signOut as storeSignOut, type Account } from "../lib/accounts";
+import { loadProfile, loadResumeRef, loadTracker, saveProfile, setNote as storeNote, setStage as storeStage, toggleShortlist, type ResumeRef, type Stage, type TrackedItem } from "../lib/storage";
+import { fetchAccount, signOut as serverSignOut, type Account } from "../lib/accounts";
 import type { Profile } from "../lib/types";
 
 // Same-tab change signal so every component reading storage re-syncs after a write.
@@ -73,17 +73,40 @@ export function notifyStorageChange() {
   notify();
 }
 
-/** Signed-in demo account (browser-only). `ready` is false until storage has been read. */
+/** Last uploaded resume reference, or null. */
+export function useResumeRef(): ResumeRef | null {
+  const [ref, setRef] = useState<ResumeRef | null>(null);
+  const sync = useCallback(() => setRef(loadResumeRef()), []);
+  useStorageSync(sync);
+  return ref;
+}
+
+/**
+ * Signed-in account from the server session (HttpOnly cookie). `ready` is false until the first
+ * answer arrives. Re-checks after sign-in or sign-out (same-tab change signal).
+ */
 export function useAccount() {
   const [account, setAccount] = useState<Account | null>(null);
   const [ready, setReady] = useState(false);
   const sync = useCallback(() => {
-    setAccount(currentAccount());
-    setReady(true);
+    let live = true;
+    void fetchAccount().then((a) => {
+      if (!live) return;
+      setAccount(a);
+      setReady(true);
+    });
+    return () => {
+      live = false;
+    };
   }, []);
-  useStorageSync(sync);
-  const signOut = useCallback(() => {
-    storeSignOut();
+  useEffect(() => {
+    sync();
+    const onChange = () => sync();
+    window.addEventListener(CHANGE_EVENT, onChange);
+    return () => window.removeEventListener(CHANGE_EVENT, onChange);
+  }, [sync]);
+  const signOut = useCallback(async () => {
+    await serverSignOut();
     notify();
   }, []);
   return { account, ready, signOut };

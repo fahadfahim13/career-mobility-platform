@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { sampleProfile } from "../data/sampleProfile";
 import { notifyStorageChange } from "../hooks/useLocalState";
-import { createAccount, signIn, signInDemo, signUpSchema, type Account, type Role } from "../lib/accounts";
+import { createAccount, ORGANISATIONS, signIn, signInDemo, signUpSchema, type Account, type Role } from "../lib/accounts";
 import { EMPTY_PROFILE, mergeResume, type ResumeFields } from "../lib/resume/fields";
 import { loadProfile, saveProfile } from "../lib/storage";
 import { ResumeUpload } from "./ResumeUpload";
@@ -49,7 +49,7 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
     try {
       if (mode === "signin") {
         const r = await signIn(data.email ?? "", data.password ?? "");
-        if (!r.ok) return setErrors({ form: "Email or password is incorrect." });
+        if (!r.ok) return setErrors({ form: r.error === "network" ? "Could not reach the server. Try again." : "Email or password is incorrect." });
         return finish(r.account);
       }
       const input = { name: data.name, email: data.email, password: data.password, role, organisation: data.organisation };
@@ -61,7 +61,11 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
       }
       const r = await createAccount(input);
       if (!r.ok) {
-        return setErrors(r.error === "email-taken" ? { email: "An account with this email already exists. Sign in instead." } : { form: "Check the details and try again." });
+        return setErrors(
+          r.error === "email-taken"
+            ? { email: "An account with this email already exists. Sign in instead." }
+            : { form: r.error === "network" ? "Could not reach the server. Try again." : "Check the details and try again." },
+        );
       }
       if (role === "seeker" && resume) {
         // Pre-fill the profile, then open it so the candidate can check the fields and add countries.
@@ -77,10 +81,15 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
 
   async function demo(r: Role) {
     setBusy(true);
-    const account = await signInDemo(r);
-    if (r === "seeker" && !loadProfile()) saveProfile(sampleProfile);
-    setBusy(false);
-    finish(account);
+    try {
+      const account = await signInDemo(r);
+      if (r === "seeker" && !loadProfile()) saveProfile(sampleProfile);
+      finish(account);
+    } catch {
+      setErrors({ form: "Could not open the demo account. Try again." });
+    } finally {
+      setBusy(false);
+    }
   }
 
   const err = (k: keyof Errors) =>
@@ -161,7 +170,11 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
         {mode === "signup" && role === "employer" && (
           <div>
             <label htmlFor="organisation" className={fieldLabel}>Organisation</label>
-            <input id="organisation" name="organisation" autoComplete="organization" className={field} {...aria("organisation")} />
+            <select id="organisation" name="organisation" defaultValue="" className={field} {...aria("organisation")}>
+              <option value="" disabled>Select your organisation</option>
+              {ORGANISATIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+            <p className="mt-0.5 text-xs text-muted">You see applicants for your organisation’s roles only.</p>
             {err("organisation")}
           </div>
         )}
@@ -201,7 +214,7 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
         </button>
       </form>
 
-      <p className="mt-8 text-xs text-muted">Prototype: accounts and profiles stay in this browser. An uploaded resume is read by AI and kept in private storage.</p>
+      <p className="mt-8 text-xs text-muted">Accounts are stored on our server with a hashed password. Your profile stays in this browser until you apply.</p>
     </div>
   );
 }

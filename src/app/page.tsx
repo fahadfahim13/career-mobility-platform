@@ -64,7 +64,7 @@ const FAQ = [
   { q: "Is the score a hiring decision?", a: "No. It compares a profile with a role’s stated requirements. People make the decision." },
   { q: "Does Pathway decide who can work in a country?", a: "No. Right to work is self-stated. Unknown answers are marked “to verify”, with official links." },
   { q: "What does the AI do?", a: "It writes a two-sentence summary. It cannot change a score. Without it, a rules-based summary is shown." },
-  { q: "Where is my data stored?", a: "Your profile stays in your browser. A resume you upload is stored privately. Nothing is shared with employers." },
+  { q: "Where is my data stored?", a: "Your profile stays in your browser until you apply. Then only that role’s employer sees it, with your resume if attached." },
   { q: "Are these real jobs and candidates?", a: "No. All organisations, roles, salaries and candidates are fictional." },
 ];
 

@@ -25,7 +25,7 @@ describe("POST /api/resume", () => {
     resetRateLimit();
     extractMock.mockReset();
     storeMock.mockReset();
-    storeMock.mockResolvedValue(true);
+    storeMock.mockResolvedValue("resumes/anon/11111111-1111-1111-1111-111111111111.pdf");
   });
 
   it("returns 503 when resume reading is not configured", async () => {
@@ -49,7 +49,8 @@ describe("POST /api/resume", () => {
     const res = await post({ bytes: PDF_BYTES, name: "cv.pdf", type: "application/pdf" });
     expect(res.status).toBe(200);
     const data = await res.json();
-    expect(data).toEqual({ fields: { educationLevel: "master", skills: ["Excel"] }, stored: true });
+    expect(data).toEqual({ fields: { educationLevel: "master", skills: ["Excel"] }, stored: true, resumeId: "resumes/anon/11111111-1111-1111-1111-111111111111.pdf" });
+    expect(storeMock.mock.calls[0]?.[1]).toBe("anon");
     expect(storeMock).toHaveBeenCalledTimes(1);
   });
 

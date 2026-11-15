@@ -350,7 +350,7 @@ export function ProfileForm() {
 
       <div className="flex flex-wrap items-center gap-4">
         <button type="submit" className={btnPrimary}>Save profile and view matches</button>
-        <p className="text-xs text-muted">Your profile is stored only in this browser. Nothing is sent to an employer.</p>
+        <p className="text-xs text-muted">Your profile stays in this browser. An employer sees it only when you apply.</p>
       </div>
     </form>
     </div>

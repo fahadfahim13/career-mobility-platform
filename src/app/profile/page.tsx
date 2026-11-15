@@ -15,7 +15,7 @@ export default function ProfilePage() {
         photo={seeker}
         photoAlt="A person applying for jobs on a laptop"
       >
-        <HeroStats items={[{ value: "5 min", label: "To complete" }, { value: "6", label: "Criteria scored" }, { value: "0", label: "Shared with employers" }]} />
+        <HeroStats items={[{ value: "5 min", label: "To complete" }, { value: "6", label: "Criteria scored" }, { value: "0", label: "Shared until you apply" }]} />
       </PageHero>
       <div className={`${wrap} py-12 sm:py-16`}>
         <ProfileForm />

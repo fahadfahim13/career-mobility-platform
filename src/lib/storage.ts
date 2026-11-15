@@ -9,6 +9,8 @@ export const SHORTLIST_KEY = "cm.shortlist.v1";
 export const TRACKER_KEY = "cm.tracker.v1";
 /** Holds unreadable tracker data so a later write cannot silently destroy it. */
 export const TRACKER_BACKUP_KEY = "cm.tracker.v1.backup";
+/** Reference to the last uploaded resume (server key plus file name). The file itself is on the server. */
+export const RESUME_KEY = "cm.resume.v1";
 
 export const STAGES = ["Saved", "Applying", "Applied", "Interviewing", "Offer", "Closed"] as const;
 export type Stage = (typeof STAGES)[number];
@@ -141,8 +143,20 @@ export function setNote(id: string, note: string): void {
   update(id, { note: note.slice(0, 500) });
 }
 
+const resumeRefSchema = z.object({ id: z.string(), name: z.string() });
+export type ResumeRef = z.infer<typeof resumeRefSchema>;
+
+export function loadResumeRef(): ResumeRef | null {
+  return read(RESUME_KEY, resumeRefSchema);
+}
+
+export function saveResumeRef(ref: ResumeRef): void {
+  write(RESUME_KEY, ref);
+}
+
 export function clearAll(): void {
   try {
+    storage()?.removeItem(RESUME_KEY);
     storage()?.removeItem(PROFILE_KEY);
     storage()?.removeItem(SHORTLIST_KEY);
     storage()?.removeItem(TRACKER_KEY);
