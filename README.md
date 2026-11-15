@@ -5,7 +5,8 @@ profile, the system scores 12 sample opportunities across six countries, and the
 list with the reasons for each score, the gaps, and any eligibility concerns. Opportunities can be
 opened in detail and saved to a shortlist.
 
-- **Live demo:** _to be added after deployment_
+- **Live demo:** https://career-mobility-platform.vercel.app
+- **Source:** https://github.com/fahadfahim13/career-mobility-platform
 - **Technical note:** [docs/TECHNICAL_NOTE.md](docs/TECHNICAL_NOTE.md)
 - **Test evidence:** [docs/TEST_EVIDENCE.md](docs/TEST_EVIDENCE.md)
 
