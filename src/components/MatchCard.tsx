@@ -17,7 +17,7 @@ export function opportunityMeta(opp: Opportunity): string {
 export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: MatchResult; rank?: number }) {
   return (
     <article className={`${panel} p-5 sm:p-6`} data-testid="match-card" aria-labelledby={`t-${opp.id}`}>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0 flex-1">
           <h2 id={`t-${opp.id}`} className="text-lg font-semibold text-ink">
             {rank !== undefined && <span className="mr-2 tabular-nums text-slate-500">{rank}.</span>}
@@ -25,7 +25,7 @@ export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: Mat
           </h2>
           <p className="mt-0.5 text-sm text-slate-600">{opportunityMeta(opp)}</p>
         </div>
-        <div className="flex flex-col items-end gap-1.5">
+        <div className="flex flex-wrap items-center gap-2 sm:flex-col sm:items-end sm:gap-1.5">
           <ScorePill score={result.score} />
           <BandBadge band={result.band} />
           <VerifyBadge show={result.flags.some((f) => f.kind === "verify")} />
@@ -63,7 +63,7 @@ export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: Mat
         <FlagList flags={result.flags.filter((f) => f.kind !== "critical")} compact />
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
         <Link href={`/opportunities/${opp.id}`} className={btnDark}>
           View details
           <ArrowRight className="size-4" aria-hidden />

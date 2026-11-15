@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BandBadge } from "../../components/badges";
+import { BandBadge, VerifyBadge } from "../../components/badges";
 import { OpportunityRow } from "../../components/OpportunityRow";
 import { useProfile, useShortlist } from "../../hooks/useLocalState";
 import { getOpportunity } from "../../lib/data";
@@ -40,9 +40,10 @@ export default function ShortlistPage() {
                 key={o.id}
                 opp={o}
                 aside={r && (
-                  <span className="flex items-center gap-2 text-sm">
+                  <span className="flex flex-wrap items-center gap-2 text-sm">
                     <span className="font-semibold tabular-nums">{r.score}/100</span>
                     <BandBadge band={r.band} />
+                    <VerifyBadge show={r.flags.some((f) => f.kind === "verify")} />
                   </span>
                 )}
               />
