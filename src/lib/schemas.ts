@@ -3,6 +3,7 @@ import { z } from "zod";
 export const EDUCATION_LEVELS = ["none", "secondary", "diploma", "bachelor", "master", "phd"] as const;
 export const LANGUAGE_LEVELS = ["basic", "conversational", "professional", "native"] as const;
 export const WORK_AUTH = ["yes", "no", "unknown"] as const;
+export const VISA_SUPPORT = ["offered", "case-by-case", "not-offered"] as const;
 
 export const educationLevelSchema = z.enum(EDUCATION_LEVELS);
 export const languageLevelSchema = z.enum(LANGUAGE_LEVELS);
@@ -62,6 +63,18 @@ export const opportunitySchema = z.object({
   languages: z.array(languageSchema),
   enrolledStudentRequired: z.boolean(),
   localWorkAuthRequired: z.boolean(),
+  /** Fictional gross pay range. */
+  salary: z.object({
+    min: z.number().min(0),
+    max: z.number().min(0),
+    currency: z.string().length(3),
+    period: z.enum(["year", "month"]),
+  }),
+  /** What the employer states about visa or work-permit help. Never a statement about the candidate. */
+  visaSupport: z.enum(VISA_SUPPORT),
+  relocation: z.array(z.string()),
+  /** Foreign qualifications may need formal recognition in this role's country. */
+  recognitionMayBeRequired: z.boolean(),
 });
 
 export const opportunitiesSchema = z.array(opportunitySchema).min(1);
