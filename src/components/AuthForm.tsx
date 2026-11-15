@@ -7,7 +7,9 @@ import { useState, type FormEvent } from "react";
 import { sampleProfile } from "../data/sampleProfile";
 import { notifyStorageChange } from "../hooks/useLocalState";
 import { createAccount, signIn, signInDemo, signUpSchema, type Account, type Role } from "../lib/accounts";
+import { EMPTY_PROFILE, mergeResume, type ResumeFields } from "../lib/resume/fields";
 import { loadProfile, saveProfile } from "../lib/storage";
+import { ResumeUpload } from "./ResumeUpload";
 import { btnPrimary, field, fieldError, fieldLabel } from "./ui";
 
 const ROLE_OPTIONS: { role: Role; title: string; body: string; Icon: typeof Briefcase }[] = [
@@ -32,6 +34,7 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
   const [role, setRole] = useState<Role>(initialRole);
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
+  const [resume, setResume] = useState<ResumeFields | null>(null);
 
   const finish = (account: Account) => {
     notifyStorageChange();
@@ -59,6 +62,12 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
       const r = await createAccount(input);
       if (!r.ok) {
         return setErrors(r.error === "email-taken" ? { email: "An account with this email already exists. Sign in instead." } : { form: "Check the details and try again." });
+      }
+      if (role === "seeker" && resume) {
+        // Pre-fill the profile, then open it so the candidate can check the fields and add countries.
+        saveProfile(mergeResume(loadProfile() ?? EMPTY_PROFILE, resume).profile);
+        notifyStorageChange();
+        return router.push("/profile");
       }
       finish(r.account);
     } finally {
@@ -175,6 +184,16 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
           {err("password")}
         </div>
 
+        {mode === "signup" && role === "seeker" && (
+          <ResumeUpload
+            title="Add your resume (optional)"
+            onFields={(f) => {
+              setResume(f);
+              return mergeResume(EMPTY_PROFILE, f).filled;
+            }}
+          />
+        )}
+
         {errors.form && <p role="alert" className="bg-blocked-tint px-3 py-2 text-sm text-ink">{errors.form}</p>}
 
         <button type="submit" disabled={busy} className={`${btnPrimary} w-full`}>
@@ -182,7 +201,7 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
         </button>
       </form>
 
-      <p className="mt-8 text-xs text-muted">Prototype: accounts are stored only in this browser. Nothing is sent to a server.</p>
+      <p className="mt-8 text-xs text-muted">Prototype: accounts and profiles stay in this browser. An uploaded resume is read by AI and kept in private storage.</p>
     </div>
   );
 }

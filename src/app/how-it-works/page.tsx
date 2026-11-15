@@ -140,7 +140,7 @@ export default function HowItWorksPage() {
       <section id="privacy" aria-labelledby="p-h" className="grid scroll-mt-24 gap-8 lg:grid-cols-12">
         <h2 id="p-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">Your data</h2>
         <div className="space-y-3 text-sm lg:col-span-8">
-          <p>Your profile, shortlist, stages and notes are stored only in this browser&apos;s local storage. Accounts are browser-only too. There is no server database.</p>
+          <p>Your profile, shortlist, stages and notes are stored only in this browser&apos;s local storage. Accounts are browser-only too. Only a resume you choose to upload is stored on a server, in private storage.</p>
           <p>Nothing is shared with employers. The only data that leaves your browser is the structured profile sent to generate the optional AI summary, without your free-text summary.</p>
           <p>Use &ldquo;Clear my data&rdquo; on the profile page to remove everything.</p>
         </div>

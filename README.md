@@ -52,11 +52,19 @@ npm start
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `OPENROUTER_API_KEY` | No | Enables the AI-written summary on the opportunity detail page, through OpenRouter. |
-| `OPENROUTER_MODEL` | No | OpenRouter model id. Default `anthropic/claude-haiku-5.5`. |
+| `OPENROUTER_API_KEY` | No | Enables resume reading and the AI-written match summary, through OpenRouter. |
+| `OPENROUTER_MODEL` | No | Model for the match summary. Default `anthropic/claude-haiku-5.5`. |
+| `OPENROUTER_RESUME_MODEL` | No | Model for resume reading. Default `google/gemini-2.5-flash-lite` (native PDF input, about $0.10 per million input tokens). |
+| `BLOB_READ_WRITE_TOKEN` | No | Private Vercel Blob store for uploaded resumes. Set automatically when the store is connected. Without it, resumes are read but not kept. |
 
-Without a key the app runs in **mock mode**: every feature works, and the detail page shows a
-rule-based summary instead. Copy `.env.example` to `.env.local` to set the key. The score, ranking,
+Without a key the app runs in **mock mode**: every feature works, the resume upload asks the user to
+fill in the form by hand, and the detail page shows a rule-based summary instead.
+
+**Resume upload** (`/api/resume`): the server checks the file is a real PDF (magic bytes) under 4 MB,
+saves it to the private Blob store, and asks the model for dated roles, skills, education and
+languages as strict JSON. Years of experience are calculated in code from the role dates, because
+small models add dates badly. All output is cleaned by `sanitizeResumeFields` and merged into the
+form for the user to check. Preferred countries and work authorisation are never read from a resume. Copy `.env.example` to `.env.local` to set the key. The score, ranking,
 gaps and flags never depend on the AI.
 
 ## Scripts

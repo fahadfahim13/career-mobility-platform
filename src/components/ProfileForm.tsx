@@ -7,23 +7,14 @@ import { sampleProfile } from "../data/sampleProfile";
 import { notifyStorageChange, useProfile } from "../hooks/useLocalState";
 import { profileStrength } from "../lib/profileStrength";
 import { EDUCATION_LEVELS, LANGUAGE_LEVELS, profileFormSchema } from "../lib/schemas";
+import { EMPTY_PROFILE, mergeResume, type ResumeFields } from "../lib/resume/fields";
 import { clearAll } from "../lib/storage";
 import type { Profile, WorkAuth } from "../lib/types";
+import { ResumeUpload } from "./ResumeUpload";
 import { TagInput } from "./TagInput";
 import { btnGhost, btnOutline, btnPrimary, field, fieldError, fieldHint, fieldLabel } from "./ui";
 
-const EMPTY: Profile = {
-  educationLevel: null,
-  educationField: "",
-  yearsExperience: null,
-  experienceSummary: "",
-  skills: [],
-  languages: [],
-  preferredCountries: [],
-  interests: [],
-  enrolledStudent: null,
-  workAuthorisation: {},
-};
+const EMPTY = EMPTY_PROFILE;
 
 const COUNTRY_SUGGESTIONS = ["Germany", "Canada", "Singapore", "United Kingdom", "Netherlands", "United Arab Emirates"];
 const LEVEL_LABEL: Record<string, string> = {
@@ -89,6 +80,16 @@ export function ProfileForm() {
     setYears(String(sampleProfile.yearsExperience));
     setErrors({});
     setNotice("Sample profile loaded. Review the details, then save to see your matches.");
+  }
+
+  function fillFromResume(fields: ResumeFields): number {
+    const draftNow: Profile = { ...p, yearsExperience: years.trim() === "" ? null : Number(years) };
+    const { profile, filled } = mergeResume(draftNow, fields);
+    setP(profile);
+    setYears(profile.yearsExperience === null ? "" : String(profile.yearsExperience));
+    setErrors({});
+    setNotice(null);
+    return filled;
   }
 
   function onSubmit(e: React.FormEvent) {
@@ -175,6 +176,8 @@ export function ProfileForm() {
         </button>
       </div>
 
+      <ResumeUpload onFields={fillFromResume} />
+
       <div aria-live="polite">
         {notice && <p className="bg-field-tint px-4 py-3 text-sm font-medium text-field-deep">{notice}</p>}
       </div>
@@ -218,7 +221,7 @@ export function ProfileForm() {
             type="number"
             min={0}
             max={50}
-            step={0.5}
+            step={0.1}
             inputMode="decimal"
             className={`${field} tabular-nums`}
             value={years}
