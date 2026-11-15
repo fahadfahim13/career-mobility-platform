@@ -1,15 +1,16 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { sampleProfile } from "../data/sampleProfile";
 import { notifyStorageChange, useProfile } from "../hooks/useLocalState";
+import { profileStrength } from "../lib/profileStrength";
 import { EDUCATION_LEVELS, LANGUAGE_LEVELS, profileFormSchema } from "../lib/schemas";
 import { clearAll } from "../lib/storage";
 import type { Profile, WorkAuth } from "../lib/types";
 import { TagInput } from "./TagInput";
-import { btnGhost, btnOutline, btnPrimary, field, fieldError, fieldHint, fieldLabel, panel } from "./ui";
+import { btnGhost, btnOutline, btnPrimary, field, fieldError, fieldHint, fieldLabel } from "./ui";
 
 const EMPTY: Profile = {
   educationLevel: null,
@@ -47,8 +48,15 @@ const FRIENDLY: Partial<Record<keyof Profile, string>> = {
   yearsExperience: "Enter your years of work experience (0–50).",
 };
 
-const sectionCls = `${panel} grid gap-5 p-5 sm:p-6`;
-const legendCls = "float-left mb-1 w-full text-base font-semibold text-ink";
+const sectionCls = "grid scroll-mt-24 gap-5 border-t-2 border-ink bg-white p-5 sm:p-6";
+const legendCls = "float-left mb-1 w-full text-lg font-bold tracking-tight text-ink";
+
+const RAIL: { href: string; label: string; done: (p: Profile) => boolean }[] = [
+  { href: "#education", label: "Education and experience", done: (p) => p.educationLevel !== null && p.yearsExperience !== null },
+  { href: "#skills", label: "Skills and interests", done: (p) => p.skills.length > 0 && p.interests.length > 0 },
+  { href: "#languages", label: "Languages", done: (p) => p.languages.length > 0 },
+  { href: "#preferredCountries", label: "Countries and work authorisation", done: (p) => p.preferredCountries.length > 0 },
+];
 
 export function ProfileForm() {
   const router = useRouter();
@@ -66,6 +74,11 @@ export function ProfileForm() {
       loadedRef.current = true;
       setP(stored);
       setYears(stored.yearsExperience === null ? "" : String(stored.yearsExperience));
+    }
+    // Next steps link to #field anchors that only exist once the saved profile has rendered.
+    if (ready && window.location.hash) {
+      const id = window.location.hash.slice(1);
+      requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: "start" }));
     }
   }, [ready, stored]);
 
@@ -112,13 +125,46 @@ export function ProfileForm() {
     setP(EMPTY);
     setYears("");
     setErrors({});
-    setNotice("Your profile and shortlist have been removed from this browser.");
+    setNotice("Your profile, shortlist, stages and notes have been removed from this browser.");
   }
 
   const errorCount = Object.keys(errors).length;
+  const draft: Profile = { ...p, yearsExperience: years.trim() === "" ? null : Number(years) };
+  const strength = profileStrength(draft);
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-6">
+    <div className="grid gap-8 lg:grid-cols-12">
+      <aside className="lg:order-last lg:col-span-4" aria-label="Profile progress">
+        <div className="on-field bg-field p-5 text-on-field lg:sticky lg:top-24">
+          <p className="text-6xl font-extrabold leading-none tracking-tighter">
+            {strength.percent}
+            <span className="text-2xl">%</span>
+          </p>
+          <p className="mt-1 text-sm font-bold">Profile strength</p>
+          <div className="mt-3 h-2 bg-field-deep" aria-hidden>
+            <div className="h-full bg-on-field transition-[width] duration-500" style={{ width: `${strength.percent}%` }} />
+          </div>
+          <ul className="mt-4 space-y-1 text-sm">
+            {RAIL.map((r) => {
+              const ok = r.done(draft);
+              return (
+                <li key={r.href}>
+                  <a href={r.href} className="flex min-h-9 items-center gap-2 hover:underline">
+                    {ok ? <Check className="size-4 text-on-field" aria-hidden /> : <Circle className="size-4 text-on-field-muted" aria-hidden />}
+                    {r.label}
+                    <span className="sr-only">{ok ? "(complete)" : "(incomplete)"}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-4 border-t border-on-field-muted/40 pt-3 text-xs text-on-field-muted">
+            About five minutes. If you do not know your work authorisation, answer &ldquo;Not sure&rdquo;: affected roles are
+            marked for verification, never hidden.
+          </p>
+        </div>
+      </aside>
+    <form onSubmit={onSubmit} noValidate className="space-y-6 lg:col-span-8">
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={loadSample} className={btnOutline}>
           Load sample profile
@@ -130,11 +176,11 @@ export function ProfileForm() {
       </div>
 
       <div aria-live="polite">
-        {notice && <p className="rounded-md border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-700">{notice}</p>}
+        {notice && <p className="bg-field-tint px-4 py-3 text-sm font-medium text-field-deep">{notice}</p>}
       </div>
 
       {errorCount > 0 && (
-        <div ref={summaryRef} tabIndex={-1} role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+        <div ref={summaryRef} tabIndex={-1} role="alert" className="bg-blocked-tint px-4 py-3 text-sm text-ink">
           <p className="font-semibold">Please correct {errorCount === 1 ? "1 field" : `${errorCount} fields`} before saving:</p>
           <ul className="mt-1 list-disc pl-5">
             {Object.values(errors).map((m) => <li key={m}>{m}</li>)}
@@ -142,7 +188,7 @@ export function ProfileForm() {
         </div>
       )}
 
-      <fieldset className={`${sectionCls} sm:grid-cols-2`}>
+      <fieldset id="education" className={`${sectionCls} sm:grid-cols-2`}>
         <legend className={legendCls}>Education and experience</legend>
         <div>
           <label htmlFor="educationLevel" className={fieldLabel}>Highest level of education</label>
@@ -165,7 +211,7 @@ export function ProfileForm() {
           <label htmlFor="educationField" className={fieldLabel}>Field of study</label>
           <input id="educationField" className={field} value={p.educationField} placeholder="For example, Business Administration" onChange={(e) => set("educationField", e.target.value)} />
         </div>
-        <div>
+        <div id="yearsExperience" className="scroll-mt-24">
           <label htmlFor="years" className={fieldLabel}>Years of professional experience</label>
           <input
             id="years"
@@ -182,7 +228,7 @@ export function ProfileForm() {
           />
           {errors.yearsExperience && <p id="years-err" className={fieldError}>{errors.yearsExperience}</p>}
         </div>
-        <fieldset>
+        <fieldset id="enrolledStudent" className="scroll-mt-24">
           <legend className={fieldLabel}>Are you currently enrolled as a student?</legend>
           <p className={fieldHint}>Some internships are open only to enrolled students.</p>
           <div className="mt-1 flex flex-wrap gap-x-5 text-sm">
@@ -195,12 +241,12 @@ export function ProfileForm() {
           </div>
         </fieldset>
         <div className="sm:col-span-2">
-          <label htmlFor="summary" className={fieldLabel}>Experience summary <span className="font-normal text-slate-500">(optional)</span></label>
+          <label htmlFor="summary" className={fieldLabel}>Experience summary <span className="font-normal text-muted">(optional)</span></label>
           <textarea id="summary" rows={3} maxLength={500} className={`${field} py-2`} value={p.experienceSummary} onChange={(e) => set("experienceSummary", e.target.value)} />
         </div>
       </fieldset>
 
-      <fieldset className={sectionCls}>
+      <fieldset id="skills" className={sectionCls}>
         <legend className={legendCls}>Skills and career interests</legend>
         <TagInput
           label="Skills"
@@ -210,6 +256,7 @@ export function ProfileForm() {
           error={errors.skills}
           placeholder="For example, Excel"
         />
+        <div id="interests" className="-mb-5 scroll-mt-24" />
         <TagInput
           label="Career interests"
           hint="Areas of work you would like to pursue."
@@ -219,9 +266,9 @@ export function ProfileForm() {
         />
       </fieldset>
 
-      <fieldset className={sectionCls}>
+      <fieldset id="languages" className={sectionCls}>
         <legend className={legendCls}>Languages</legend>
-        {p.languages.length === 0 && <p className="text-sm text-slate-600">Add each language you can work in and your level.</p>}
+        {p.languages.length === 0 && <p className="text-sm text-muted">Add each language you can work in and your level.</p>}
         {p.languages.map((l, i) => (
           <div key={i} className="grid gap-3 sm:grid-cols-[1fr_200px_auto] sm:items-end">
             <div>
@@ -262,7 +309,7 @@ export function ProfileForm() {
         {errors.languages && <p className={fieldError}>{errors.languages}</p>}
       </fieldset>
 
-      <fieldset className={sectionCls}>
+      <fieldset id="preferredCountries" className={sectionCls}>
         <legend className={legendCls}>Preferred locations and work authorisation</legend>
         <TagInput
           label="Preferred countries"
@@ -273,17 +320,17 @@ export function ProfileForm() {
           placeholder="For example, Germany"
         />
         {p.preferredCountries.length > 0 && (
-          <div>
+          <div id="workAuthorisation" className="scroll-mt-24">
             <p className={fieldLabel}>Do you have the right to work in each country?</p>
             <p className={fieldHint}>
               Pathway does not assess visa or immigration status. If you are unsure, matching roles will be marked as requiring verification.
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {p.preferredCountries.map((c) => (
-                <label key={c} className="flex items-center justify-between gap-3 rounded-md border border-line px-3 py-2 text-sm text-ink">
+                <label key={c} className="flex items-center justify-between gap-3 border border-line px-3 py-2 text-sm font-semibold text-ink">
                   {c}
                   <select
-                    className="min-h-10 rounded-md border border-slate-300 bg-white px-2 text-sm"
+                    className="min-h-10 border border-slate-300 bg-white px-2 text-sm"
                     value={p.workAuthorisation[c] ?? "unknown"}
                     onChange={(e) => set("workAuthorisation", { ...p.workAuthorisation, [c]: e.target.value as WorkAuth })}
                   >
@@ -300,8 +347,9 @@ export function ProfileForm() {
 
       <div className="flex flex-wrap items-center gap-4">
         <button type="submit" className={btnPrimary}>Save profile and view matches</button>
-        <p className="text-xs text-slate-600">Your profile is stored only in this browser.</p>
+        <p className="text-xs text-muted">Your profile is stored only in this browser. Nothing is sent to an employer.</p>
       </div>
     </form>
+    </div>
   );
 }

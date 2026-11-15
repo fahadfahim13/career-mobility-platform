@@ -36,12 +36,12 @@ export function TagInput({ label, values, onChange, placeholder, hint, error, su
       {values.length > 0 && (
         <ul className="mt-2 flex flex-wrap gap-2" aria-label={`${label} added`}>
           {values.map((v) => (
-            <li key={v} className="inline-flex items-center gap-1 rounded-full bg-brand-50 py-1 pl-3 pr-1 text-sm text-brand-700 ring-1 ring-inset ring-brand-100">
+            <li key={v} className="inline-flex items-center gap-1 bg-brand-50 py-1 pl-3 pr-1 text-sm text-brand-700 ring-1 ring-inset ring-brand-100">
               {v}
               <button
                 type="button"
                 aria-label={`Remove ${v}`}
-                className="inline-flex size-6 items-center justify-center rounded-full transition-colors duration-150 hover:bg-brand-100 hover:text-red-700"
+                className="inline-flex size-6 items-center justify-center transition-colors duration-150 hover:bg-brand-100 hover:text-red-700"
                 onClick={() => onChange(values.filter((x) => x !== v))}
               >
                 <X className="size-3.5" aria-hidden />
@@ -73,7 +73,7 @@ export function TagInput({ label, values, onChange, placeholder, hint, error, su
               key={s}
               type="button"
               onClick={() => onChange([...values, s])}
-              className="inline-flex min-h-8 items-center gap-1 rounded-full border border-slate-300 bg-white px-3 text-xs text-slate-700 transition-colors duration-150 hover:border-brand-600 hover:text-brand-700"
+              className="inline-flex min-h-8 items-center gap-1 border border-slate-300 bg-white px-3 text-xs text-slate-700 transition-colors duration-150 hover:border-brand-600 hover:text-brand-700"
             >
               <Plus className="size-3" aria-hidden />
               {s}

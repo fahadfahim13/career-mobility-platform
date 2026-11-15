@@ -1,12 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { OpportunityMatch } from "../../../components/OpportunityMatch";
 import { opportunityMeta } from "../../../components/MatchCard";
+import { OpportunityMatch } from "../../../components/OpportunityMatch";
 import { ShortlistButton } from "../../../components/ShortlistButton";
-import { panel } from "../../../components/ui";
+import { VerifySteps } from "../../../components/VerifySteps";
 import { getOpportunities, getOpportunity } from "../../../lib/data";
-import { EDUCATION_LABEL, formatLanguage } from "../../../lib/format";
+import { EDUCATION_LABEL, formatLanguage, formatSalary, formatYears, refCode, VISA_SUPPORT_LABEL } from "../../../lib/format";
 
 export function generateStaticParams() {
   return getOpportunities().map((o) => ({ id: o.id }));
@@ -19,11 +19,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: opp ? `${opp.title} — Pathway` : "Not found — Pathway" };
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid gap-1 border-b border-slate-100 py-2.5 last:border-0 sm:grid-cols-[140px_1fr]">
-      <dt className="text-sm font-medium text-slate-600">{label}</dt>
-      <dd className="text-sm text-ink">{children}</dd>
+    <div className="border-b border-line py-3 last:border-0">
+      <dt className="text-xs font-bold uppercase tracking-wide text-muted">{label}</dt>
+      <dd className="mt-0.5 text-sm">{children}</dd>
     </div>
   );
 }
@@ -32,47 +32,63 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
   const opp = getOpportunity((await params).id);
   if (!opp) notFound();
 
-  const years = opp.maxYears === null ? `${opp.minYears}+ years` : `${opp.minYears}–${opp.maxYears} years`;
-
   return (
-    <div className="space-y-6">
-      <Link href="/matches" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-brand-700 hover:underline">
+    <div className="space-y-8">
+      <Link href="/matches" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-field hover:underline">
         <ArrowLeft className="size-4" aria-hidden />
         Back to matches
       </Link>
-      <header className="flex flex-col items-start justify-between gap-4 sm:flex-row">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{opp.title}</h1>
-          <p className="mt-1 text-slate-600">{opportunityMeta(opp)}</p>
+
+      <header className="grid gap-4 border-b-2 border-ink pb-6 md:grid-cols-12 md:items-end">
+        <div className="md:col-span-9">
+          <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{opp.title}</h1>
+          <p className="mt-2 text-muted">{opportunityMeta(opp)}</p>
+          <p className="mt-2 inline-block border-t border-ink pt-0.5 text-xs font-bold tracking-wider">Ref. {refCode(opp)}</p>
         </div>
-        <ShortlistButton id={opp.id} title={opp.title} />
+        <div className="md:col-span-3 md:justify-self-end">
+          <ShortlistButton id={opp.id} title={opp.title} />
+        </div>
       </header>
 
-      <p className="max-w-3xl text-slate-700">{opp.description}</p>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+        <div className="space-y-10 lg:col-span-8">
+          <p className="max-w-3xl text-lg leading-relaxed">{opp.description}</p>
+          <OpportunityMatch opp={opp} />
+          <VerifySteps opp={opp} />
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
-        <section aria-labelledby="req-h" className={`${panel} self-start p-5 sm:p-6`}>
-          <h2 id="req-h" className="text-lg font-semibold text-ink">Requirements</h2>
-          <dl className="mt-2">
-            <Row label="Required skills">{opp.requiredSkills.join(", ")}</Row>
-            <Row label="Desirable skills">{opp.niceToHaveSkills.join(", ") || "—"}</Row>
-            <Row label="Experience">{years}</Row>
-            <Row label="Field">{opp.category}</Row>
-            <Row label="Education">
-              {opp.education
-                ? `${EDUCATION_LABEL[opp.education.minLevel]} or higher${opp.education.relevantFields.length ? ` in ${opp.education.relevantFields.join(", ")}` : ""}`
-                : "No formal requirement stated"}
-            </Row>
-            <Row label="Languages">{opp.languages.map(formatLanguage).join(", ") || "—"}</Row>
-            <Row label="Eligibility">
-              <ul className="space-y-0.5">
-                <li>{opp.localWorkAuthRequired ? `Right to work in ${opp.country} required` : "No local work authorisation required (remote contract)"}</li>
-                {opp.enrolledStudentRequired && <li>Open only to currently enrolled students</li>}
-              </ul>
-            </Row>
-          </dl>
-        </section>
-        <OpportunityMatch opp={opp} />
+        <aside className="lg:col-span-4">
+          <div className="lg:sticky lg:top-24">
+            <h2 className="border-b-2 border-ink pb-2 text-lg font-bold tracking-tight">About the role</h2>
+            <dl>
+              <Fact label="Salary (fictional)">{formatSalary(opp)}</Fact>
+              <Fact label="Visa and work permit">{VISA_SUPPORT_LABEL[opp.visaSupport]}</Fact>
+              <Fact label="Relocation package">
+                {opp.relocation.length ? (
+                  <ul className="list-disc pl-4">{opp.relocation.map((r) => <li key={r}>{r}</li>)}</ul>
+                ) : (
+                  "Not offered"
+                )}
+              </Fact>
+              <Fact label="Required skills">{opp.requiredSkills.join(", ")}</Fact>
+              <Fact label="Desirable skills">{opp.niceToHaveSkills.join(", ") || "None stated"}</Fact>
+              <Fact label="Experience">{formatYears(opp)}</Fact>
+              <Fact label="Education">
+                {opp.education
+                  ? `${EDUCATION_LABEL[opp.education.minLevel]} or higher${opp.education.relevantFields.length ? ` in ${opp.education.relevantFields.join(", ")}` : ""}`
+                  : "No formal requirement stated"}
+              </Fact>
+              <Fact label="Languages">{opp.languages.map(formatLanguage).join(", ") || "None stated"}</Fact>
+              <Fact label="Eligibility">
+                <ul className="space-y-0.5">
+                  <li>{opp.localWorkAuthRequired ? `Right to work in ${opp.country} required` : "No local work authorisation required (remote contract)"}</li>
+                  {opp.enrolledStudentRequired && <li>Open only to currently enrolled students</li>}
+                  {opp.recognitionMayBeRequired && <li>Foreign qualifications may need formal recognition</li>}
+                </ul>
+              </Fact>
+            </dl>
+          </div>
+        </aside>
       </div>
     </div>
   );

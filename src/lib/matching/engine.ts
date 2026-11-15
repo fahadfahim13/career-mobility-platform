@@ -1,6 +1,6 @@
 import type { Opportunity, Profile } from "../types";
-import { EVALUATORS, LABELS, WEIGHTS, type CriterionEval } from "./criteria";
-import { buildExplanation, eligibilityFlags } from "./explain";
+import { EVALUATORS, LABELS, WEIGHTS, skillCoverage, type CriterionEval } from "./criteria";
+import { buildExplanation, buildNextSteps, eligibilityFlags, eligibilityFor } from "./explain";
 import type { Band, CriterionKey, CriterionResult, MatchResult } from "./types";
 
 /** Score ceiling when any hard constraint is unmet, so a blocked role can never outrank an eligible one on skills alone. */
@@ -38,7 +38,20 @@ export function matchOne(profile: Profile, opp: Opportunity): MatchResult {
   const score = critical ? Math.min(raw, CRITICAL_CAP) : raw;
   const { strengths, gaps } = buildExplanation(evals, flags);
 
-  return { opportunityId: opp.id, score, band: bandFor(score, critical), criteria, strengths, gaps, flags };
+  const coverage = skillCoverage(profile, opp);
+
+  return {
+    opportunityId: opp.id,
+    score,
+    band: bandFor(score, critical),
+    criteria,
+    strengths,
+    gaps,
+    flags,
+    eligibility: eligibilityFor(profile, opp),
+    skillCoverage: coverage,
+    nextSteps: buildNextSteps(profile, opp, criteria, coverage.missing),
+  };
 }
 
 export function rankOpportunities(profile: Profile, opps: Opportunity[]): MatchResult[] {

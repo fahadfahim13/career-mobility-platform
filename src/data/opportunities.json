@@ -8,16 +8,54 @@
     "remote": false,
     "type": "job",
     "category": "Programme support",
-    "tags": ["programme support", "ngo", "project coordination", "international development"],
+    "tags": [
+      "programme support",
+      "ngo",
+      "project coordination",
+      "international development"
+    ],
     "description": "Support country programme teams with donor reporting, meeting coordination and tracking of project milestones across three regional offices.",
-    "requiredSkills": ["Reporting", "Project coordination", "Stakeholder communication", "Excel"],
-    "niceToHaveSkills": ["Research", "Budget tracking"],
+    "requiredSkills": [
+      "Reporting",
+      "Project coordination",
+      "Stakeholder communication",
+      "Excel"
+    ],
+    "niceToHaveSkills": [
+      "Research",
+      "Budget tracking"
+    ],
     "minYears": 1,
     "maxYears": 2,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Business", "Social science", "Development studies", "International relations"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Business",
+        "Social science",
+        "Development studies",
+        "International relations"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 52000,
+      "max": 58000,
+      "currency": "CAD",
+      "period": "year"
+    },
+    "visaSupport": "case-by-case",
+    "relocation": [
+      "Relocation allowance",
+      "Settling-in support"
+    ],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "operations-coordinator-singapore",
@@ -28,16 +66,53 @@
     "remote": false,
     "type": "job",
     "category": "Business operations",
-    "tags": ["business operations", "logistics", "process improvement"],
+    "tags": [
+      "business operations",
+      "logistics",
+      "process improvement"
+    ],
     "description": "Coordinate daily warehouse and shipping operations, prepare weekly performance reports and act as the link between sales, finance and the warehouse team.",
-    "requiredSkills": ["Excel", "Reporting", "Stakeholder communication", "Process improvement", "Inventory management"],
-    "niceToHaveSkills": ["Power BI"],
+    "requiredSkills": [
+      "Excel",
+      "Reporting",
+      "Stakeholder communication",
+      "Process improvement",
+      "Inventory management"
+    ],
+    "niceToHaveSkills": [
+      "Power BI"
+    ],
     "minYears": 2,
     "maxYears": 4,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Business", "Supply chain", "Logistics"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Business",
+        "Supply chain",
+        "Logistics"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 48000,
+      "max": 60000,
+      "currency": "SGD",
+      "period": "year"
+    },
+    "visaSupport": "offered",
+    "relocation": [
+      "Visa application support",
+      "Temporary housing",
+      "Flight ticket"
+    ],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "junior-data-analyst-amsterdam",
@@ -48,16 +123,54 @@
     "remote": false,
     "type": "job",
     "category": "Data analytics",
-    "tags": ["data", "analytics", "dashboards"],
+    "tags": [
+      "data",
+      "analytics",
+      "dashboards"
+    ],
     "description": "Build dashboards and recurring reports for retail clients. Most work is in SQL and Python with results presented to account managers.",
-    "requiredSkills": ["SQL", "Python", "Excel", "Data visualisation", "Reporting"],
-    "niceToHaveSkills": ["Tableau"],
+    "requiredSkills": [
+      "SQL",
+      "Python",
+      "Excel",
+      "Data visualisation",
+      "Reporting"
+    ],
+    "niceToHaveSkills": [
+      "Tableau"
+    ],
     "minYears": 1,
     "maxYears": 3,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Statistics", "Economics", "Computer science", "Business"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Statistics",
+        "Economics",
+        "Computer science",
+        "Business"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 42000,
+      "max": 50000,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "visaSupport": "offered",
+    "relocation": [
+      "Visa application support",
+      "Relocation allowance",
+      "Housing search assistance"
+    ],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "business-analyst-intern-berlin",
@@ -68,16 +181,47 @@
     "remote": false,
     "type": "internship",
     "category": "Business analysis",
-    "tags": ["internship", "business analysis", "technology"],
+    "tags": [
+      "internship",
+      "business analysis",
+      "technology"
+    ],
     "description": "Six-month internship supporting the product team with market research, data analysis and stakeholder presentations. Open only to currently enrolled students.",
-    "requiredSkills": ["Data analysis", "Excel", "Presentation skills"],
-    "niceToHaveSkills": ["Research"],
+    "requiredSkills": [
+      "Data analysis",
+      "Excel",
+      "Presentation skills"
+    ],
+    "niceToHaveSkills": [
+      "Research"
+    ],
     "minYears": 0,
     "maxYears": 1,
-    "education": { "minLevel": "secondary", "relevantFields": ["Business", "Economics", "Computer science"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "secondary",
+      "relevantFields": [
+        "Business",
+        "Economics",
+        "Computer science"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": true,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 1600,
+      "max": 1800,
+      "currency": "EUR",
+      "period": "month"
+    },
+    "visaSupport": "not-offered",
+    "relocation": [],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "german-client-associate-frankfurt",
@@ -88,19 +232,46 @@
     "remote": false,
     "type": "job",
     "category": "Customer support",
-    "tags": ["customer support", "banking", "client service"],
+    "tags": [
+      "customer support",
+      "banking",
+      "client service"
+    ],
     "description": "Handle client questions by phone and email for a German retail bank. All client contact is in German.",
-    "requiredSkills": ["Customer support", "Stakeholder communication", "CRM software"],
-    "niceToHaveSkills": ["Banking products"],
+    "requiredSkills": [
+      "Customer support",
+      "Stakeholder communication",
+      "CRM software"
+    ],
+    "niceToHaveSkills": [
+      "Banking products"
+    ],
     "minYears": 1,
     "maxYears": 4,
     "education": null,
     "languages": [
-      { "name": "German", "level": "professional" },
-      { "name": "English", "level": "professional" }
+      {
+        "name": "German",
+        "level": "professional"
+      },
+      {
+        "name": "English",
+        "level": "professional"
+      }
     ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 48000,
+      "max": 56000,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "visaSupport": "case-by-case",
+    "relocation": [
+      "German language courses"
+    ],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "software-engineer-london",
@@ -111,16 +282,51 @@
     "remote": false,
     "type": "job",
     "category": "Software engineering",
-    "tags": ["engineering", "web", "typescript"],
+    "tags": [
+      "engineering",
+      "web",
+      "typescript"
+    ],
     "description": "Build and run customer-facing web services in TypeScript and React for a payments platform.",
-    "requiredSkills": ["TypeScript", "React", "Node.js", "System design"],
-    "niceToHaveSkills": ["AWS"],
+    "requiredSkills": [
+      "TypeScript",
+      "React",
+      "Node.js",
+      "System design"
+    ],
+    "niceToHaveSkills": [
+      "AWS"
+    ],
     "minYears": 4,
     "maxYears": 8,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Computer science", "Software engineering"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Computer science",
+        "Software engineering"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 55000,
+      "max": 70000,
+      "currency": "GBP",
+      "period": "year"
+    },
+    "visaSupport": "offered",
+    "relocation": [
+      "Visa application support",
+      "Relocation allowance",
+      "Flight ticket"
+    ],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "project-coordinator-toronto",
@@ -131,16 +337,51 @@
     "remote": false,
     "type": "job",
     "category": "Project coordination",
-    "tags": ["project coordination", "infrastructure", "public sector"],
+    "tags": [
+      "project coordination",
+      "infrastructure",
+      "public sector"
+    ],
     "description": "Keep schedules, meeting notes and progress reports up to date for municipal infrastructure projects and coordinate between contractors and city staff.",
-    "requiredSkills": ["Project coordination", "Scheduling", "Stakeholder communication", "Reporting", "MS Project"],
-    "niceToHaveSkills": ["Excel"],
+    "requiredSkills": [
+      "Project coordination",
+      "Scheduling",
+      "Stakeholder communication",
+      "Reporting",
+      "MS Project"
+    ],
+    "niceToHaveSkills": [
+      "Excel"
+    ],
     "minYears": 2,
     "maxYears": 5,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Business", "Engineering", "Project management"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Business",
+        "Engineering",
+        "Project management"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 58000,
+      "max": 66000,
+      "currency": "CAD",
+      "period": "year"
+    },
+    "visaSupport": "case-by-case",
+    "relocation": [
+      "Relocation allowance"
+    ],
+    "recognitionMayBeRequired": true
   },
   {
     "id": "programme-officer-berlin",
@@ -151,16 +392,52 @@
     "remote": false,
     "type": "job",
     "category": "Programme management",
-    "tags": ["programme support", "grants", "monitoring and evaluation"],
+    "tags": [
+      "programme support",
+      "grants",
+      "monitoring and evaluation"
+    ],
     "description": "Manage a portfolio of education grants, including partner reporting, monitoring visits and budget reviews.",
-    "requiredSkills": ["Programme management", "Grant reporting", "Stakeholder communication", "Monitoring and evaluation"],
-    "niceToHaveSkills": ["Research"],
+    "requiredSkills": [
+      "Programme management",
+      "Grant reporting",
+      "Stakeholder communication",
+      "Monitoring and evaluation"
+    ],
+    "niceToHaveSkills": [
+      "Research"
+    ],
     "minYears": 3,
     "maxYears": 6,
-    "education": { "minLevel": "master", "relevantFields": ["Development studies", "International relations", "Public policy"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "master",
+      "relevantFields": [
+        "Development studies",
+        "International relations",
+        "Public policy"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 50000,
+      "max": 58000,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "visaSupport": "offered",
+    "relocation": [
+      "Visa application support",
+      "German language courses",
+      "Housing search assistance"
+    ],
+    "recognitionMayBeRequired": true
   },
   {
     "id": "sales-executive-dubai",
@@ -171,19 +448,52 @@
     "remote": false,
     "type": "job",
     "category": "Sales",
-    "tags": ["sales", "b2b"],
+    "tags": [
+      "sales",
+      "b2b"
+    ],
     "description": "Win and grow B2B accounts for an industrial supplies distributor across the Gulf region. Client meetings are held in Arabic and English.",
-    "requiredSkills": ["B2B sales", "Negotiation", "CRM software", "Lead generation"],
+    "requiredSkills": [
+      "B2B sales",
+      "Negotiation",
+      "CRM software",
+      "Lead generation"
+    ],
     "niceToHaveSkills": [],
     "minYears": 2,
     "maxYears": 5,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Business", "Marketing"] },
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Business",
+        "Marketing"
+      ]
+    },
     "languages": [
-      { "name": "Arabic", "level": "professional" },
-      { "name": "English", "level": "professional" }
+      {
+        "name": "Arabic",
+        "level": "professional"
+      },
+      {
+        "name": "English",
+        "level": "professional"
+      }
     ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 180000,
+      "max": 240000,
+      "currency": "AED",
+      "period": "year"
+    },
+    "visaSupport": "offered",
+    "relocation": [
+      "Visa application support",
+      "Flight ticket",
+      "Temporary housing"
+    ],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "research-assistant-remote",
@@ -194,16 +504,49 @@
     "remote": true,
     "type": "job",
     "category": "Research",
-    "tags": ["research", "policy", "remote"],
+    "tags": [
+      "research",
+      "policy",
+      "remote"
+    ],
     "description": "Fully remote, contract-based role. Collect and summarise public data and literature for policy briefs on labour migration.",
-    "requiredSkills": ["Research", "Report writing", "Excel", "Literature review"],
-    "niceToHaveSkills": ["Stakeholder communication"],
+    "requiredSkills": [
+      "Research",
+      "Report writing",
+      "Excel",
+      "Literature review"
+    ],
+    "niceToHaveSkills": [
+      "Stakeholder communication"
+    ],
     "minYears": 0,
     "maxYears": 2,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Social science", "Economics", "Business", "Public policy"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Social science",
+        "Economics",
+        "Business",
+        "Public policy"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": false
+    "localWorkAuthRequired": false,
+    "salary": {
+      "min": 30000,
+      "max": 36000,
+      "currency": "GBP",
+      "period": "year"
+    },
+    "visaSupport": "not-offered",
+    "relocation": [],
+    "recognitionMayBeRequired": false
   },
   {
     "id": "operations-specialist-munich",
@@ -214,16 +557,53 @@
     "remote": false,
     "type": "job",
     "category": "Business operations",
-    "tags": ["business operations", "procurement", "manufacturing"],
+    "tags": [
+      "business operations",
+      "procurement",
+      "manufacturing"
+    ],
     "description": "Support purchasing and supplier management for a mid-sized manufacturer, including monthly reporting in SAP and Excel.",
-    "requiredSkills": ["SAP", "Excel", "Procurement", "Reporting", "Supplier management"],
-    "niceToHaveSkills": ["Stakeholder communication"],
+    "requiredSkills": [
+      "SAP",
+      "Excel",
+      "Procurement",
+      "Reporting",
+      "Supplier management"
+    ],
+    "niceToHaveSkills": [
+      "Stakeholder communication"
+    ],
     "minYears": 3,
     "maxYears": 5,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Business", "Engineering", "Supply chain"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Business",
+        "Engineering",
+        "Supply chain"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 52000,
+      "max": 62000,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "visaSupport": "offered",
+    "relocation": [
+      "Visa application support",
+      "Relocation allowance",
+      "German language courses"
+    ],
+    "recognitionMayBeRequired": true
   },
   {
     "id": "marketing-coordinator-vancouver",
@@ -234,15 +614,47 @@
     "remote": false,
     "type": "job",
     "category": "Marketing",
-    "tags": ["marketing", "content", "social media"],
+    "tags": [
+      "marketing",
+      "content",
+      "social media"
+    ],
     "description": "Plan and publish social media content for agency clients and coordinate campaign timelines with designers.",
-    "requiredSkills": ["Social media", "Content writing", "Google Analytics", "Project coordination"],
-    "niceToHaveSkills": ["Canva"],
+    "requiredSkills": [
+      "Social media",
+      "Content writing",
+      "Google Analytics",
+      "Project coordination"
+    ],
+    "niceToHaveSkills": [
+      "Canva"
+    ],
     "minYears": 1,
     "maxYears": 3,
-    "education": { "minLevel": "bachelor", "relevantFields": ["Marketing", "Communications", "Business"] },
-    "languages": [{ "name": "English", "level": "professional" }],
+    "education": {
+      "minLevel": "bachelor",
+      "relevantFields": [
+        "Marketing",
+        "Communications",
+        "Business"
+      ]
+    },
+    "languages": [
+      {
+        "name": "English",
+        "level": "professional"
+      }
+    ],
     "enrolledStudentRequired": false,
-    "localWorkAuthRequired": true
+    "localWorkAuthRequired": true,
+    "salary": {
+      "min": 55000,
+      "max": 62000,
+      "currency": "CAD",
+      "period": "year"
+    },
+    "visaSupport": "case-by-case",
+    "relocation": [],
+    "recognitionMayBeRequired": false
   }
 ]

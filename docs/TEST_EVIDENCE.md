@@ -2,7 +2,7 @@
 
 Run date: 2026-11-15. Commands: `npm test` (unit), `npm run test:e2e` (end-to-end), `npm run report` (ranking).
 
-**Result: 52/52 unit tests passed. 12/12 end-to-end runs passed (6 journeys × desktop and mobile).**
+**Result: 87/87 unit tests passed. 24/24 end-to-end runs passed (12 journeys × desktop and mobile).**
 
 ## 1. The three required cases (sample profile from the brief)
 
@@ -36,19 +36,24 @@ Unit tests: `strong match: Programme Assistant NGO`, `partial match: Junior Data
 
 The remote research role has no `verify` flag because it does not require local work authorisation.
 
-## 3. Unit tests (Vitest) — 52 passed
+## 3. Unit tests (Vitest) — 87 passed
 
 | Area | Tests |
 |---|---|
-| Data (5) | at least 10 valid opportunities; unique ids; at least two hard constraints; lookup by id and unknown id; sample profile passes schema |
+| Data (8) | at least 10 valid opportunities; unique ids; at least two hard constraints; lookup by id and unknown id; sample profile passes schema; every role has salary, visa support and relocation fields; every role country has a guide with official https sources; unknown country falls back to a generic guide |
 | Criteria (9) | skill normalisation and synonyms; experience in range / overqualified / slightly short / far short / unknown; education relevant / unrelated / level not met; location preferred / remote / other; language met / below level; whole-word matching ("IT" does not match "monitoring"; one-letter interests or fields match nothing; multi-word interests still match) |
 | Engine (13) | the four required cases above; unknown work authorisation never treated as satisfied ("yes" removes the flag, "no" makes it critical); no flag for roles without the requirement; empty profile fields give finite scores and "missing" flags; unknown enrolment flagged; synonyms; weights sum to 100; points sum to score; deterministic ranking; NGO role ranks first |
 | AI summary (9) | template mentions band and top gap; template mentions verification; no key → template; client error → template; non-JSON → template; too short or invented numbers → template; timeout → template; valid output → AI, and no free-text profile data in the prompt; output that drops the verification caveat → template |
 | OpenRouter client (6) | no key → mock mode; correct URL, bearer key, model and JSON schema sent; `OPENROUTER_MODEL` override; HTTP error → template; non-JSON content → template; valid response → AI summary |
 | Summary API (4) | server recomputes the match from the profile; client-supplied results rejected (400); malformed JSON 400 and unknown opportunity 404; rate limit returns 429 after 20 requests per minute per client, other clients unaffected |
-| Storage (6) | profile round-trip; empty storage; corrupt JSON ignored; schema-invalid profile ignored; shortlist toggle; clear all data |
+| Engine, research-led outputs (5) | sample ranking unchanged (all 12 scores pinned); eligibility reported separately from fit (verify / clear / blocked); matched and missing required skills; recognition flag never changes the score; next steps point at the profile field to update, at most 4 |
+| Storage (15) | profile round-trip; empty storage; corrupt JSON ignored; schema-invalid profile ignored; shortlist toggle; clear all data; v1 shortlist migrates into the tracker at "Saved"; stage and note updates; updates for untracked ids ignored; removing an item drops its stage; corrupt tracker data dropped; one bad tracker item keeps the rest; unreadable tracker backed up before any write; duplicates removed; legacy key kept until the tracker write succeeds |
+| Profile strength (3) | empty profile 0% with 8 missing sections; sample profile 88% (only work authorisation missing); 100% only when work authorisation is answered yes or no for every preferred country |
+| Match filters (5) | default keeps rank order; band, country and visa-support filters combine; eligibility filter; empty result; eligibility-first sort |
+| Accounts (6) | sign-up signs in and never stores the password in plain text; duplicate email rejected (case-insensitive); sign-in only with the right password; employer needs an organisation, passwords need 8 characters; demo account created once and reused; corrupt account storage does not throw |
+| Candidate ranking (4) | 8 fictional candidates with valid profiles and unique ids; ranked by fit, deterministic; right-to-work-first sort; the pool mixes strong and weaker matches |
 
-## 4. End-to-end tests (Playwright) — 12 passed
+## 4. End-to-end tests (Playwright) — 24 passed
 
 Each journey runs on Desktop Chrome and on a Pixel 7 viewport against the production build in mock mode.
 
@@ -61,9 +66,15 @@ Each journey runs on Desktop Chrome and on a Pixel 7 viewport against the produc
 4. **No profile:** /matches prompts the user to create a profile.
 5. **Unknown opportunity:** /opportunities/does-not-exist returns 404 with a not-found page.
 6. **API validation:** POST /api/summary with an invalid body returns 400.
+7. **Landing:** the heading reads "Hire from abroad"; "Try with a sample profile" saves the sample candidate and opens 12 ranked matches.
+8. **Filters, steps to verify and tracking:** Germany filter shows 4 roles; adding "confirmed right to work" shows the empty state; "Reset filters" restores 12. The detail page shows "Steps to verify before applying in Canada" with a canada.ca link and "Improve your match". Shortlisting, then setting the stage to "Applied", persists after reload.
+9. **How matching works:** the page lists the six weights.
+10. **Employer sign-up:** "I'm hiring" → create an employer account → 8 candidates ranked; for Operations Coordinator, Amira Haddad is first with "Strong match" → sign out.
+11. **Sign-in:** a wrong password shows "Email or password is incorrect."; "Demo candidate" opens 12 matches and shows "Your profile".
+12. **Employer page as guest:** asks the visitor to sign in.
 
 ## 5. Manual checks
 
-- Visual review of every page (home, profile, matches, detail, opportunities, shortlist, not found) at 360, 390, 768 and 1280 px (`node scripts/screenshots.mjs <dir>`). The script also checks that no page is wider than the viewport: no horizontal overflow at any width.
+- Visual review of every page (home, profile, matches, two detail pages, all roles, shortlist, how matching works, not found, sign in, sign up, employer) at 360, 390, 768 and 1280 px (`node scripts/screenshots.mjs <dir>`). The script also checks that no page is wider than the viewport: no horizontal overflow at any width.
 - Keyboard: visible focus ring on every control; error summary receives focus on failed submit.
 - Live OpenRouter call: see the README for the current status. All failure paths are unit-tested with a fake `fetch`.

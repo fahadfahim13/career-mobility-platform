@@ -46,9 +46,9 @@ export function SummaryPanel({ opp, result, profile }: { opp: Opportunity; resul
   }, [opp, resultKey, profileKey]);
 
   return (
-    <div className="rounded-md border border-brand-100 bg-brand-50 p-4" data-testid="summary" aria-busy={loading}>
-      <p className="text-sm text-ink">{summary.text}</p>
-      <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-600" data-testid="summary-source">
+    <div className="border-y-2 border-ink py-4" data-testid="summary" aria-busy={loading}>
+      <p className="text-lg font-medium leading-relaxed text-ink">{summary.text}</p>
+      <p className="mt-2 flex items-center gap-1.5 text-xs text-muted" data-testid="summary-source">
         {summary.source === "ai" ? (
           <>
             <Sparkles className="size-3.5" aria-hidden />

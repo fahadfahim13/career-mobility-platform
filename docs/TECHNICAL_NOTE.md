@@ -7,7 +7,7 @@
 | Frontend | Next.js 15 (App Router), React 19, Tailwind CSS 4 | Server-rendered pages for opportunity data; client components for profile, matches and shortlist. |
 | Matching | Pure TypeScript module (`src/lib/matching`) | No I/O, fully unit-tested. Runs in the browser, so the profile never has to leave the device to be scored. |
 | Backend | One Next.js route handler, `POST /api/summary` | Only used for the optional AI summary. Receives the profile (validated with zod), recomputes the match on the server, rate-limited per client (20/min). Returns 400/404/429 on bad input or abuse. |
-| Data storage | Opportunities: versioned JSON file validated by zod at load. Profile and shortlist: browser `localStorage` under versioned keys (`cm.profile.v1`, `cm.shortlist.v1`). | No database is needed for the brief's scope. Corrupt or out-of-date stored data is discarded, not trusted. |
+| Data storage | Opportunities: versioned JSON file validated by zod at load. Profile and shortlist tracker: browser `localStorage` under versioned keys (`cm.profile.v1`, `cm.tracker.v1`; the older `cm.shortlist.v1` is migrated on first read). | No database is needed for the brief's scope. Corrupt or out-of-date stored data is discarded, not trusted. |
 | External service | OpenRouter chat completions API (default model `anthropic/claude-haiku-5.5`), optional | Mock mode when no key is set. Model is configurable with `OPENROUTER_MODEL`. |
 
 ## 2. Data model
@@ -19,9 +19,15 @@
 - **Opportunity:** id, title, organisation, country, city, remote flag, type (job / internship), category,
   tags, required and desirable skills, experience range, minimum education level with relevant fields,
   required languages with level, and two hard-constraint flags: `enrolledStudentRequired` and
-  `localWorkAuthRequired`.
+  `localWorkAuthRequired`. Role facts shown but never scored: fictional salary range, `visaSupport`
+  (`offered` / `case-by-case` / `not-offered`) and relocation package. `recognitionMayBeRequired` adds a
+  verify flag that never changes the score.
 - **MatchResult:** score (0–100), band, six criterion results (weight, points, status, reasoning),
-  strengths, gaps, and flags (`critical`, `verify`, `missing`).
+  strengths, gaps, flags (`critical`, `verify`, `missing`), a separate `eligibility` status
+  (`clear` / `verify` / `blocked`, right to work only), `skillCoverage` (matched and missing required
+  skills) and up to four `nextSteps`, each pointing at the profile field to update.
+- **Country guides** (`src/data/countryGuides.ts`): steps to verify and official government links per
+  country, with a generic fallback. Worded as questions to check, never as a statement of eligibility.
 
 ## 3. Matching method
 
@@ -87,7 +93,31 @@ The detail page shows every criterion's points, so any score can be traced to it
 - Replace the prototype's in-memory, per-instance rate limit with a shared store or the platform firewall; secrets only in server-side environment
   variables; dependency and security scanning in CI.
 
-## 7. Key trade-offs
+## 7. Product decisions from competitor research
+
+A review of relocation job boards, AI job-match tools, and visa and talent-mobility tools
+(`docs/COMPETITOR_RESEARCH.md`) found three recurring gaps:
+
+- **Black-box percentages.** The tools give a score but do not show how it was reached.
+- **Fit and eligibility blended into one number.** A role the user cannot legally take can look as good as one they can.
+- **Eligibility checkers and job listings kept apart.** The visa tools have no jobs, and the job boards have no eligibility logic.
+
+The redesign responds to each one:
+
+- **Visible arithmetic.** A score strip shows each criterion as a segment: its width is the weight and its fill is the points earned. The detail page shows the weight × share calculation for every criterion.
+- **Two separate signals.** The fit score is shown next to, not combined with, an eligibility status.
+- **Eligibility next to the role.** Each detail page has steps to verify, linked to official sources.
+
+Further borrowed patterns:
+
+- An "x of y required skills" count.
+- "Why it fits" and "What to review" sections.
+- Next steps for each gap.
+- A profile-strength meter.
+- Application stages on the shortlist.
+- A public "How matching works" page that states what is *not* scored.
+
+## 8. Key trade-offs
 
 - **Rules over machine learning:** fully explainable and testable, which suits a decision support tool
   where users must see why. Cost: synonym matching misses skills phrased differently.
@@ -98,7 +128,7 @@ The detail page shows every criterion's points, so any score can be traced to it
 - **Critical cap at 35:** keeps blocked roles visible (users may plan to close the gap) without ranking
   them above eligible roles of similar fit.
 
-## 8. Known limitations and next steps
+## 9. Known limitations and next steps
 
 - Skill matching is lexical, and US/UK spelling variants (e.g. visualization / visualisation) are not yet folded. Next: embeddings or a curated skills taxonomy (e.g. ESCO) for semantic matching.
 - Weights are fixed. Next: let users adjust priorities, and calibrate weights against real outcomes.

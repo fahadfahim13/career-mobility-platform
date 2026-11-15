@@ -44,6 +44,15 @@ function evalOf(score: number | null, detail: string, extra: Partial<CriterionEv
 
 const list = (items: string[]) => items.join(", ");
 
+/** Required skills split into those the profile has and those it lacks. */
+export function skillCoverage(profile: Profile, opp: Opportunity) {
+  const have = new Set(profile.skills.map(normalizeSkill));
+  return {
+    matched: opp.requiredSkills.filter((s) => have.has(normalizeSkill(s))),
+    missing: opp.requiredSkills.filter((s) => !have.has(normalizeSkill(s))),
+  };
+}
+
 export function scoreSkills(profile: Profile, opp: Opportunity): CriterionEval {
   if (profile.skills.length === 0) return evalOf(null, "No skills provided in your profile");
   const have = new Set(profile.skills.map(normalizeSkill));

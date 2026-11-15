@@ -1,10 +1,13 @@
-import type { Band, CriterionStatus } from "../lib/matching/types";
+import { Check, CircleHelp, OctagonX, ShieldQuestion } from "lucide-react";
+import type { Band, CriterionStatus, Eligibility } from "../lib/matching/types";
+
+const tag = "inline-flex items-center gap-1.5 whitespace-nowrap px-2 py-0.5 text-xs font-bold uppercase tracking-wide";
 
 const BAND_STYLE: Record<Band, string> = {
-  Strong: "bg-emerald-50 text-emerald-800 ring-emerald-200",
-  Partial: "bg-amber-50 text-amber-900 ring-amber-200",
-  Weak: "bg-slate-100 text-slate-700 ring-slate-200",
-  "Critical gap": "bg-red-50 text-red-800 ring-red-200",
+  Strong: "bg-field text-on-field",
+  Partial: "bg-field-tint text-field",
+  Weak: "bg-slate-100 text-muted",
+  "Critical gap": "bg-blocked-tint text-blocked",
 };
 
 const BAND_LABEL: Record<Band, string> = {
@@ -15,46 +18,62 @@ const BAND_LABEL: Record<Band, string> = {
 };
 
 export function BandBadge({ band }: { band: Band }) {
-  return (
-    <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${BAND_STYLE[band]}`}>
-      {BAND_LABEL[band]}
-    </span>
-  );
+  return <span className={`${tag} ${BAND_STYLE[band]}`}>{BAND_LABEL[band]}</span>;
 }
 
-/** Shown beside the band whenever eligibility is unconfirmed, so a high score never reads as "eligible". */
-export function VerifyBadge({ show }: { show: boolean }) {
-  if (!show) return null;
-  return (
-    <span data-testid="verify-badge" className="inline-flex whitespace-nowrap rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-900 ring-1 ring-inset ring-amber-200">
-      Eligibility to verify
-    </span>
-  );
-}
-
-export function ScorePill({ score }: { score: number }) {
-  return (
-    <span className="text-2xl font-semibold tabular-nums text-ink" aria-label={`Match score ${score} out of 100`}>
-      {score}
-      <span className="text-sm font-normal text-slate-500">/100</span>
-    </span>
-  );
-}
-
-const STATUS_STYLE: Record<CriterionStatus, string> = {
-  met: "text-emerald-700",
-  partial: "text-amber-800",
-  unmet: "text-red-700",
-  unknown: "text-slate-600",
+const ELIGIBILITY: Record<Eligibility, { label: string; cls: string; Icon: typeof Check }> = {
+  clear: { label: "Right to work stated", cls: "bg-met-tint text-met", Icon: Check },
+  verify: { label: "Eligibility to verify", cls: "bg-verify-tint text-verify-ink", Icon: ShieldQuestion },
+  blocked: { label: "You stated no right to work", cls: "bg-blocked-tint text-blocked", Icon: OctagonX },
 };
 
-const STATUS_LABEL: Record<CriterionStatus, string> = {
-  met: "Met",
-  partial: "Partial",
-  unmet: "Not met",
-  unknown: "Not provided",
+/**
+ * Right-to-work status, shown apart from the fit score so a high score never reads as "eligible".
+ * Roles that need no local work authorisation are shown as not required rather than "confirmed".
+ */
+export function EligibilityTag({ eligibility, required = true }: { eligibility: Eligibility; required?: boolean }) {
+  if (!required) {
+    return (
+      <span className={`${tag} bg-slate-100 text-muted`}>
+        <Check className="size-3.5" aria-hidden />
+        No local permit needed
+      </span>
+    );
+  }
+  const e = ELIGIBILITY[eligibility];
+  return (
+    <span className={`${tag} ${e.cls}`} data-testid={eligibility === "verify" ? "verify-badge" : undefined}>
+      <e.Icon className="size-3.5" aria-hidden />
+      {e.label}
+    </span>
+  );
+}
+
+/** Big tabular score. `size` lg is used on detail pages and the landing demo. */
+export function ScoreFigure({ score, size = "md", onField = false }: { score: number; size?: "md" | "lg"; onField?: boolean }) {
+  const big = size === "lg" ? "text-7xl sm:text-8xl" : "text-5xl";
+  return (
+    <span className={`inline-flex items-baseline font-extrabold leading-none tracking-tighter ${big}`}>
+      <span className="sr-only">Match score {score} out of 100</span>
+      <span aria-hidden>{score}</span>
+      <span aria-hidden className={`ml-1 text-sm font-semibold tracking-normal ${onField ? "text-on-field-muted" : "text-muted"}`}>/100</span>
+    </span>
+  );
+}
+
+const STATUS: Record<CriterionStatus, { label: string; cls: string; Icon: typeof Check }> = {
+  met: { label: "Met", cls: "text-met", Icon: Check },
+  partial: { label: "Partial", cls: "text-verify-ink", Icon: CircleHelp },
+  unmet: { label: "Not met", cls: "text-blocked", Icon: OctagonX },
+  unknown: { label: "Not provided", cls: "text-muted", Icon: CircleHelp },
 };
 
 export function StatusText({ status }: { status: CriterionStatus }) {
-  return <span className={`whitespace-nowrap font-medium ${STATUS_STYLE[status]}`}>{STATUS_LABEL[status]}</span>;
+  const s = STATUS[status];
+  return (
+    <span className={`inline-flex items-center gap-1 whitespace-nowrap font-semibold ${s.cls}`}>
+      <s.Icon className="size-3.5" aria-hidden />
+      {s.label}
+    </span>
+  );
 }

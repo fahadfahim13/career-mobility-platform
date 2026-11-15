@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { loadProfile, loadShortlist, saveProfile, toggleShortlist } from "../lib/storage";
+import { loadProfile, loadTracker, saveProfile, setNote as storeNote, setStage as storeStage, toggleShortlist, type Stage, type TrackedItem } from "../lib/storage";
+import { currentAccount, signOut as storeSignOut, type Account } from "../lib/accounts";
 import type { Profile } from "../lib/types";
 
 // Same-tab change signal so every component reading storage re-syncs after a write.
@@ -42,11 +43,12 @@ export function useProfile(): [Profile | null, (p: Profile) => void, boolean] {
   return [profile, save, ready];
 }
 
+/** Shortlist plus application tracking (stage and note per saved role). */
 export function useShortlist() {
-  const [ids, setIds] = useState<string[]>([]);
+  const [items, setItems] = useState<TrackedItem[]>([]);
   const [ready, setReady] = useState(false);
   const sync = useCallback(() => {
-    setIds(loadShortlist());
+    setItems(loadTracker());
     setReady(true);
   }, []);
   useStorageSync(sync);
@@ -54,10 +56,35 @@ export function useShortlist() {
     toggleShortlist(id);
     notify();
   }, []);
-  const has = useCallback((id: string) => ids.includes(id), [ids]);
-  return { ids, toggle, has, ready };
+  const setStage = useCallback((id: string, stage: Stage) => {
+    storeStage(id, stage);
+    notify();
+  }, []);
+  const setNote = useCallback((id: string, note: string) => {
+    storeNote(id, note);
+    notify();
+  }, []);
+  const ids = items.map((i) => i.id);
+  const has = useCallback((id: string) => items.some((i) => i.id === id), [items]);
+  return { ids, items, toggle, has, setStage, setNote, ready };
 }
 
 export function notifyStorageChange() {
   notify();
+}
+
+/** Signed-in demo account (browser-only). `ready` is false until storage has been read. */
+export function useAccount() {
+  const [account, setAccount] = useState<Account | null>(null);
+  const [ready, setReady] = useState(false);
+  const sync = useCallback(() => {
+    setAccount(currentAccount());
+    setReady(true);
+  }, []);
+  useStorageSync(sync);
+  const signOut = useCallback(() => {
+    storeSignOut();
+    notify();
+  }, []);
+  return { account, ready, signOut };
 }
