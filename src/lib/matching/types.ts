@@ -22,6 +22,25 @@ export interface Flag {
 
 export type Band = "Strong" | "Partial" | "Weak" | "Critical gap";
 
+/** Right-to-work status only. Kept apart from the fit score so a high score never implies eligibility. */
+export type Eligibility = "clear" | "verify" | "blocked";
+
+/** Profile fields a next step can send the user back to (anchor ids on the profile form). */
+export type ProfileField =
+  | "skills"
+  | "yearsExperience"
+  | "education"
+  | "preferredCountries"
+  | "languages"
+  | "interests"
+  | "enrolledStudent"
+  | "workAuthorisation";
+
+export interface NextStep {
+  text: string;
+  field: ProfileField;
+}
+
 export interface MatchResult {
   opportunityId: string;
   /** Integer 0..100. */
@@ -31,4 +50,7 @@ export interface MatchResult {
   strengths: string[];
   gaps: string[];
   flags: Flag[];
+  eligibility: Eligibility;
+  skillCoverage: { matched: string[]; missing: string[] };
+  nextSteps: NextStep[];
 }

@@ -4,7 +4,7 @@ import { sampleProfile } from "../../data/sampleProfile";
 import type { Opportunity, Profile } from "../types";
 import { matchOne, rankOpportunities } from "./engine";
 import { WEIGHTS } from "./criteria";
-import { VERIFY_WORK_AUTH_MESSAGE } from "./explain";
+import { RECOGNITION_MESSAGE, VERIFY_WORK_AUTH_MESSAGE } from "./explain";
 
 function opp(id: string): Opportunity {
   const o = getOpportunity(id);
@@ -122,5 +122,60 @@ describe("matching engine — scoring mechanics", () => {
 
   it("ranks the strong NGO role first for the sample profile", () => {
     expect(rankOpportunities(sampleProfile, getOpportunities())[0].opportunityId).toBe("programme-assistant-ngo");
+  });
+});
+
+describe("matching engine — research-led outputs", () => {
+  it("keeps the sample ranking unchanged", () => {
+    const ranked = rankOpportunities(sampleProfile, getOpportunities()).map((r) => `${r.opportunityId}:${r.score}`);
+    expect(ranked).toEqual([
+      "programme-assistant-ngo:100",
+      "operations-coordinator-singapore:88",
+      "project-coordinator-toronto:88",
+      "research-assistant-remote:79",
+      "operations-specialist-munich:72",
+      "marketing-coordinator-vancouver:68",
+      "junior-data-analyst-amsterdam:57",
+      "programme-officer-berlin:53",
+      "business-analyst-intern-berlin:35",
+      "german-client-associate-frankfurt:35",
+      "sales-executive-dubai:35",
+      "software-engineer-london:19",
+    ]);
+  });
+
+  it("reports eligibility separately from fit", () => {
+    expect(matchOne(sampleProfile, opp("programme-assistant-ngo")).eligibility).toBe("verify");
+    expect(matchOne(sampleProfile, opp("research-assistant-remote")).eligibility).toBe("clear");
+    const yes: Profile = { ...sampleProfile, workAuthorisation: { Canada: "yes" } };
+    expect(matchOne(yes, opp("programme-assistant-ngo")).eligibility).toBe("clear");
+    const no: Profile = { ...sampleProfile, workAuthorisation: { Canada: "no" } };
+    expect(matchOne(no, opp("programme-assistant-ngo")).eligibility).toBe("blocked");
+  });
+
+  it("lists matched and missing required skills", () => {
+    const o = opp("junior-data-analyst-amsterdam");
+    const r = matchOne(sampleProfile, o);
+    expect(r.skillCoverage.missing).toContain("SQL");
+    expect(r.skillCoverage.matched.length + r.skillCoverage.missing.length).toBe(o.requiredSkills.length);
+  });
+
+  it("flags qualification recognition for verification without changing the score", () => {
+    const o = opp("project-coordinator-toronto");
+    const r = matchOne(sampleProfile, o);
+    expect(r.flags).toContainEqual({ kind: "verify", message: RECOGNITION_MESSAGE });
+    const without = matchOne(sampleProfile, { ...o, recognitionMayBeRequired: false });
+    expect(without.score).toBe(r.score);
+    expect(without.flags.some((f) => f.message === RECOGNITION_MESSAGE)).toBe(false);
+  });
+
+  it("suggests next steps that point at the profile field to update", () => {
+    const analyst = matchOne(sampleProfile, opp("junior-data-analyst-amsterdam"));
+    expect(analyst.nextSteps.some((s) => s.field === "skills" && s.text.includes("SQL"))).toBe(true);
+    const ngo = matchOne(sampleProfile, opp("programme-assistant-ngo"));
+    expect(ngo.nextSteps.some((s) => s.field === "workAuthorisation")).toBe(true);
+    const german = matchOne(sampleProfile, opp("german-client-associate-frankfurt"));
+    expect(german.nextSteps.some((s) => s.field === "languages" && s.text.includes("German"))).toBe(true);
+    expect(analyst.nextSteps.length).toBeLessThanOrEqual(4);
   });
 });
