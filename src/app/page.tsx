@@ -8,7 +8,6 @@ import { SampleProfileButton } from "../components/SampleProfileButton";
 import { ScoreStrip } from "../components/ScoreStrip";
 import { CtaBand } from "../components/PageHero";
 import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary, wrap } from "../components/ui";
-import { getCountryGuide } from "../data/countryGuides";
 import { sampleProfile } from "../data/sampleProfile";
 import { getOpportunities, getOpportunity } from "../lib/data";
 import { matchOne } from "../lib/matching/engine";
@@ -131,12 +130,7 @@ export default function Home() {
       <div className={`${wrap} space-y-20 py-20 sm:space-y-28 sm:py-28`}>
       {/* The problem, drawn as a flow rather than written as a paragraph. */}
       <section aria-labelledby="problem-h">
-        <div className="grid gap-4 lg:grid-cols-12">
-          <h2 id="problem-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:col-span-7">One match. Both sides see the same facts.</h2>
-          <p className="text-muted lg:col-span-5 lg:self-end">
-            Candidates don’t know which roles abroad they qualify for. Employers don’t know who can work there. Pathway answers both.
-          </p>
-        </div>
+        <h2 id="problem-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">One match. Both sides see the same facts.</h2>
         <div className="mt-10">
           <TwoSidedFlow />
         </div>
@@ -248,35 +242,24 @@ export default function Home() {
 
       {/* Countries as a photo mosaic, with official sources underneath. */}
       <section aria-labelledby="sources-h">
-        <div className="grid gap-4 lg:grid-cols-12">
-          <h2 id="sources-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:col-span-7">
-            {roles.length} roles in {countries.length} countries
-          </h2>
-          <p className="text-muted lg:col-span-5 lg:self-end">Every role links to the country’s official authority. Reference only, not legal advice.</p>
-        </div>
+        <h2 id="sources-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">
+          {roles.length} roles in {countries.length} countries
+        </h2>
         <ul className="mt-8 grid grid-cols-2 gap-2 md:grid-cols-6">
-          {CITIES.map((c, i) => (
-            <li key={c.city} className={`relative overflow-hidden bg-field-deep ${TILE[i]}`}>
-              <Image src={c.img} alt={`${c.city} skyline`} fill placeholder="blur" sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-10 text-white">
-                <p className="font-bold">{c.country}</p>
-                <p className="text-xs opacity-80">{roles.filter((r) => r.country === c.country).length} roles</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <ul className="mt-6 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {countries.map((c) => {
-            const g = getCountryGuide(c);
+          {CITIES.map((c, i) => {
+            const n = roles.filter((r) => r.country === c.country).length;
             return (
-              <li key={c} className="bg-paper p-4">
-                <p className="font-bold">{c}</p>
-                {g.sources.map((s) => (
-                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="mt-1 block text-sm text-field underline">
-                    {s.label}
-                    <span className="sr-only"> (opens in a new tab)</span>
-                  </a>
-                ))}
+              <li key={c.city} className={`relative overflow-hidden bg-field-deep ${TILE[i]}`}>
+                <Link href={`/opportunities?country=${encodeURIComponent(c.country)}`} className="group absolute inset-0 block focus-visible:outline-4 focus-visible:outline-offset-[-4px] focus-visible:outline-white">
+                  <Image src={c.img} alt={`${c.city} skyline`} fill placeholder="blur" sizes="(min-width: 768px) 33vw, 50vw" className="object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none" />
+                  <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10 text-white">
+                    <span>
+                      <span className="block font-bold">{c.country}</span>
+                      <span className="block text-xs opacity-80">{n} {n === 1 ? "role" : "roles"}</span>
+                    </span>
+                    <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" aria-hidden />
+                  </span>
+                </Link>
               </li>
             );
           })}

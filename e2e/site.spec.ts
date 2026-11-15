@@ -32,3 +32,13 @@ test("landing shows photos and diagrams", async ({ page }) => {
   await expect(page.getByRole("figure", { name: "How right to work is decided" })).toBeVisible();
   await expect(page.getByRole("img", { name: "Frankfurt skyline" })).toBeVisible();
 });
+
+test("country cards open the roles for that country", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /Germany/ }).click();
+  await expect(page).toHaveURL(/country=Germany/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Roles in Germany");
+  await expect(page.getByTestId("opportunity-row")).toHaveCount(4);
+  await page.getByRole("link", { name: "Show all countries" }).click();
+  await expect(page.getByTestId("opportunity-row")).toHaveCount(12);
+});
