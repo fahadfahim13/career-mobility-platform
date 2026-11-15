@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BandBadge, EligibilityTag, ScoreFigure } from "../components/badges";
 import { CompareMatrix, EligibilityFlow, TwoSidedFlow, WeightsDonut } from "../components/diagrams";
 import { SampleProfileButton } from "../components/SampleProfileButton";
+import { opportunityMeta } from "../components/MatchCard";
 import { ScoreStrip } from "../components/ScoreStrip";
 import { CtaBand } from "../components/PageHero";
 import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary, wrap } from "../components/ui";
@@ -98,12 +99,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative min-h-[26rem] overflow-hidden bg-field-deep sm:min-h-[32rem]">
+        <div className="relative min-h-[36rem] overflow-hidden bg-field-deep sm:min-h-[34rem]">
           <Image src={hero} alt="A candidate reviewing roles abroad on a laptop" fill priority placeholder="blur" sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           <div className="absolute inset-x-4 bottom-4 border border-ink bg-white p-5 shadow-[0_12px_32px_-12px_rgba(17,29,51,0.45)] sm:inset-x-auto sm:right-8 sm:bottom-8 sm:w-[22rem]">
             <p className="text-xs font-bold uppercase tracking-wider text-muted">Live example</p>
             <h2 className="mt-1 text-lg font-bold leading-snug tracking-tight">{demoOpp.title}</h2>
-            <p className="text-sm text-muted">{demoOpp.organisation} · {demoOpp.city}</p>
+            <p className="text-sm text-muted">{opportunityMeta(demoOpp)}</p>
             <div className="mt-4 flex items-end justify-between gap-3">
               <ScoreFigure score={demo.score} size="lg" />
               <div className="flex flex-col items-end gap-1">
@@ -112,7 +113,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-4">
-              <ScoreStrip result={demo} animate />
+              <ScoreStrip result={demo} variant="full" animate />
             </div>
           </div>
         </div>
