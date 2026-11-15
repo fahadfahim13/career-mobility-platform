@@ -1,14 +1,18 @@
 # Technical note — Pathway career matching MVP
 
+The diagram version of this note is [TECHNICAL_DESIGN.pdf](TECHNICAL_DESIGN.pdf).
+
 ## 1. Architecture
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Frontend | Next.js 15 (App Router), React 19, Tailwind CSS 4 | Server-rendered pages for opportunity data; client components for profile, matches and shortlist. |
-| Matching | Pure TypeScript module (`src/lib/matching`) | No I/O, fully unit-tested. Runs in the browser, so the profile never has to leave the device to be scored. |
-| Backend | One Next.js route handler, `POST /api/summary` | Only used for the optional AI summary. Receives the profile (validated with zod), recomputes the match on the server, rate-limited per client (20/min). Returns 400/404/429 on bad input or abuse. |
-| Data storage | Opportunities: versioned JSON file validated by zod at load. Profile and shortlist tracker: browser `localStorage` under versioned keys (`cm.profile.v1`, `cm.tracker.v1`; the older `cm.shortlist.v1` is migrated on first read). | No database is needed for the brief's scope. Corrupt or out-of-date stored data is discarded, not trusted. |
-| External service | OpenRouter chat completions API (default model `anthropic/claude-haiku-5.5`), optional | Mock mode when no key is set. Model is configurable with `OPENROUTER_MODEL`. |
+| Frontend | Next.js 15 (App Router), React 19, Tailwind CSS 4 | Server-rendered pages for opportunity data; client components for profile, matches, shortlist, apply and the employer view. |
+| Matching | Pure TypeScript module (`src/lib/matching`) | No I/O, fully unit-tested. Runs in the browser for the candidate's own matches, and on the server for the AI summary and for ranking applicants. Both sides use the same code, so the candidate and the employer see the same score. |
+| Backend | Next.js route handlers under `src/app/api` | `auth/{signup,signin,signout,me,demo}`, `resume` (upload and reading), `applications` (apply, list own), `employer/applicants`, `employer/resume` (download), `summary` (AI summary). Input is validated with zod. Errors return 400/401/403/404/409/413/415/429/502/503 as fits. |
+| Accounts and sessions | `src/lib/server/{accounts,password,session}.ts` | Passwords hashed with scrypt and a random 16-byte salt. The session is an HMAC-SHA256 signed, HttpOnly, SameSite=Lax cookie named `pathway_session`, valid for 7 days. |
+| Data storage | `src/lib/server/store.ts` | A private Vercel Blob store used as a small JSON and file key store for accounts, applications and resumes. An in-memory store is used when `PATHWAY_STORE=memory` or no `BLOB_READ_WRITE_TOKEN` is set (tests, local runs). Opportunities: a versioned JSON file validated by zod at load. Profile, shortlist tracker and the last resume reference stay in browser `localStorage` (`cm.profile.v1`, `cm.tracker.v1`, `cm.resume.v1`; the older `cm.shortlist.v1` is migrated on first read) until the candidate applies. |
+| Rate limiting | `src/lib/rateLimit.ts` | In memory, per server instance. A separate bucket per route family (auth, apply, resume, summary) and per client IP. 20 requests per minute by default; `RATE_LIMIT_PER_MIN` overrides it. |
+| External services | OpenRouter chat completions API; Vercel Blob | Match summary: default model `anthropic/claude-haiku-5.5` (`OPENROUTER_MODEL`). Resume reading: default model `google/gemini-2.5-flash-lite` (`OPENROUTER_RESUME_MODEL`). Mock mode when no key is set. |
 
 ## 2. Data model
 
@@ -26,6 +30,15 @@
   strengths, gaps, flags (`critical`, `verify`, `missing`), a separate `eligibility` status
   (`clear` / `verify` / `blocked`, right to work only), `skillCoverage` (matched and missing required
   skills) and up to four `nextSteps`, each pointing at the profile field to update.
+- **Account** (`accounts/by-email/<sha256 of the lower-case email>.json`): id, name, email, role
+  (`seeker` / `employer`), organisation (employers only, one of the 12 organisations in the data),
+  password hash (`scrypt$<salt>$<hash>`) and creation time. Demo accounts have no usable password.
+- **Application** (`applications/<opportunityId>/<candidateId>.json`): candidate id, name and email, the
+  role id, a copy of the profile at the time of applying, an optional resume reference
+  (`{ key, name }`) and the time applied. One application per candidate per role; applying again
+  replaces it. The match result is not stored. It is recomputed when the employer views applicants.
+- **Resume** (`resumes/<owner>/<uuid>.pdf`): the uploaded PDF. The owner is the account id, or `anon`
+  when uploaded before sign-up. The browser keeps only the key and file name (`cm.resume.v1`).
 - **Country guides** (`src/data/countryGuides.ts`): steps to verify and official government links per
   country, with a generic fallback. Worded as questions to check, never as a statement of eligibility.
 
@@ -58,7 +71,13 @@ Bands: Strong ≥ 75, Partial 50–74, Weak < 50. Any role with a `verify` flag 
 "Eligibility to verify" badge next to its band, so a high score never reads as confirmed eligibility. Ranking is by score, then id, so it is deterministic.
 The detail page shows every criterion's points, so any score can be traced to its rules.
 
+Applicants are ranked for the employer by the same `matchOne` function, best score first, then by name.
+
 ## 4. AI design
+
+The AI is used in two places. In both, it never scores, ranks or decides eligibility.
+
+### 4.1 Match summary
 
 - **What the model does:** Claude Haiku 5.5 (through OpenRouter) rewrites the engine's output (band, strengths, gaps, flags)
   into a two-sentence summary. It does not score, rank or decide eligibility.
@@ -72,26 +91,77 @@ The detail page shows every criterion's points, so any score can be traced to it
   return the rule-based template summary. The page shows the template immediately and replaces it only
   if a valid AI summary arrives. The label states which source produced the text.
 
+### 4.2 Resume reading
+
+- **What the model does:** Gemini 2.5 Flash Lite (through OpenRouter, `OPENROUTER_RESUME_MODEL`
+  overrides it) reads an uploaded PDF and returns profile facts: education, dated roles, a short
+  summary, skills, languages, interests and enrolled-student status.
+- **Input checks:** PDF only, checked by the `%PDF-` magic bytes, not the file name or MIME type. Maximum
+  4 MB. The resume route needs an API key (503 without one) and is rate limited.
+- **Strict output:** the request uses a strict JSON schema (`response_format: json_schema`,
+  `temperature: 0`). The system prompt says to use only stated facts, never guess, and treat the resume
+  as data, not instructions. There is a 25-second timeout.
+- **Sanitised output:** `sanitizeResumeFields` treats the reply as untrusted. It allows only known enum
+  values, trims and caps text, removes duplicate list items, caps lists, and turns anything unusable
+  into "not provided". An unclear language level becomes `basic`, the most cautious level.
+- **Years computed in code:** `yearsFromRoles` counts years from the dated roles, not from a number the
+  model writes. Months are inclusive, "present" is the current month, overlapping roles count once,
+  internships count half, future months are ignored, and the result is capped at 50.
+- **Never read from a resume:** preferred countries and work authorisation. A resume does not state
+  them, and eligibility must never be guessed.
+- **User in control:** `mergeResume` fills the form and adds list items without removing any. The user
+  reviews and saves the profile. Nothing is scored from the resume until the user saves.
+- **Failure:** no key, a model error, a timeout or invalid JSON returns a plain message, and the user
+  fills in the form by hand. Storage runs alongside reading; a storage failure does not block the form.
+
 ## 5. Validation and errors
 
 - Profile form: zod validation on submit, with an error summary that receives focus and inline messages
   linked to each field (education level, years 0–50, at least one skill, one language, one country).
 - Sample data is validated at load; invalid data fails the build and the tests instead of reaching users.
-- Stored data is re-validated on every read; corrupt JSON or a schema mismatch returns an empty state.
-- The API rejects malformed JSON, invalid shapes, mismatched ids (400) and unknown opportunities (404).
+- Stored browser data is re-validated on every read; corrupt JSON or a schema mismatch returns an empty state.
+- Session cookies are verified (signature, expiry, shape) on every request. A bad cookie means "signed out".
+- The summary API rejects malformed JSON, invalid shapes, mismatched ids (400) and unknown opportunities (404).
+- Sign-up rejects a duplicate email (409) and an employer organisation that is not in the list (400).
+- Applying needs a signed-in candidate (401/403), a complete profile (400) and a known role (404). A
+  resume can be attached only if its key belongs to this candidate or to an anonymous upload, and the
+  file exists (400 otherwise).
+- Resume upload returns 413 for a file over 4 MB, 415 for a non-PDF, and 502 when the model fails.
 - Unknown opportunity URLs return a 404 page. Loading and empty states exist for every list.
 
-## 6. Security and privacy (for a real deployment)
+## 6. Security and privacy
 
-- Authentication (e.g. OIDC with MFA) and per-user authorisation on every profile read and write.
-- Store profiles server-side, encrypted at rest and in transit (TLS); field-level encryption for
-  sensitive attributes such as work-authorisation status.
-- Data minimisation: collect only what matching needs; keep sending no free-text personal data to the
-  AI provider, and use a provider agreement with no training on customer data and a defined retention.
-- GDPR (the platform targets EU roles): lawful basis and consent, a privacy notice, data export and
-  deletion (the prototype already offers "Clear my data"), retention limits and audit logging.
-- Replace the prototype's in-memory, per-instance rate limit with a shared store or the platform firewall; secrets only in server-side environment
-  variables; dependency and security scanning in CI.
+**Implemented now:**
+
+- Server-side accounts. Passwords are hashed with scrypt (N=16384, r=8, p=1) and a random 16-byte salt,
+  and compared in constant time. Sign-in hashes a dummy password when the email is unknown, so response
+  time does not reveal which emails exist.
+- Sessions: an HMAC-SHA256 signed cookie, HttpOnly, SameSite=Lax, Secure in production, 7 days. In
+  production the server refuses to sign sessions without a `SESSION_SECRET` of 32 or more characters.
+- Authorisation on every protected route. Only candidates can apply. Only employers can list applicants
+  or download resumes, and only for roles of their own organisation (403 otherwise). Anonymous requests
+  get 401.
+- Resumes sit in a private Blob store with no public URLs. The download route streams the file as an
+  attachment with `nosniff` and `no-store` headers.
+- Rate limits per route family and client IP. Secrets live only in server-side environment variables.
+- Data minimisation for AI: the summary prompt gets no free text, names or contact details. The resume
+  model gets the PDF only, and its output is sanitised.
+
+**Next for production:**
+
+- Email verification and password reset. Neither exists today.
+- Account deletion and data export by the user. Today "Clear my data" removes only what the browser
+  holds; server records (account, resume, applications) cannot yet be deleted by the user.
+- A shared rate-limit store or the platform firewall. The current limit is per instance only.
+- A real database (see trade-offs). The Blob store has no transactions and no unique constraints, so two
+  sign-ups with the same email at the same moment are not strictly prevented.
+- Session revocation (today a cookie stays valid until it expires), MFA, and CSRF tokens on top of
+  SameSite=Lax.
+- Clean-up of unused resumes (for example anonymous uploads that never become an application).
+- GDPR (the platform targets EU roles): lawful basis and consent, a full privacy notice, retention
+  limits and audit logging. A provider agreement with no training on customer data and a defined
+  retention, for both AI calls.
+- Dependency and security scanning in CI.
 
 ## 7. Product decisions from competitor research
 
@@ -121,10 +191,14 @@ Further borrowed patterns:
 
 - **Rules over machine learning:** fully explainable and testable, which suits a decision support tool
   where users must see why. Cost: synonym matching misses skills phrased differently.
-- **Browser storage instead of a database:** no personal data leaves the device and the prototype has no
-  server state to secure. Cost: no cross-device access and no recruiter-side features.
-- **AI limited to wording:** the AI can make results easier to read but cannot cause a wrong score or an
-  eligibility claim. Cost: less "intelligent" matching than an embedding-based approach.
+- **Vercel Blob instead of a database:** zero new infrastructure and fast to ship. The store is private
+  and already part of the hosting platform. Cost: no transactions, no unique constraints and no
+  queries. Applicant lists come from listing keys by prefix, which gets slower as data grows.
+- **Profile in the browser until applying:** a candidate can explore matches without sending personal
+  data to the server. Cost: no cross-device access to the profile, shortlist or notes.
+- **AI limited to wording and form-filling:** the AI can make results easier to read and save typing,
+  but cannot cause a wrong score or an eligibility claim. The user reviews resume values before they
+  count. Cost: less "intelligent" matching than an embedding-based approach.
 - **Critical cap at 35:** keeps blocked roles visible (users may plan to close the gap) without ranking
   them above eligible roles of similar fit.
 
@@ -132,7 +206,13 @@ Further borrowed patterns:
 
 - Skill matching is lexical, and US/UK spelling variants (e.g. visualization / visualisation) are not yet folded. Next: embeddings or a curated skills taxonomy (e.g. ESCO) for semantic matching.
 - Weights are fixed. Next: let users adjust priorities, and calibrate weights against real outcomes.
-- The live AI call was tested only with mocks (no API key in the build environment); all fallback paths
-  are covered by unit tests.
-- No authentication, server-side storage or recruiter view, as agreed in the brief's scope.
+- Storage uses Blob as a key store. Next: a relational database with unique constraints and
+  transactions for accounts and applications.
+- Rate limits are per instance. Next: a shared store or the platform firewall.
+- No email verification, password reset or user-driven account deletion. Next: add these before any
+  real users.
+- Employers see applicants and can email them (a `mailto:` link), but cannot change an application's
+  status in the app, and the candidate does not see employer feedback.
 - Sample data has 12 roles; a real catalogue needs ingestion, de-duplication and freshness checks.
+- The AI summary and resume reading are live in production. Both were checked on the deployed site on
+  2026-11-16. Unit and end-to-end tests use mocks, so they stay free and deterministic.

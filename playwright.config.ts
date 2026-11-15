@@ -20,7 +20,13 @@ export default defineConfig({
         url: BASE_URL,
         timeout: 180_000,
         reuseExistingServer: false,
-        // Mock mode: no API key, so summaries are deterministic.
-        env: { OPENROUTER_API_KEY: "" },
+        // Mock mode: no API key (deterministic summaries), an in-memory store (no writes to the real
+        // Blob store), a test-only session secret, and a high rate limit (all tests share one IP).
+        env: {
+          OPENROUTER_API_KEY: "",
+          PATHWAY_STORE: "memory",
+          SESSION_SECRET: "e2e-only-session-secret-not-used-anywhere-else",
+          RATE_LIMIT_PER_MIN: "1000",
+        },
       },
 });
