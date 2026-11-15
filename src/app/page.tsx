@@ -1,6 +1,8 @@
-import { ArrowRight, Briefcase, Building2, Check, Minus, Plus } from "lucide-react";
+import { ArrowRight, Check, Minus, Plus } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { BandBadge, EligibilityTag, ScoreFigure } from "../components/badges";
+import { CompareMatrix, EligibilityFlow, TwoSidedFlow, WeightsDonut } from "../components/diagrams";
 import { opportunityMeta } from "../components/MatchCard";
 import { SampleProfileButton } from "../components/SampleProfileButton";
 import { ScoreStrip } from "../components/ScoreStrip";
@@ -8,49 +10,65 @@ import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary } from "../comp
 import { getCountryGuide } from "../data/countryGuides";
 import { sampleProfile } from "../data/sampleProfile";
 import { getOpportunities, getOpportunity } from "../lib/data";
-import { refCode } from "../lib/format";
-import { CRITICAL_CAP, matchOne } from "../lib/matching/engine";
-import { WEIGHTS, LABELS } from "../lib/matching/criteria";
-
-const STEPS = [
-  { title: "Build a profile", body: "Skills, experience, languages and target countries. About five minutes." },
-  { title: "Get scored matches", body: "Every role is scored 0–100 on six weighted criteria, with the working shown." },
-  { title: "Verify and apply", body: "Check the right to work with official sources, then track each application." },
-];
+import { matchOne } from "../lib/matching/engine";
+import dubai from "../../public/images/dubai.webp";
+import hero from "../../public/images/hero.webp";
+import frankfurt from "../../public/images/frankfurt.webp";
+import london from "../../public/images/london.webp";
+import seeker from "../../public/images/seeker.webp";
+import singapore from "../../public/images/singapore.webp";
+import team from "../../public/images/team.webp";
+import toronto from "../../public/images/toronto.webp";
 
 const AUDIENCES = [
   {
-    Icon: Briefcase,
+    photo: seeker,
+    alt: "A person applying for jobs on a laptop",
     title: "For job seekers",
-    points: ["See which roles abroad you qualify for", "Know why you fit, and what to improve", "Get official steps to verify your right to work"],
+    points: ["Roles abroad you qualify for", "Why you fit, and what to improve", "Official steps to verify right to work"],
     cta: "Find roles",
     href: "/signup?role=seeker",
     primary: true,
   },
   {
-    Icon: Building2,
+    photo: team,
+    alt: "A hiring team reviewing candidates around a table",
     title: "For employers",
-    points: ["See candidates ranked by fit for each role", "See who has stated the right to work", "Review the score behind every candidate"],
+    points: ["Candidates ranked by fit for each role", "Right to work shown for every candidate", "The score behind every ranking"],
     cta: "Find candidates",
     href: "/signup?role=employer",
     primary: false,
   },
 ];
 
-const COMPARE = [
-  ["Match score", "A number with no reasons", "Every point explained"],
-  ["Right to work", "A “visa sponsorship” badge", "Shown per person, per country"],
-  ["Gaps", "Missing keywords", "Each gap with a next step"],
-  ["Employers", "Applicants sorted by keywords", "Candidates ranked by fit, eligibility shown"],
+const COMPARE: [string, string, string][] = [
+  ["Explained score", "A number with no reasons", "Every point explained"],
+  ["Right to work", "A “visa sponsorship” badge", "Per person, per country"],
+  ["Gaps with next steps", "Missing keywords", "Each gap has a next step"],
+  ["Two-sided", "Applicants sorted by keywords", "Candidates ranked by fit"],
+];
+
+const CITIES = [
+  { img: frankfurt, country: "Germany", city: "Frankfurt" },
+  { img: toronto, country: "Canada", city: "Toronto" },
+  { img: london, country: "United Kingdom", city: "London" },
+  { img: singapore, country: "Singapore", city: "Singapore" },
+  { img: dubai, country: "United Arab Emirates", city: "Dubai" },
+];
+
+/** Mosaic: two wide tiles over three squares; on phones the last tile spans the row. */
+const TILE = [
+  "aspect-[4/3] md:col-span-3",
+  "aspect-[4/3] md:col-span-3",
+  "aspect-square md:col-span-2",
+  "aspect-square md:col-span-2",
+  "col-span-2 aspect-[2/1] md:aspect-square",
 ];
 
 const FAQ = [
-  { q: "Is the score a hiring decision?", a: "No. It shows how a profile compares with a role’s stated requirements. People make the decision." },
-  {
-    q: "Does Pathway decide who can work in a country?",
-    a: "No. Right to work is self-stated. When it is unknown, the match is marked “to verify” with links to the official authority.",
-  },
-  { q: "What does the AI do?", a: "It writes a two-sentence summary of the result. It cannot change a score. If it is unavailable, a rules-based summary is shown." },
+  { q: "Is the score a hiring decision?", a: "No. It compares a profile with a role’s stated requirements. People make the decision." },
+  { q: "Does Pathway decide who can work in a country?", a: "No. Right to work is self-stated. Unknown answers are marked “to verify”, with official links." },
+  { q: "What does the AI do?", a: "It writes a two-sentence summary. It cannot change a score. Without it, a rules-based summary is shown." },
   { q: "Where is my data stored?", a: "In this prototype, only in your browser. Nothing is sent to a server or shared with employers." },
   { q: "Are these real jobs and candidates?", a: "No. All organisations, roles, salaries and candidates are fictional." },
 ];
@@ -58,20 +76,21 @@ const FAQ = [
 export default function Home() {
   const demoOpp = getOpportunity("operations-coordinator-singapore")!;
   const demo = matchOne(sampleProfile, demoOpp);
-  const countries = [...new Set(getOpportunities().map((o) => o.country))];
+  const roles = getOpportunities();
+  const countries = [...new Set(roles.map((o) => o.country))];
 
   return (
     <div className="-mt-8 space-y-20 sm:-mt-12 sm:space-y-28">
-      {/* Hero: the navy field and a live score strip computed by the engine. */}
+      {/* Hero: statement on the navy field, a real photo, and a live match card computed by the engine. */}
       <section className="-mx-4 grid grid-cols-1 lg:mx-0 lg:grid-cols-12" aria-labelledby="hero-h">
-        <div className="on-field bg-field px-5 py-12 text-on-field sm:px-10 sm:py-16 lg:col-span-7">
+        <div className="on-field flex flex-col justify-center bg-field px-5 py-12 text-on-field sm:px-10 sm:py-16 lg:col-span-6">
           <h1 id="hero-h" className="text-5xl font-extrabold leading-[0.95] tracking-tighter sm:text-7xl">
             Find work abroad.
             <br />
             Hire from abroad.
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-on-field-muted">
-            Every match gets a clear score. Right to work is shown separately, never assumed.
+          <p className="mt-6 max-w-md text-lg text-on-field-muted">
+            A clear fit score for every match. Right to work shown separately, never assumed.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup?role=seeker" className={btnOnField}>
@@ -84,175 +103,165 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="border-x-2 border-b-2 border-ink bg-white px-5 py-8 sm:px-8 lg:col-span-5 lg:border-l-0 lg:border-t-2 lg:py-10">
-          <div className="border-t-2 border-ink pt-4">
-            <h2 className="text-xl font-bold leading-snug tracking-tight">{demoOpp.title}</h2>
+        <div className="relative min-h-[42rem] overflow-hidden bg-field-deep sm:min-h-[32rem] lg:col-span-6">
+          <Image src={hero} alt="A candidate reviewing roles abroad on a laptop" fill priority placeholder="blur" sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+          <div className="absolute inset-x-4 bottom-4 border border-ink bg-white p-5 shadow-[0_12px_32px_-12px_rgba(17,29,51,0.45)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[22rem]">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted">Live example</p>
+            <h2 className="mt-1 text-lg font-bold leading-snug tracking-tight">{demoOpp.title}</h2>
             <p className="text-sm text-muted">{opportunityMeta(demoOpp)}</p>
-            <p className="mt-2 inline-block border-t border-ink pt-0.5 text-xs font-bold tracking-wider">Ref. {refCode(demoOpp)}</p>
-          </div>
-          <div className="mt-5 flex items-end justify-between gap-3">
-            <ScoreFigure score={demo.score} size="lg" />
-            <div className="flex flex-col items-end gap-1">
-              <BandBadge band={demo.band} />
-              <EligibilityTag eligibility={demo.eligibility} />
-            </div>
-          </div>
-          <div className="mt-6">
-            <ScoreStrip result={demo} variant="full" animate />
-          </div>
-          <ul className="mt-5 space-y-1.5 text-sm">
-            {demo.strengths.slice(0, 2).map((s) => (
-              <li key={s} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-met" aria-hidden />{s}</li>
-            ))}
-            {demo.gaps.slice(0, 1).map((g) => (
-              <li key={g} className="flex gap-2"><Minus className="mt-0.5 size-4 shrink-0 text-blocked" aria-hidden />{g}</li>
-            ))}
-          </ul>
-          <p className="mt-4 text-xs text-muted">Live example, calculated by the matching engine.</p>
-        </div>
-      </section>
-
-      <section aria-labelledby="problem-h" className="grid gap-8 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <h2 id="problem-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">The right people for the right roles, across borders.</h2>
-          <p className="mt-4 text-muted">
-            Candidates can’t tell which roles abroad they qualify for. Employers can’t tell which applicants can work there.
-            Pathway shows both.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-px bg-ink sm:grid-cols-2 lg:col-span-7">
-          {AUDIENCES.map((a) => (
-            <div key={a.title} className="flex flex-col bg-paper p-6">
-              <a.Icon className="size-6 text-field" aria-hidden />
-              <h3 className="mt-3 text-xl font-bold">{a.title}</h3>
-              <ul className="mt-3 flex-1 space-y-2 text-sm">
-                {a.points.map((p) => (
-                  <li key={p} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-field" aria-hidden />{p}</li>
-                ))}
-              </ul>
-              <Link href={a.href} className={`${a.primary ? btnPrimary : btnSecondary} mt-6 self-start`}>
-                {a.cta} <ArrowRight className="size-4" aria-hidden />
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section aria-labelledby="steps-h">
-        <h2 id="steps-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">How it works</h2>
-        <ol className="mt-10 border-t-2 border-ink">
-          {STEPS.map((s, i) => (
-            <li key={s.title} className="grid gap-4 border-b border-line py-8 md:grid-cols-12 md:items-center">
-              <span className="text-7xl font-extrabold leading-none tracking-tighter md:col-span-1" aria-hidden>{i + 1}</span>
-              <div className="md:col-span-5">
-                <h3 className="text-2xl font-bold tracking-tight">{s.title}</h3>
-                <p className="mt-2 max-w-lg text-muted">{s.body}</p>
+            <div className="mt-4 flex items-end justify-between gap-3">
+              <ScoreFigure score={demo.score} size="lg" />
+              <div className="flex flex-col items-end gap-1">
+                <BandBadge band={demo.band} />
+                <EligibilityTag eligibility={demo.eligibility} />
               </div>
-              <div className="md:col-span-5 md:col-start-8" aria-hidden>
-                {i === 0 && (
-                  <div className="space-y-2 text-sm">
-                    {[["Germany", "Not sure"], ["Canada", "Not sure"], ["Singapore", "Not sure"]].map(([c, a]) => (
-                      <div key={c} className="flex items-center justify-between border border-line bg-white px-3 py-2 font-semibold">
-                        {c}
-                        <span className="border border-slate-300 px-2 py-0.5 font-normal">{a}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {i === 1 && <ScoreStrip result={demo} variant="full" />}
-                {i === 2 && (
-                  <p className="flex flex-wrap items-center gap-2 text-sm font-bold">
-                    <span className="bg-ink px-2.5 py-1 text-paper">Saved</span>
-                    <ArrowRight className="size-4" />
-                    <span className="border border-ink px-2.5 py-1">Applied</span>
-                    <ArrowRight className="size-4" />
-                    <span className="border border-ink px-2.5 py-1">Interviewing</span>
-                    <ArrowRight className="size-4" />
-                    <span className="border border-ink px-2.5 py-1">Offer</span>
-                  </p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section aria-labelledby="signals-h" className="on-field -mx-4 grid gap-10 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <h2 id="signals-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">Two signals, never blended</h2>
-          <p className="mt-4 text-on-field-muted">A great fit you can’t legally take is not a great match. So we show both.</p>
-        </div>
-        <div className="grid gap-px bg-on-field-muted/40 sm:grid-cols-2 lg:col-span-8">
-          <div className="bg-field p-6 sm:pl-0">
-            <h3 className="text-xl font-bold">Fit score, 0 to 100</h3>
-            <p className="mt-2 text-sm text-on-field-muted">Six weighted criteria.</p>
-            <dl className="mt-5 divide-y divide-on-field-muted/40 text-sm">
-              {Object.entries(WEIGHTS).map(([k, w]) => (
-                <div key={k} className="flex justify-between py-1.5">
-                  <dt>{LABELS[k as keyof typeof LABELS]}</dt>
-                  <dd className="font-bold tabular-nums">{w}</dd>
-                </div>
+            </div>
+            <div className="mt-4">
+              <ScoreStrip result={demo} variant="full" animate />
+            </div>
+            <ul className="mt-4 space-y-1 text-sm">
+              {demo.strengths.slice(0, 1).map((s) => (
+                <li key={s} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-met" aria-hidden />{s}</li>
               ))}
-            </dl>
-            <p className="mt-4 text-sm">An unmet hard requirement caps the score at <strong>{CRITICAL_CAP}</strong>.</p>
-          </div>
-          <div className="bg-field p-6">
-            <h3 className="text-xl font-bold">Right to work</h3>
-            <p className="mt-2 text-sm text-on-field-muted">Self-stated, per country.</p>
-            <ul className="mt-5 space-y-4 text-sm">
-              <li><EligibilityTag eligibility="clear" /><p className="mt-1">Stated by the candidate.</p></li>
-              <li><EligibilityTag eligibility="verify" /><p className="mt-1">Unknown. Official steps provided.</p></li>
-              <li><EligibilityTag eligibility="blocked" /><p className="mt-1">Not held. Score capped.</p></li>
+              {demo.gaps.slice(0, 1).map((g) => (
+                <li key={g} className="flex gap-2"><Minus className="mt-0.5 size-4 shrink-0 text-blocked" aria-hidden />{g}</li>
+              ))}
             </ul>
           </div>
         </div>
       </section>
 
-      <section aria-labelledby="compare-h">
-        <h2 id="compare-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Why Pathway</h2>
-        <p className="mt-4 max-w-2xl text-muted">
-          Based on a review of 23 job boards, match tools and visa checkers.{" "}
-          <a href="https://github.com/fahadfahim13/career-mobility-platform/blob/main/docs/COMPETITOR_RESEARCH.md" className="font-semibold text-field underline">
-            Read the research
-          </a>
-        </p>
-        <dl className="mt-8 space-y-6 sm:hidden">
-          {COMPARE.map(([topic, them, us]) => (
-            <div key={topic} className="border-t-2 border-ink pt-3">
-              <dt className="font-bold">{topic}</dt>
-              <dd className="mt-1 text-sm text-muted">Typical: {them}</dd>
-              <dd className="mt-2 bg-field-tint px-3 py-2 text-sm font-semibold">Pathway: {us}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="mt-8 hidden sm:block">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b-2 border-ink">
-              <tr>
-                <th scope="col" className="w-1/5 py-3 pr-4 font-bold"><span className="sr-only">Topic</span></th>
-                <th scope="col" className="py-3 pr-4 font-bold text-muted">Typical tools</th>
-                <th scope="col" className="bg-field px-4 py-3 font-bold text-on-field">Pathway</th>
-              </tr>
-            </thead>
-            <tbody>
-              {COMPARE.map(([topic, them, us]) => (
-                <tr key={topic} className="border-b border-line align-top">
-                  <th scope="row" className="py-4 pr-4 font-bold">{topic}</th>
-                  <td className="py-4 pr-4 text-muted">{them}</td>
-                  <td className="bg-field-tint px-4 py-4 font-semibold">{us}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* The problem, drawn as a flow rather than written as a paragraph. */}
+      <section aria-labelledby="problem-h">
+        <div className="grid gap-4 lg:grid-cols-12">
+          <h2 id="problem-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:col-span-7">One match. Both sides see the same facts.</h2>
+          <p className="text-muted lg:col-span-5 lg:self-end">
+            Candidates don’t know which roles abroad they qualify for. Employers don’t know who can work there. Pathway answers both.
+          </p>
+        </div>
+        <div className="mt-10">
+          <TwoSidedFlow />
         </div>
       </section>
 
-      <section aria-labelledby="sources-h" className="grid gap-8 border-t-2 border-ink pt-10 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <h2 id="sources-h" className="text-3xl font-extrabold tracking-tight">Official sources on every role</h2>
-          <p className="mt-3 text-muted">Links to each country’s government authority. Reference only, not legal advice.</p>
+      <section aria-labelledby="aud-h">
+        <h2 id="aud-h" className="sr-only">Who Pathway is for</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          {AUDIENCES.map((a) => (
+            <article key={a.title} className="flex flex-col border border-line bg-white">
+              <div className="relative aspect-[16/9]">
+                <Image src={a.photo} alt={a.alt} fill placeholder="blur" sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+              </div>
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="text-2xl font-bold tracking-tight">{a.title}</h3>
+                <ul className="mt-3 flex-1 space-y-2 text-sm">
+                  {a.points.map((p) => (
+                    <li key={p} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-field" aria-hidden />{p}</li>
+                  ))}
+                </ul>
+                <Link href={a.href} className={`${a.primary ? btnPrimary : btnSecondary} mt-6 self-start`}>
+                  {a.cta} <ArrowRight className="size-4" aria-hidden />
+                </Link>
+              </div>
+            </article>
+          ))}
         </div>
-        <ul className="grid gap-px bg-line sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
+      </section>
+
+      {/* How it works: three steps, each shown as the screen it produces. */}
+      <section aria-labelledby="steps-h">
+        <h2 id="steps-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">How it works</h2>
+        <ol className="mt-10 grid gap-6 md:grid-cols-3">
+          <li className="flex flex-col border-t-4 border-field bg-white p-5">
+            <p className="text-sm font-bold text-muted">Step 1</p>
+            <h3 className="text-xl font-bold">Build a profile</h3>
+            <div className="mt-5 flex-1 space-y-2 text-sm" aria-hidden>
+              {[["Skills", "Excel, SQL, Logistics"], ["Experience", "4 years"], ["Singapore", "Not sure"]].map(([k, v]) => (
+                <div key={k} className="flex items-center justify-between border border-line px-3 py-2">
+                  <span className="font-semibold">{k}</span>
+                  <span className="text-muted">{v}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-sm text-muted">About five minutes.</p>
+          </li>
+          <li className="flex flex-col border-t-4 border-field bg-white p-5">
+            <p className="text-sm font-bold text-muted">Step 2</p>
+            <h3 className="text-xl font-bold">Get scored matches</h3>
+            <div className="mt-5 flex flex-1 flex-col justify-center gap-3" aria-hidden>
+              <div className="flex items-end justify-between">
+                <ScoreFigure score={demo.score} size="lg" />
+                <BandBadge band={demo.band} />
+              </div>
+              <ScoreStrip result={demo} variant="full" />
+            </div>
+            <p className="mt-4 text-sm text-muted">Six weighted criteria, working shown.</p>
+          </li>
+          <li className="flex flex-col border-t-4 border-field bg-white p-5">
+            <p className="text-sm font-bold text-muted">Step 3</p>
+            <h3 className="text-xl font-bold">Verify and apply</h3>
+            <ol className="mt-5 flex-1 space-y-2 text-sm font-semibold" aria-hidden>
+              {["Saved", "Applied", "Interviewing", "Offer"].map((s, i) => (
+                <li key={s} className="flex items-center gap-3">
+                  <span className={`grid size-7 shrink-0 place-items-center text-xs ${i === 0 ? "bg-field text-on-field" : "border border-field text-field"}`}>{i + 1}</span>
+                  {s}
+                </li>
+              ))}
+            </ol>
+            <p className="mt-4 text-sm text-muted">Official links for each country.</p>
+          </li>
+        </ol>
+      </section>
+
+      {/* Two signals: a chart of the real weights and the eligibility decision diagram. */}
+      <section aria-labelledby="signals-h" className="on-field -mx-4 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10 sm:py-16">
+        <h2 id="signals-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">Two signals, never blended</h2>
+        <p className="mt-3 max-w-xl text-on-field-muted">A great fit you can’t legally take is not a great match.</p>
+        <div className="mt-10 grid gap-10 lg:grid-cols-2">
+          <div>
+            <h3 className="mb-5 text-xl font-bold">1. Fit score</h3>
+            <WeightsDonut onField />
+          </div>
+          <div>
+            <h3 className="mb-5 text-xl font-bold">2. Right to work</h3>
+            <EligibilityFlow onField />
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="compare-h" className="grid gap-8 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <h2 id="compare-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">Why Pathway</h2>
+          <p className="mt-4 text-muted">From a review of 23 job boards, match tools and visa checkers.</p>
+          <a href="https://github.com/fahadfahim13/career-mobility-platform/blob/main/docs/COMPETITOR_RESEARCH.md" className="mt-3 inline-block font-semibold text-field underline">
+            Read the research
+          </a>
+        </div>
+        <div className="lg:col-span-8">
+          <CompareMatrix rows={COMPARE} />
+        </div>
+      </section>
+
+      {/* Countries as a photo mosaic, with official sources underneath. */}
+      <section aria-labelledby="sources-h">
+        <div className="grid gap-4 lg:grid-cols-12">
+          <h2 id="sources-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:col-span-7">
+            {roles.length} roles in {countries.length} countries
+          </h2>
+          <p className="text-muted lg:col-span-5 lg:self-end">Every role links to the country’s official authority. Reference only, not legal advice.</p>
+        </div>
+        <ul className="mt-8 grid grid-cols-2 gap-2 md:grid-cols-6">
+          {CITIES.map((c, i) => (
+            <li key={c.city} className={`relative overflow-hidden bg-field-deep ${TILE[i]}`}>
+              <Image src={c.img} alt={`${c.city} skyline`} fill placeholder="blur" sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-10 text-white">
+                <p className="font-bold">{c.country}</p>
+                <p className="text-xs opacity-80">{roles.filter((r) => r.country === c.country).length} roles</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <ul className="mt-6 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-3">
           {countries.map((c) => {
             const g = getCountryGuide(c);
             return (
@@ -285,13 +294,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="on-field -mx-4 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10" aria-labelledby="cta-h">
-        <h2 id="cta-h" className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">Start matching in minutes.</h2>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/signup?role=seeker" className={btnOnField}>
-            I’m looking for work <ArrowRight className="size-4" aria-hidden />
-          </Link>
-          <Link href="/signup?role=employer" className={btnOnFieldOutline}>I’m hiring</Link>
+      <section className="on-field relative -mx-4 overflow-hidden bg-field px-5 py-14 text-on-field sm:mx-0 sm:px-10" aria-labelledby="cta-h">
+        <Image src={team} alt="" fill sizes="100vw" className="object-cover opacity-15" />
+        <div className="relative">
+          <h2 id="cta-h" className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">Start matching in minutes.</h2>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/signup?role=seeker" className={btnOnField}>
+              I’m looking for work <ArrowRight className="size-4" aria-hidden />
+            </Link>
+            <Link href="/signup?role=employer" className={btnOnFieldOutline}>I’m hiring</Link>
+          </div>
         </div>
       </section>
     </div>

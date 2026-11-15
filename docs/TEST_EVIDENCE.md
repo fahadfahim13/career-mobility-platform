@@ -2,7 +2,7 @@
 
 Run date: 2026-11-15. Commands: `npm test` (unit), `npm run test:e2e` (end-to-end), `npm run report` (ranking).
 
-**Result: 87/87 unit tests passed. 24/24 end-to-end runs passed (12 journeys × desktop and mobile).**
+**Result: 87/87 unit tests passed. 32/32 end-to-end runs passed (16 journeys × desktop and mobile; journeys 13–16 cover the 404 page, privacy and terms, the share image and icon, and the landing diagrams).**
 
 ## 1. The three required cases (sample profile from the brief)
 

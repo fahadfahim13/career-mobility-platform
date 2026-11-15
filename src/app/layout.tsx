@@ -7,6 +7,7 @@ import "./globals.css";
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://career-mobility-platform.vercel.app"),
   title: "Pathway — Find work abroad. Hire from abroad.",
   description:
     "International job matching for candidates and employers. Every match gets a clear score, and right to work is shown separately.",
@@ -40,7 +41,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </div>
             <ul className="space-y-1 text-sm sm:col-span-3">
               <li><Link href="/how-it-works" className="hover:underline">How matching works</Link></li>
-              <li><Link href="/how-it-works#privacy" className="hover:underline">Your data stays in this browser</Link></li>
+              <li><Link href="/legal#privacy" className="hover:underline">Privacy</Link></li>
+              <li><Link href="/legal#terms" className="hover:underline">Terms</Link></li>
               <li><a href="https://github.com/fahadfahim13/career-mobility-platform" className="hover:underline">Source code</a></li>
             </ul>
           </div>

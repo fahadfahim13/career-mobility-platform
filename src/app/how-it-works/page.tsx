@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { EligibilityTag } from "../../components/badges";
+import { EligibilityFlow, WeightsDonut } from "../../components/diagrams";
 import { btnPrimary, pageTitle } from "../../components/ui";
 import { CRITICAL_CAP } from "../../lib/matching/engine";
 import { LABELS, WEIGHTS } from "../../lib/matching/criteria";
@@ -39,6 +39,9 @@ export default function HowItWorksPage() {
       <section aria-labelledby="w-h" className="grid gap-8 lg:grid-cols-12">
         <h2 id="w-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">The six weighted criteria</h2>
         <div className="lg:col-span-8">
+          <div className="mb-8 border border-line bg-white p-6">
+            <WeightsDonut />
+          </div>
           <table className="w-full text-left text-sm">
             <thead className="border-b-2 border-ink text-xs font-bold uppercase tracking-wide text-muted">
               <tr>
@@ -91,18 +94,12 @@ export default function HowItWorksPage() {
       <section aria-labelledby="e-h" className="grid gap-8 lg:grid-cols-12">
         <h2 id="e-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">Eligibility is a separate signal</h2>
         <div className="space-y-4 text-sm lg:col-span-8">
+          <EligibilityFlow />
           <p>
             Your right to work comes only from your own answer for each country. Pathway never infers it and never makes a
             legal determination.
           </p>
-          <ul className="space-y-3">
-            <li className="flex flex-wrap items-center gap-3"><EligibilityTag eligibility="clear" /> You said yes.</li>
-            <li className="flex flex-wrap items-center gap-3">
-              <EligibilityTag eligibility="verify" /> You are not sure. The role shows &ldquo;{VERIFY_WORK_AUTH_MESSAGE}&rdquo; and
-              does not lose points.
-            </li>
-            <li className="flex flex-wrap items-center gap-3"><EligibilityTag eligibility="blocked" /> You said no. The role is capped.</li>
-          </ul>
+          <p>When you are not sure, the role shows &ldquo;{VERIFY_WORK_AUTH_MESSAGE}&rdquo;.</p>
           <p>
             Where a foreign qualification may need formal recognition, the role also shows &ldquo;{RECOGNITION_MESSAGE}&rdquo;.
             This never changes the score.
@@ -138,7 +135,7 @@ export default function HowItWorksPage() {
       <section id="privacy" aria-labelledby="p-h" className="grid scroll-mt-24 gap-8 lg:grid-cols-12">
         <h2 id="p-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">Your data</h2>
         <div className="space-y-3 text-sm lg:col-span-8">
-          <p>Your profile, shortlist, stages and notes are stored only in this browser&apos;s local storage. There is no account and no server database.</p>
+          <p>Your profile, shortlist, stages and notes are stored only in this browser&apos;s local storage. Accounts are browser-only too. There is no server database.</p>
           <p>Nothing is shared with employers. The only data that leaves your browser is the structured profile sent to generate the optional AI summary, without your free-text summary.</p>
           <p>Use &ldquo;Clear my data&rdquo; on the profile page to remove everything.</p>
         </div>

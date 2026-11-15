@@ -18,6 +18,8 @@ const PAGES = [
   ["signup", "/signup?role=employer"],
   ["signin", "/signin"],
   ["employer", "/employer"],
+  ["legal", "/legal"],
+  ["404", "/no-such-page"],
 ];
 
 const b = await chromium.launch();
@@ -33,7 +35,16 @@ for (const [w, tag] of WIDTHS) {
   await p.getByRole("button", { name: /Add .* to shortlist/ }).first().click();
   for (const [name, path] of PAGES) {
     await p.goto(`${BASE}${path}`);
-    await p.waitForLoadState("networkidle");
+    await p.waitForLoadState("load");
+    // Scroll through the page so lazy images load before the full-page capture.
+    await p.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 60));
+      }
+      window.scrollTo(0, 0);
+    });
+    await p.waitForTimeout(500);
     const sw = await p.evaluate(() => document.documentElement.scrollWidth);
     if (sw > w) overflow.push(`${tag} ${name}: scrollWidth ${sw} > ${w}`);
     await p.screenshot({ path: `${out}/${tag}-${name}.png`, fullPage: true });
