@@ -1,21 +1,23 @@
 import Link from "next/link";
 import { OpportunityRow } from "../../components/OpportunityRow";
+import { pageTitle, textLink } from "../../components/ui";
 import { getOpportunities } from "../../lib/data";
 
-export const metadata = { title: "All opportunities — Pathway" };
+export const metadata = { title: "All roles — Pathway" };
 
 export default function OpportunitiesPage() {
   const opps = getOpportunities();
+  const countries = new Set(opps.map((o) => o.country)).size;
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">All opportunities</h1>
-        <p className="mt-2 max-w-2xl text-slate-600">
-          {opps.length} fictional opportunities, listed in no particular order. See{" "}
-          <Link href="/matches" className="font-medium text-brand-700 underline">Matches</Link> for a ranking based on your profile.
+    <div className="space-y-8">
+      <header className="border-b-2 border-ink pb-8">
+        <h1 className={pageTitle}>All roles</h1>
+        <p className="mt-3 max-w-2xl text-muted">
+          {opps.length} fictional roles across {countries} countries, with salary, visa support and relocation facts. For a
+          ranking against your background, see <Link href="/matches" className={textLink}>your matches</Link>.
         </p>
       </header>
-      <ul className="space-y-3">
+      <ul className="space-y-6">
         {opps.map((o) => <OpportunityRow key={o.id} opp={o} />)}
       </ul>
     </div>

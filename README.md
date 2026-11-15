@@ -9,6 +9,23 @@ opened in detail and saved to a shortlist.
 - **Source:** https://github.com/fahadfahim13/career-mobility-platform
 - **Technical note:** [docs/TECHNICAL_NOTE.md](docs/TECHNICAL_NOTE.md)
 - **Test evidence:** [docs/TEST_EVIDENCE.md](docs/TEST_EVIDENCE.md)
+- **Competitor research:** [docs/COMPETITOR_RESEARCH.md](docs/COMPETITOR_RESEARCH.md)
+
+## What it does
+
+Each feature below came out of the competitor research (relocation job boards, AI job-match tools, and visa and talent-mobility tools):
+
+- **Score strip with full arithmetic.** Each score is split into six segments: the width is the weight and the fill is the points earned. The detail page shows weight × share = points for every criterion.
+- **Fit and eligibility kept apart.** The 0–100 fit score sits next to a separate right-to-work status: confirmed, to verify, or not held. An unknown status is never assumed.
+- **Steps to verify** for each country, with links to the official government sources, plus a reference-only disclaimer.
+- **Next steps for each gap**, each linking to the profile field to update.
+- **Required-skill count** on every card ("3 of 4 required skills").
+- **Qualification-recognition flag** where it applies.
+- **Facts on every role:** salary range, visa support and relocation package (all fictional).
+- **Filters and sorting:** match band, country, right-to-work status and visa support; sort by best fit or eligibility first.
+- **Profile-strength meter** with section progress and a time estimate.
+- **Shortlist with application stages** (Saved → Applying → Applied → Interviewing → Offer → Closed) and notes.
+- **"How matching works" page** covering weights, bands, caps, what is *not* scored, an AI fact sheet and the data policy.
 
 ## Quick start
 

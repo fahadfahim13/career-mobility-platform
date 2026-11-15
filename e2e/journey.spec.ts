@@ -76,3 +76,39 @@ test("summary API rejects invalid input", async ({ request }) => {
   const bad = await request.post("/api/summary", { data: { opportunityId: "x" } });
   expect(bad.status()).toBe(400);
 });
+
+test("landing sample button opens ranked matches", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Know exactly why you fit");
+  await page.getByRole("button", { name: "Try with a sample profile" }).first().click();
+  await expect(page).toHaveURL(/\/matches$/);
+  await expect(page.getByTestId("match-card")).toHaveCount(12);
+});
+
+test("filters, steps to verify and application tracking", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Try with a sample profile" }).first().click();
+  await page.getByLabel("Country").selectOption("Germany");
+  await expect(page.getByTestId("match-card")).toHaveCount(4);
+  await page.getByLabel("Right to work").selectOption("clear");
+  await expect(page.getByText("No roles match these filters.")).toBeVisible();
+  await page.getByRole("button", { name: "Reset filters" }).click();
+  await expect(page.getByTestId("match-card")).toHaveCount(12);
+
+  await page.getByTestId("match-card").first().getByRole("link", { name: "View details" }).click();
+  await expect(page.getByRole("heading", { name: /Steps to verify before applying in Canada/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Government of Canada/ })).toHaveAttribute("href", /canada\.ca/);
+  await expect(page.getByRole("heading", { name: "Improve your match" })).toBeVisible();
+
+  await page.getByRole("button", { name: /Add .* to shortlist/ }).click();
+  await page.goto("/shortlist");
+  await page.getByLabel("Application stage").selectOption("Applied");
+  await page.reload();
+  await expect(page.getByLabel("Application stage")).toHaveValue("Applied");
+});
+
+test("how matching works lists the weights", async ({ page }) => {
+  await page.goto("/how-it-works");
+  await expect(page.getByRole("heading", { name: "How matching works" })).toBeVisible();
+  await expect(page.getByRole("row", { name: /Skills 30/ })).toBeVisible();
+});

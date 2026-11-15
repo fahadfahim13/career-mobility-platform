@@ -1,27 +1,49 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Nav } from "../components/Nav";
+import { Archivo } from "next/font/google";
+import Link from "next/link";
+import { Mark, Nav } from "../components/Nav";
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
-  title: "Pathway — International Career Matching",
-  description: "Enter a career profile and get ranked international opportunities with clear reasons and gaps.",
+  title: "Pathway — International career matching, explained",
+  description:
+    "Build one career profile and see how you fit international roles. Every score shows its arithmetic, and work authorisation is never assumed.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col font-sans antialiased`}>
+    <html lang="en-GB">
+      <body className={`${archivo.variable} flex min-h-screen flex-col font-sans antialiased`}>
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:bg-verify focus:px-3 focus:py-2 focus:font-bold">
+          Skip to content
+        </a>
         <Nav />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">{children}</main>
-        <footer className="border-t border-line">
-          <p className="mx-auto max-w-5xl px-4 py-6 text-xs text-slate-600">
-            Prototype using fictional data. Your profile is stored only in this browser. Match results are guidance and
-            do not constitute legal or immigration advice.
-          </p>
+        <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-12">{children}</main>
+        <footer className="mt-12 bg-ink text-paper">
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-12">
+            <div className="sm:col-span-5">
+              <p className="flex items-center gap-2.5 text-lg font-extrabold">
+                <Mark className="size-6" /> Pathway
+              </p>
+              <p className="mt-3 max-w-sm text-sm text-slate-300">
+                Prototype built for a technical assessment. All organisations, roles and salaries are fictional.
+              </p>
+            </div>
+            <div className="text-sm sm:col-span-4">
+              <p className="font-bold">Pathway explains. You decide.</p>
+              <p className="mt-2 text-slate-300">
+                Match results are guidance, not an employer&apos;s hiring decision. Eligibility information is for reference only
+                and is not legal or immigration advice. Always confirm with the official authority.
+              </p>
+            </div>
+            <ul className="space-y-1 text-sm sm:col-span-3">
+              <li><Link href="/how-it-works" className="hover:underline">How matching works</Link></li>
+              <li><Link href="/how-it-works#privacy" className="hover:underline">Your data stays in this browser</Link></li>
+              <li><a href="https://github.com/fahadfahim13/career-mobility-platform" className="hover:underline">Source code</a></li>
+            </ul>
+          </div>
         </footer>
       </body>
     </html>
