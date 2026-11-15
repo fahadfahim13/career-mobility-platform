@@ -23,3 +23,6 @@ export const panel = "border border-line bg-white";
 export const h2 = "text-lg font-bold tracking-tight text-ink";
 export const pageTitle = "text-3xl font-extrabold tracking-tight text-ink sm:text-5xl";
 export const textLink = "font-semibold text-field underline hover:text-field-deep";
+
+/** Page container. The layout is full width; pages wrap their content in this. */
+export const wrap = "mx-auto w-full max-w-6xl px-4";

@@ -6,7 +6,9 @@ import { useMemo, useState } from "react";
 import { BandBadge, EligibilityTag, ScoreFigure } from "../../components/badges";
 import { ScoreBreakdown } from "../../components/ScoreBreakdown";
 import { ScoreStrip } from "../../components/ScoreStrip";
-import { btnPrimary, btnSecondary, field, fieldLabel, pageTitle } from "../../components/ui";
+import { HeroStats, PageHero } from "../../components/PageHero";
+import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary, field, fieldLabel, wrap } from "../../components/ui";
+import team from "../../../public/images/team.webp";
 import { candidates } from "../../data/candidates";
 import { useAccount } from "../../hooks/useLocalState";
 import { getOpportunities } from "../../lib/data";
@@ -21,21 +23,28 @@ export default function EmployerPage() {
   const role = roles.find((r) => r.id === roleId) ?? roles[0];
   const rows = useMemo(() => rankCandidates(role, candidates, sort), [role, sort]);
 
-  if (!ready) return <p className="text-sm text-muted" role="status">Loading…</p>;
+  if (!ready) {
+    return (
+      <>
+        <PageHero eyebrow="For employers" title="Candidates" photo={team} />
+        <p className={`${wrap} py-12 text-sm text-muted`} role="status">Loading…</p>
+      </>
+    );
+  }
   if (!account || account.role !== "employer") {
     return (
-      <section className="on-field mx-auto max-w-2xl bg-field p-8 text-on-field">
-        <h1 className="text-3xl font-extrabold tracking-tight">Find qualified international candidates</h1>
-        <p className="mt-3 text-on-field-muted">Sign in with an employer account to see candidates ranked against your roles.</p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/signup?role=employer" className="inline-flex min-h-11 items-center bg-paper px-4 text-sm font-semibold text-ink hover:bg-field-tint">
-            Create employer account
-          </Link>
-          <Link href="/signin" className="inline-flex min-h-11 items-center border border-on-field-muted px-4 text-sm font-semibold hover:bg-field-deep">
-            Sign in
-          </Link>
+      <PageHero
+        eyebrow="For employers"
+        title="Find qualified international candidates"
+        intro="Sign in with an employer account to see candidates ranked against your roles."
+        photo={team}
+        photoAlt="A hiring team reviewing candidates around a table"
+      >
+        <div className="flex flex-wrap gap-3">
+          <Link href="/signup?role=employer" className={btnOnField}>Create employer account</Link>
+          <Link href="/signin" className={btnOnFieldOutline}>Sign in</Link>
         </div>
-      </section>
+      </PageHero>
     );
   }
 
@@ -43,12 +52,23 @@ export default function EmployerPage() {
   const stated = rows.filter((r) => r.result.eligibility === "clear").length;
 
   return (
-    <div className="space-y-8">
-      <header>
-        <p className="text-sm font-semibold text-muted">{account.organisation}</p>
-        <h1 className={pageTitle}>Candidates</h1>
-        <p className="mt-3 max-w-2xl text-muted">Ranked by fit for the selected role. Right to work is shown separately.</p>
-      </header>
+    <>
+    <PageHero
+      eyebrow={account.organisation}
+      title="Candidates"
+      intro="Ranked by fit for the selected role. Right to work is shown separately."
+      photo={team}
+      photoAlt="A hiring team reviewing candidates around a table"
+    >
+      <HeroStats
+        items={[
+          { value: rows.length, label: "Candidates" },
+          { value: strong, label: "Strong matches" },
+          { value: stated, label: "Right to work stated" },
+        ]}
+      />
+    </PageHero>
+    <div className={`${wrap} space-y-8 py-12 sm:py-16`}>
 
       <div className="grid gap-4 border-y-2 border-ink py-4 sm:grid-cols-12 sm:items-end">
         <div className="sm:col-span-7">
@@ -67,12 +87,6 @@ export default function EmployerPage() {
           </select>
         </div>
       </div>
-
-      <dl className="grid grid-cols-3 border-b border-line pb-4 text-center sm:text-left">
-        <div><dt className="text-xs font-semibold text-muted">Candidates</dt><dd className="text-3xl font-extrabold tabular-nums">{rows.length}</dd></div>
-        <div><dt className="text-xs font-semibold text-muted">Strong matches</dt><dd className="text-3xl font-extrabold tabular-nums">{strong}</dd></div>
-        <div><dt className="text-xs font-semibold text-muted">Right to work stated</dt><dd className="text-3xl font-extrabold tabular-nums">{stated}</dd></div>
-      </dl>
 
       <p className="text-sm text-muted">
         Ref. {refCode(role)} · {role.country} · {formatSalary(role)} ·{" "}
@@ -138,5 +152,6 @@ export default function EmployerPage() {
         <Link href="/opportunities" className={btnPrimary}>All roles</Link>
       </div>
     </div>
+    </>
   );
 }

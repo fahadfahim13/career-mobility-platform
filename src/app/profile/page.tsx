@@ -1,19 +1,25 @@
 import { ProfileForm } from "../../components/ProfileForm";
-import { pageTitle } from "../../components/ui";
+import { HeroStats, PageHero } from "../../components/PageHero";
+import { wrap } from "../../components/ui";
+import seeker from "../../../public/images/seeker.webp";
 
 export const metadata = { title: "Your profile — Pathway" };
 
 export default function ProfilePage() {
   return (
-    <div className="space-y-8">
-      <header className="border-b-2 border-ink pb-8">
-        <h1 className={pageTitle}>Your career profile</h1>
-        <p className="mt-3 max-w-2xl text-muted">
-          Tell us what you can do, where you want to work and which languages you work in. One profile is compared with
-          every role. A field left blank is shown as &ldquo;not provided&rdquo; and is never counted as a match.
-        </p>
-      </header>
-      <ProfileForm />
-    </div>
+    <>
+      <PageHero
+        eyebrow="Step 1 of 3"
+        title="Your career profile"
+        intro="One profile is compared with every role. A blank field is shown as “not provided” and never counts as a match."
+        photo={seeker}
+        photoAlt="A person applying for jobs on a laptop"
+      >
+        <HeroStats items={[{ value: "5 min", label: "To complete" }, { value: "6", label: "Criteria scored" }, { value: "0", label: "Shared with employers" }]} />
+      </PageHero>
+      <div className={`${wrap} py-12 sm:py-16`}>
+        <ProfileForm />
+      </div>
+    </>
   );
 }

@@ -21,8 +21,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           Skip to content
         </a>
         <Nav />
-        <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-12">{children}</main>
-        <footer className="mt-12 bg-ink text-paper">
+        <main id="main" className="flex-1">{children}</main>
+        <footer className="bg-ink text-paper">
           <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-12">
             <div className="sm:col-span-5">
               <p className="flex items-center gap-2.5 text-lg font-extrabold">

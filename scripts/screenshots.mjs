@@ -20,6 +20,7 @@ const PAGES = [
   ["employer", "/employer"],
   ["legal", "/legal"],
   ["404", "/no-such-page"],
+  ["signup-seeker", "/signup"],
 ];
 
 const b = await chromium.launch();

@@ -5,6 +5,9 @@ import { opportunityMeta } from "../../../components/MatchCard";
 import { OpportunityMatch } from "../../../components/OpportunityMatch";
 import { ShortlistButton } from "../../../components/ShortlistButton";
 import { VerifySteps } from "../../../components/VerifySteps";
+import { countryPhoto } from "../../../components/countryPhotos";
+import { PageHero } from "../../../components/PageHero";
+import { btnOnFieldOutline, wrap } from "../../../components/ui";
 import { getOpportunities, getOpportunity } from "../../../lib/data";
 import { EDUCATION_LABEL, formatLanguage, formatSalary, formatYears, refCode, VISA_SUPPORT_LABEL } from "../../../lib/format";
 
@@ -31,26 +34,27 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 export default async function OpportunityPage({ params }: { params: Promise<{ id: string }> }) {
   const opp = getOpportunity((await params).id);
   if (!opp) notFound();
+  const photo = countryPhoto(opp.country);
 
   return (
-    <div className="space-y-8">
-      <Link href="/matches" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-field hover:underline">
-        <ArrowLeft className="size-4" aria-hidden />
-        Back to matches
-      </Link>
-
-      <header className="grid gap-4 border-b-2 border-ink pb-6 md:grid-cols-12 md:items-end">
-        <div className="md:col-span-9">
-          <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{opp.title}</h1>
-          <p className="mt-2 text-muted">{opportunityMeta(opp)}</p>
-          <p className="mt-2 inline-block border-t border-ink pt-0.5 text-xs font-bold tracking-wider">Ref. {refCode(opp)}</p>
-        </div>
-        <div className="md:col-span-3 md:justify-self-end">
+    <>
+      <PageHero
+        eyebrow={`Ref. ${refCode(opp)}`}
+        title={opp.title}
+        intro={opportunityMeta(opp)}
+        photo={photo?.img}
+        photoAlt={photo ? `${photo.city}, ${opp.country}` : ""}
+      >
+        <div className="flex flex-wrap gap-3">
           <ShortlistButton id={opp.id} title={opp.title} />
+          <Link href="/matches" className={btnOnFieldOutline}>
+            <ArrowLeft className="size-4" aria-hidden />
+            Back to matches
+          </Link>
         </div>
-      </header>
+      </PageHero>
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <div className={`${wrap} grid grid-cols-1 gap-10 py-12 sm:py-16 lg:grid-cols-12`}>
         <div className="space-y-10 lg:col-span-8">
           <p className="max-w-3xl text-lg leading-relaxed">{opp.description}</p>
           <OpportunityMatch opp={opp} />
@@ -90,6 +94,6 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
           </div>
         </aside>
       </div>
-    </div>
+    </>
   );
 }

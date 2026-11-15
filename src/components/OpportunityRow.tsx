@@ -1,14 +1,22 @@
+import Image from "next/image";
 import Link from "next/link";
 import { formatLanguage, refCode } from "../lib/format";
 import type { Opportunity } from "../lib/types";
 import { FactChips, opportunityMeta } from "./MatchCard";
 import { ShortlistButton } from "./ShortlistButton";
+import { countryPhoto } from "./countryPhotos";
 
 /** Compact, unranked listing row. `aside` adds a score; `children` adds tracker controls below. */
 export function OpportunityRow({ opp, aside, children }: { opp: Opportunity; aside?: React.ReactNode; children?: React.ReactNode }) {
+  const photo = countryPhoto(opp.country);
   return (
     <li className="border-t-2 border-ink px-1 py-5 sm:px-2" data-testid="opportunity-row">
       <div className="flex flex-wrap items-start justify-between gap-4">
+        {photo && (
+          <div className="relative size-16 shrink-0 overflow-hidden bg-field-deep sm:size-28">
+            <Image src={photo.img} alt="" fill placeholder="blur" sizes="112px" className="object-cover" />
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <Link href={`/opportunities/${opp.id}`} className="text-lg font-bold tracking-tight hover:underline">{opp.title}</Link>
           <p className="mt-0.5 text-sm text-muted">{opportunityMeta(opp)}</p>

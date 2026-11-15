@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { pageTitle, textLink } from "../../components/ui";
+import { HeroStats, PageHero } from "../../components/PageHero";
+import { textLink, wrap } from "../../components/ui";
 
 export const metadata = { title: "Privacy and terms — Pathway" };
 
@@ -21,11 +22,11 @@ const TERMS = [
 
 export default function LegalPage() {
   return (
-    <div className="space-y-14">
-      <header className="border-b-2 border-ink pb-8">
-        <h1 className={pageTitle}>Privacy and terms</h1>
-        <p className="mt-3 max-w-2xl text-lg text-muted">Short version: your data stays in your browser.</p>
-      </header>
+    <>
+      <PageHero eyebrow="Legal" title="Privacy and terms" intro="Short version: your data stays in your browser." compact>
+        <HeroStats items={[{ value: "0", label: "Server databases" }, { value: "0", label: "Data shared" }, { value: "100%", label: "Fictional roles" }]} />
+      </PageHero>
+      <div className={`${wrap} space-y-14 py-14 sm:py-20`}>
 
       <section id="privacy" aria-labelledby="pv-h" className="grid scroll-mt-24 gap-8 lg:grid-cols-12">
         <h2 id="pv-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">Privacy</h2>
@@ -49,6 +50,7 @@ export default function LegalPage() {
       <p className="text-sm text-muted">
         Photos are public domain (CC0). <Link href="/how-it-works" className={textLink}>How matching works</Link>
       </p>
-    </div>
+      </div>
+    </>
   );
 }

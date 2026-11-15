@@ -1,10 +1,12 @@
 "use client";
 
-import { ArrowRight, UserRound } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { MatchCard } from "../../components/MatchCard";
-import { btnPrimary, btnSecondary, field, fieldLabel, pageTitle, textLink } from "../../components/ui";
+import { HeroStats, PageHero } from "../../components/PageHero";
+import { btnOnField, btnSecondary, field, fieldLabel, textLink, wrap } from "../../components/ui";
+import hero from "../../../public/images/hero.webp";
 import { useProfile } from "../../hooks/useLocalState";
 import { getOpportunities } from "../../lib/data";
 import { DEFAULT_FILTERS, filterMatches, type MatchFilters, type MatchRow } from "../../lib/filterMatches";
@@ -30,16 +32,28 @@ export default function MatchesPage() {
     return rankOpportunities(profile, opps).map((result) => ({ opp: byId.get(result.opportunityId)!, result }));
   }, [profile]);
 
-  if (!ready) return <p className="text-sm text-muted" role="status">Loading your matches…</p>;
+  if (!ready) {
+    return (
+      <>
+        <PageHero eyebrow="Step 2 of 3" title="Your ranked matches" photo={hero} />
+        <p className={`${wrap} py-12 text-sm text-muted`} role="status">Loading your matches…</p>
+      </>
+    );
+  }
 
   if (!profile) {
     return (
-      <div className="mx-auto max-w-xl border-t-4 border-field bg-white p-8 text-center">
-        <UserRound className="mx-auto size-8 text-field" aria-hidden />
-        <h1 className="mt-3 text-2xl font-extrabold tracking-tight">Create a profile to see your matches</h1>
-        <p className="mt-2 text-sm text-muted">It takes about five minutes. You can also load the sample profile to explore the platform.</p>
-        <Link href="/profile" className={`${btnPrimary} mt-5`}>Create profile</Link>
-      </div>
+      <PageHero
+        eyebrow="Step 2 of 3"
+        title="Create a profile to see your matches"
+        intro="It takes about five minutes. You can also load the sample profile to explore the platform."
+        photo={hero}
+        photoAlt="A candidate reviewing roles abroad on a laptop"
+      >
+        <Link href="/profile" className={btnOnField}>
+          Create profile <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      </PageHero>
     );
   }
 
@@ -52,21 +66,28 @@ export default function MatchesPage() {
   const verifyCount = rows.filter((r) => r.result.eligibility === "verify").length;
 
   return (
-    <div className="space-y-8">
-      <header className="grid gap-6 border-b-2 border-ink pb-8 md:grid-cols-12">
-        <div className="md:col-span-8">
-          <h1 className={pageTitle}>Your ranked matches</h1>
-          <p className="mt-3 max-w-2xl text-muted">
-            Twelve roles in six countries, scored on six weighted criteria. The strip under each score shows where the
-            points came from. Eligibility is shown separately and never changes the score.{" "}
-            <Link href="/how-it-works" className={textLink}>How matching works</Link>
-          </p>
-        </div>
-        <p className="self-end text-lg md:col-span-4 md:text-right">
-          <strong className="text-4xl font-extrabold tracking-tight">{bandCount("Strong")}</strong> strong matches,{" "}
-          <strong className="font-extrabold">{verifyCount}</strong> with right to work to verify.
-        </p>
-      </header>
+    <>
+    <PageHero
+      eyebrow="Step 2 of 3"
+      title="Your ranked matches"
+      intro={
+        <>
+          Every role scored on six weighted criteria. Right to work is shown separately.{" "}
+          <Link href="/how-it-works" className="font-semibold text-on-field underline hover:no-underline">Method</Link>
+        </>
+      }
+      photo={hero}
+      photoAlt="A candidate reviewing roles abroad on a laptop"
+    >
+      <HeroStats
+        items={[
+          { value: bandCount("Strong"), label: "Strong matches" },
+          { value: verifyCount, label: "To verify" },
+          { value: `${strength.percent}%`, label: "Profile complete" },
+        ]}
+      />
+    </PageHero>
+    <div className={`${wrap} space-y-8 py-12 sm:py-16`}>
 
       {strength.missing.length > 0 && (
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 bg-verify-tint px-4 py-3 text-sm">
@@ -144,5 +165,6 @@ export default function MatchesPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

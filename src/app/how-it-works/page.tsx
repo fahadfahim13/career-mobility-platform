@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { EligibilityFlow, WeightsDonut } from "../../components/diagrams";
-import { btnPrimary, pageTitle } from "../../components/ui";
+import { CtaBand, PageHero } from "../../components/PageHero";
+import { btnOnField, wrap } from "../../components/ui";
+import team from "../../../public/images/team.webp";
 import { CRITICAL_CAP } from "../../lib/matching/engine";
 import { LABELS, WEIGHTS } from "../../lib/matching/criteria";
 import { RECOGNITION_MESSAGE, VERIFY_WORK_AUTH_MESSAGE } from "../../lib/matching/explain";
@@ -27,21 +29,22 @@ const NOT_SCORED = [
 
 export default function HowItWorksPage() {
   return (
-    <div className="space-y-14">
-      <header className="border-b-2 border-ink pb-8">
-        <h1 className={pageTitle}>How matching works</h1>
-        <p className="mt-3 max-w-2xl text-lg text-muted">
-          No black boxes. Every score is the sum of six rules, written out below. The same profile and role always give the
-          same result.
-        </p>
-      </header>
+    <>
+      <PageHero
+        eyebrow="Method"
+        title="How matching works"
+        intro="No black boxes. Every score is the sum of six rules. The same profile and role always give the same result."
+        aside={
+          <div className="border border-on-field-muted/40 bg-field-deep/60 p-6">
+            <WeightsDonut onField />
+          </div>
+        }
+      />
+      <div className={`${wrap} space-y-16 py-14 sm:py-20`}>
 
       <section aria-labelledby="w-h" className="grid gap-8 lg:grid-cols-12">
         <h2 id="w-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">The six weighted criteria</h2>
         <div className="lg:col-span-8">
-          <div className="mb-8 border border-line bg-white p-6">
-            <WeightsDonut />
-          </div>
           <table className="w-full text-left text-sm">
             <thead className="border-b-2 border-ink text-xs font-bold uppercase tracking-wide text-muted">
               <tr>
@@ -94,7 +97,9 @@ export default function HowItWorksPage() {
       <section aria-labelledby="e-h" className="grid gap-8 lg:grid-cols-12">
         <h2 id="e-h" className="text-2xl font-extrabold tracking-tight lg:col-span-4">Eligibility is a separate signal</h2>
         <div className="space-y-4 text-sm lg:col-span-8">
-          <EligibilityFlow />
+          <div className="border border-line bg-white p-5 sm:p-6">
+            <EligibilityFlow />
+          </div>
           <p>
             Your right to work comes only from your own answer for each country. Pathway never infers it and never makes a
             legal determination.
@@ -141,7 +146,10 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <Link href="/profile" className={btnPrimary}>Build your profile</Link>
-    </div>
+      </div>
+      <CtaBand title="See your own scores." photo={team}>
+        <Link href="/profile" className={btnOnField}>Build your profile</Link>
+      </CtaBand>
+    </>
   );
 }

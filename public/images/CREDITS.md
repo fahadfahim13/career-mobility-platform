@@ -12,3 +12,4 @@ All photos are public domain (CC0), found through the Openverse catalogue. They 
 | london.webp | https://commons.wikimedia.org/w/index.php?curid=170804581 | Andreas Wolf 01 |
 | dubai.webp | https://commons.wikimedia.org/w/index.php?curid=82583102 | Robert Bock |
 | hero.webp | https://stocksnap.io/photo/girl-woman-3CZQ87F245 | Startup Stock Photos |
+| rotterdam.webp | https://www.rawpixel.com/image/5908220/rotterdam-skyline-free-public-domain-cc0-photo | rawpixel (CC0) |

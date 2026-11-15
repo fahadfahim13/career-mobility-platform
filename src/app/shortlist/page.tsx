@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BandBadge, EligibilityTag } from "../../components/badges";
 import { OpportunityRow } from "../../components/OpportunityRow";
-import { field, fieldLabel, pageTitle, textLink } from "../../components/ui";
+import { PageHero } from "../../components/PageHero";
+import { field, fieldLabel, textLink, wrap } from "../../components/ui";
 import { useProfile, useShortlist } from "../../hooks/useLocalState";
 import { getOpportunity } from "../../lib/data";
 import { matchOne } from "../../lib/matching/engine";
@@ -31,11 +32,41 @@ function NoteField({ item, onSave }: { item: TrackedItem; onSave: (note: string)
   );
 }
 
+/** Application pipeline drawn as numbered stages with live counts. */
+function StagePipeline({ count }: { count: (s: Stage) => number }) {
+  return (
+    <ol aria-label="Roles per stage" className="grid grid-cols-3 gap-px border border-on-field-muted/40 bg-on-field-muted/40">
+      {STAGES.map((s, i) => (
+        <li key={s} className={`px-3 py-3 ${count(s) > 0 ? "bg-field-deep" : "bg-field"}`}>
+          <p className="text-xs font-semibold text-on-field-muted">{i + 1}. {s}</p>
+          <p className="mt-1 text-3xl font-extrabold tabular-nums">{count(s)}</p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export default function ShortlistPage() {
   const { items, ready, setStage, setNote } = useShortlist();
   const [profile] = useProfile();
 
-  if (!ready) return <p className="text-sm text-muted" role="status">Loading your shortlist…</p>;
+  const heroBand = (aside?: React.ReactNode) => (
+    <PageHero
+      eyebrow="Step 3 of 3"
+      title="Your shortlist"
+      intro="Track each saved role from first look to offer. Stages and notes stay in this browser."
+      aside={aside}
+    />
+  );
+
+  if (!ready) {
+    return (
+      <>
+        {heroBand()}
+        <p className={`${wrap} py-12 text-sm text-muted`} role="status">Loading your shortlist…</p>
+      </>
+    );
+  }
 
   // Ids for roles that no longer exist are skipped rather than crashing the page.
   const rows = items.flatMap((item) => {
@@ -45,21 +76,9 @@ export default function ShortlistPage() {
   const countFor = (s: Stage) => rows.filter((r) => r.item.stage === s).length;
 
   return (
-    <div className="space-y-8">
-      <header className="pb-2">
-        <h1 className={pageTitle}>Your shortlist</h1>
-        <p className="mt-3 max-w-2xl text-muted">
-          Track each saved role from first look to offer. Stages and notes are stored only in this browser.
-        </p>
-      </header>
-
-      {rows.length > 0 && (
-        <p className="text-sm font-semibold">
-          {STAGES.filter((s) => countFor(s) > 0)
-            .map((s) => `${s} ${countFor(s)}`)
-            .join(" · ")}
-        </p>
-      )}
+    <>
+    {heroBand(<StagePipeline count={countFor} />)}
+    <div className={`${wrap} space-y-8 py-12 sm:py-16`}>
 
       {rows.length === 0 ? (
         <div className="mx-auto max-w-xl border-t-4 border-field bg-white p-8 text-center">
@@ -107,5 +126,6 @@ export default function ShortlistPage() {
         </ul>
       )}
     </div>
+    </>
   );
 }

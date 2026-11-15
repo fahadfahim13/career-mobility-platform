@@ -6,7 +6,8 @@ import { CompareMatrix, EligibilityFlow, TwoSidedFlow, WeightsDonut } from "../c
 import { opportunityMeta } from "../components/MatchCard";
 import { SampleProfileButton } from "../components/SampleProfileButton";
 import { ScoreStrip } from "../components/ScoreStrip";
-import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary } from "../components/ui";
+import { CtaBand } from "../components/PageHero";
+import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary, wrap } from "../components/ui";
 import { getCountryGuide } from "../data/countryGuides";
 import { sampleProfile } from "../data/sampleProfile";
 import { getOpportunities, getOpportunity } from "../lib/data";
@@ -15,6 +16,7 @@ import dubai from "../../public/images/dubai.webp";
 import hero from "../../public/images/hero.webp";
 import frankfurt from "../../public/images/frankfurt.webp";
 import london from "../../public/images/london.webp";
+import rotterdam from "../../public/images/rotterdam.webp";
 import seeker from "../../public/images/seeker.webp";
 import singapore from "../../public/images/singapore.webp";
 import team from "../../public/images/team.webp";
@@ -54,16 +56,11 @@ const CITIES = [
   { img: london, country: "United Kingdom", city: "London" },
   { img: singapore, country: "Singapore", city: "Singapore" },
   { img: dubai, country: "United Arab Emirates", city: "Dubai" },
+  { img: rotterdam, country: "Netherlands", city: "Rotterdam" },
 ];
 
-/** Mosaic: two wide tiles over three squares; on phones the last tile spans the row. */
-const TILE = [
-  "aspect-[4/3] md:col-span-3",
-  "aspect-[4/3] md:col-span-3",
-  "aspect-square md:col-span-2",
-  "aspect-square md:col-span-2",
-  "col-span-2 aspect-[2/1] md:aspect-square",
-];
+/** Mosaic: a two-by-three grid on desktop, two columns on phones. */
+const TILE = Array(6).fill("aspect-[4/3] md:col-span-2");
 
 const FAQ = [
   { q: "Is the score a hiring decision?", a: "No. It compares a profile with a role’s stated requirements. People make the decision." },
@@ -80,10 +77,10 @@ export default function Home() {
   const countries = [...new Set(roles.map((o) => o.country))];
 
   return (
-    <div className="-mt-8 space-y-20 sm:-mt-12 sm:space-y-28">
+    <>
       {/* Hero: statement on the navy field, a real photo, and a live match card computed by the engine. */}
-      <section className="-mx-4 grid grid-cols-1 lg:mx-0 lg:grid-cols-12" aria-labelledby="hero-h">
-        <div className="on-field flex flex-col justify-center bg-field px-5 py-12 text-on-field sm:px-10 sm:py-16 lg:col-span-6">
+      <section className="grid grid-cols-1 lg:grid-cols-2" aria-labelledby="hero-h">
+        <div className="on-field flex flex-col justify-center bg-field px-5 py-14 text-on-field sm:px-10 sm:py-20 lg:pr-12 lg:pl-[max(1rem,calc((100vw-72rem)/2+1rem))]">
           <h1 id="hero-h" className="text-5xl font-extrabold leading-[0.95] tracking-tighter sm:text-7xl">
             Find work abroad.
             <br />
@@ -103,9 +100,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative min-h-[42rem] overflow-hidden bg-field-deep sm:min-h-[32rem] lg:col-span-6">
+        <div className="relative min-h-[42rem] overflow-hidden bg-field-deep sm:min-h-[36rem]">
           <Image src={hero} alt="A candidate reviewing roles abroad on a laptop" fill priority placeholder="blur" sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-          <div className="absolute inset-x-4 bottom-4 border border-ink bg-white p-5 shadow-[0_12px_32px_-12px_rgba(17,29,51,0.45)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[22rem]">
+          <div className="absolute inset-x-4 bottom-4 border border-ink bg-white p-5 shadow-[0_12px_32px_-12px_rgba(17,29,51,0.45)] sm:inset-x-auto sm:right-8 sm:bottom-8 sm:w-[22rem]">
             <p className="text-xs font-bold uppercase tracking-wider text-muted">Live example</p>
             <h2 className="mt-1 text-lg font-bold leading-snug tracking-tight">{demoOpp.title}</h2>
             <p className="text-sm text-muted">{opportunityMeta(demoOpp)}</p>
@@ -131,6 +128,7 @@ export default function Home() {
         </div>
       </section>
 
+      <div className={`${wrap} space-y-20 py-20 sm:space-y-28 sm:py-28`}>
       {/* The problem, drawn as a flow rather than written as a paragraph. */}
       <section aria-labelledby="problem-h">
         <div className="grid gap-4 lg:grid-cols-12">
@@ -214,7 +212,10 @@ export default function Home() {
       </section>
 
       {/* Two signals: a chart of the real weights and the eligibility decision diagram. */}
-      <section aria-labelledby="signals-h" className="on-field -mx-4 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10 sm:py-16">
+      </div>
+
+      <section aria-labelledby="signals-h" className="on-field bg-field text-on-field">
+        <div className={`${wrap} py-16 sm:py-24`}>
         <h2 id="signals-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">Two signals, never blended</h2>
         <p className="mt-3 max-w-xl text-on-field-muted">A great fit you can’t legally take is not a great match.</p>
         <div className="mt-10 grid gap-10 lg:grid-cols-2">
@@ -227,7 +228,10 @@ export default function Home() {
             <EligibilityFlow onField />
           </div>
         </div>
+        </div>
       </section>
+
+      <div className={`${wrap} space-y-20 py-20 sm:space-y-28 sm:py-28`}>
 
       <section aria-labelledby="compare-h" className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
@@ -294,18 +298,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="on-field relative -mx-4 overflow-hidden bg-field px-5 py-14 text-on-field sm:mx-0 sm:px-10" aria-labelledby="cta-h">
-        <Image src={team} alt="" fill sizes="100vw" className="object-cover opacity-15" />
-        <div className="relative">
-          <h2 id="cta-h" className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">Start matching in minutes.</h2>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/signup?role=seeker" className={btnOnField}>
-              I’m looking for work <ArrowRight className="size-4" aria-hidden />
-            </Link>
-            <Link href="/signup?role=employer" className={btnOnFieldOutline}>I’m hiring</Link>
-          </div>
-        </div>
-      </section>
-    </div>
+      </div>
+
+      <CtaBand title="Start matching in minutes." photo={team}>
+        <Link href="/signup?role=seeker" className={btnOnField}>
+          I’m looking for work <ArrowRight className="size-4" aria-hidden />
+        </Link>
+        <Link href="/signup?role=employer" className={btnOnFieldOutline}>I’m hiring</Link>
+      </CtaBand>
+    </>
   );
 }
