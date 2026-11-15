@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Building2, Check } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -8,11 +8,16 @@ import { sampleProfile } from "../data/sampleProfile";
 import { notifyStorageChange } from "../hooks/useLocalState";
 import { createAccount, signIn, signInDemo, signUpSchema, type Account, type Role } from "../lib/accounts";
 import { loadProfile, saveProfile } from "../lib/storage";
-import { btnPrimary, btnSecondary, field, fieldError, fieldLabel } from "./ui";
+import { btnPrimary, field, fieldError, fieldLabel } from "./ui";
 
 const ROLE_OPTIONS: { role: Role; title: string; body: string; Icon: typeof Briefcase }[] = [
   { role: "seeker", title: "I’m looking for work", body: "Find roles abroad that fit you", Icon: Briefcase },
   { role: "employer", title: "I’m hiring", body: "Find qualified international talent", Icon: Building2 },
+];
+
+const QUICK_SIGNIN: { role: Role; title: string; body: string; Icon: typeof Briefcase }[] = [
+  { role: "seeker", title: "Sign in as candidate", body: "Sample profile, ranked matches", Icon: Briefcase },
+  { role: "employer", title: "Sign in as hirer", body: "Employer view, ranked candidates", Icon: Building2 },
 ];
 
 function destination(account: Account): string {
@@ -83,7 +88,35 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
         </Link>
       </p>
 
-      <form onSubmit={onSubmit} noValidate className="mt-8 space-y-5">
+      <div className="mt-8">
+        <p className="text-sm font-semibold">One-click demo</p>
+        <div className="mt-3 grid grid-cols-1 gap-3">
+          {QUICK_SIGNIN.map((q) => (
+            <button
+              key={q.role}
+              type="button"
+              disabled={busy}
+              onClick={() => demo(q.role)}
+              className="group flex items-center gap-3 border border-slate-300 bg-white p-4 text-left transition-colors duration-150 hover:border-field hover:bg-field-tint focus-visible:outline-2 focus-visible:outline-field disabled:opacity-60"
+            >
+              <q.Icon className="size-5 shrink-0 text-field" aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-bold">{q.title}</span>
+                <span className="block text-xs text-muted">{q.body}</span>
+              </span>
+              <ArrowRight className="size-4 shrink-0 text-field transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-muted" aria-hidden>
+        <span className="h-px flex-1 bg-line" />
+        or use email
+        <span className="h-px flex-1 bg-line" />
+      </div>
+
+      <form onSubmit={onSubmit} noValidate className="mt-6 space-y-5">
         {mode === "signup" && (
           <fieldset>
             <legend className={fieldLabel}>I am</legend>
@@ -149,14 +182,7 @@ export function AuthForm({ mode, initialRole }: { mode: "signin" | "signup"; ini
         </button>
       </form>
 
-      <div className="mt-8 border-t border-line pt-6">
-        <p className="text-sm font-semibold">Exploring the prototype?</p>
-        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <button type="button" disabled={busy} onClick={() => demo("seeker")} className={btnSecondary}>Demo candidate</button>
-          <button type="button" disabled={busy} onClick={() => demo("employer")} className={btnSecondary}>Demo employer</button>
-        </div>
-        <p className="mt-4 text-xs text-muted">Prototype: accounts are stored only in this browser. Nothing is sent to a server.</p>
-      </div>
+      <p className="mt-8 text-xs text-muted">Prototype: accounts are stored only in this browser. Nothing is sent to a server.</p>
     </div>
   );
 }

@@ -28,10 +28,18 @@ test("sign-in rejects a wrong password and the demo candidate lands on matches",
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page.getByRole("alert").filter({ hasText: "incorrect" })).toHaveText("Email or password is incorrect.");
 
-  await page.getByRole("button", { name: "Demo candidate" }).click();
+  await page.getByRole("button", { name: /Sign in as candidate/ }).click();
   await expect(page).toHaveURL(/\/matches$/);
   await expect(page.getByTestId("match-card")).toHaveCount(12);
   await expect(page.getByRole("link", { name: "Your profile" })).toBeVisible();
+});
+
+test("one-click hirer sign-in opens the candidates page", async ({ page }) => {
+  await page.goto("/signin");
+  await page.getByRole("button", { name: /Sign in as hirer/ }).click();
+  await expect(page).toHaveURL(/\/employer$/);
+  await expect(page.getByRole("heading", { name: "Candidates", level: 1 })).toBeVisible();
+  await expect(page.getByTestId("candidate-row").first()).toBeVisible();
 });
 
 test("employer page asks guests to sign in", async ({ page }) => {
