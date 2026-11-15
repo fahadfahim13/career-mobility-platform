@@ -66,7 +66,7 @@ export default function Home() {
   return (
     <div className="-mt-8 space-y-20 sm:-mt-12 sm:space-y-28">
       {/* Hero: the ultramarine field and a live score strip computed by the engine. */}
-      <section className="-mx-4 grid lg:mx-0 lg:grid-cols-12" aria-labelledby="hero-h">
+      <section className="-mx-4 grid grid-cols-1 lg:mx-0 lg:grid-cols-12" aria-labelledby="hero-h">
         <div className="on-field bg-field px-5 py-12 text-on-field sm:px-10 sm:py-16 lg:col-span-7">
           <h1 id="hero-h" className="text-5xl font-extrabold leading-[0.95] tracking-tighter sm:text-7xl">
             Work abroad.
@@ -183,8 +183,17 @@ export default function Home() {
             Read the research
           </a>
         </p>
-        <div className="mt-8 overflow-x-auto">
-          <table className="w-full min-w-[36rem] text-left text-sm">
+        <dl className="mt-8 space-y-6 sm:hidden">
+          {COMPARE.map(([topic, them, us]) => (
+            <div key={topic} className="border-t-2 border-ink pt-3">
+              <dt className="font-bold">{topic}</dt>
+              <dd className="mt-1 text-sm text-muted">Most tools: {them}</dd>
+              <dd className="mt-2 bg-field-tint px-3 py-2 text-sm font-semibold">Pathway: {us}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-8 hidden sm:block">
+          <table className="w-full text-left text-sm">
             <thead className="border-b-2 border-ink">
               <tr>
                 <th scope="col" className="w-1/5 py-3 pr-4 font-bold"><span className="sr-only">Topic</span></th>

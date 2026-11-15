@@ -6,9 +6,12 @@ const SHORT: Record<string, string> = {
   experience: "Experience",
   education: "Education",
   location: "Location",
-  language: "Language",
-  interests: "Interests",
+  language: "Lang.",
+  interests: "Int.",
 };
+
+/** Full names for the phone legend, where space is not a constraint. */
+const LEGEND: Record<string, string> = { ...SHORT, language: "Language", interests: "Interests" };
 
 /**
  * The signature element: one unbroken strip on a fixed 0–100 scale. Each segment's width is the
@@ -37,7 +40,7 @@ export function ScoreStrip({
   return (
     <figure className="w-full" aria-label={`Score breakdown: ${desc}. Total ${raw}${capped ? `, capped at ${CRITICAL_CAP}` : ""}.`}>
       {full && (
-        <div className="flex" aria-hidden>
+        <div className="hidden sm:flex" aria-hidden>
           {result.criteria.map((c) => (
             <div key={c.key} style={{ width: `${c.weight}%` }} className="min-w-0 pr-1">
               <span className={`block truncate text-[11px] font-bold uppercase tracking-wide ${onField ? "text-on-field-muted" : "text-muted"}`}>
@@ -61,7 +64,7 @@ export function ScoreStrip({
         )}
       </div>
       {full && (
-        <div className="mt-1.5 flex" aria-hidden>
+        <div className="mt-1.5 hidden sm:flex" aria-hidden>
           {result.criteria.map((c) => (
             <div key={c.key} style={{ width: `${c.weight}%` }} className="min-w-0 pr-1">
               <span className={`block text-sm font-bold tabular-nums ${onField ? "text-on-field" : "text-ink"}`}>
@@ -71,6 +74,16 @@ export function ScoreStrip({
             </div>
           ))}
         </div>
+      )}
+      {full && (
+        <dl className={`mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:hidden ${onField ? "text-on-field" : "text-ink"}`} aria-hidden>
+          {result.criteria.map((c) => (
+            <div key={c.key} className="flex justify-between border-b border-current/20 py-0.5">
+              <dt className={onField ? "text-on-field-muted" : "text-muted"}>{LEGEND[c.key]}</dt>
+              <dd className="font-bold tabular-nums">{c.points}/{c.weight}</dd>
+            </div>
+          ))}
+        </dl>
       )}
       {full && capped && (
         <figcaption className={`mt-2 text-xs font-semibold ${onField ? "text-verify" : "text-blocked"}`}>

@@ -50,7 +50,7 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
         </div>
       </header>
 
-      <div className="grid gap-10 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
         <div className="space-y-10 lg:col-span-8">
           <p className="max-w-3xl text-lg leading-relaxed">{opp.description}</p>
           <OpportunityMatch opp={opp} />

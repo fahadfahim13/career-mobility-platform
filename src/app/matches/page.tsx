@@ -105,7 +105,7 @@ export default function MatchesPage() {
             </button>
           ))}
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <div>
             <label htmlFor="f-country" className={fieldLabel}>Country</label>
             <select id="f-country" className={field} value={filters.country} onChange={(e) => set("country", e.target.value)}>
@@ -122,14 +122,14 @@ export default function MatchesPage() {
               <option value="blocked">Not held</option>
             </select>
           </div>
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label htmlFor="f-sort" className={fieldLabel}>Sort by</label>
             <select id="f-sort" className={field} value={filters.sort} onChange={(e) => set("sort", e.target.value as MatchFilters["sort"])}>
               <option value="fit">Best fit</option>
               <option value="eligibility">Eligibility first, then fit</option>
             </select>
           </div>
-          <label className="flex min-h-11 items-center gap-2.5 self-end border border-slate-300 bg-white px-3 text-sm font-semibold">
+          <label className="col-span-2 flex min-h-11 items-center gap-2.5 self-end border lg:col-span-1 border-slate-300 bg-white px-3 text-sm font-semibold">
             <input type="checkbox" className="size-4" checked={filters.visaSupportOnly} onChange={(e) => set("visaSupportOnly", e.target.checked)} />
             Employer offers visa support
           </label>

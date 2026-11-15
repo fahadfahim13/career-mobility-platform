@@ -147,3 +147,8 @@ details > summary::-webkit-details-marker {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Grid children may shrink below their content width, so a wide strip or table never widens the page. */
+.grid > * {
+  min-width: 0;
+}
