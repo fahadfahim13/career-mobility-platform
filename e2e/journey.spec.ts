@@ -79,7 +79,7 @@ test("summary API rejects invalid input", async ({ request }) => {
 
 test("landing sample button opens ranked matches", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Know exactly why you fit");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Hire from abroad");
   await page.getByRole("button", { name: "Try with a sample profile" }).first().click();
   await expect(page).toHaveURL(/\/matches$/);
   await expect(page.getByTestId("match-card")).toHaveCount(12);

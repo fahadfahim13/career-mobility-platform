@@ -7,16 +7,16 @@ import "./globals.css";
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
-  title: "Pathway — International career matching, explained",
+  title: "Pathway — Find work abroad. Hire from abroad.",
   description:
-    "Build one career profile and see how you fit international roles. Every score shows its arithmetic, and work authorisation is never assumed.",
+    "International job matching for candidates and employers. Every match gets a clear score, and right to work is shown separately.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB">
       <body className={`${archivo.variable} flex min-h-screen flex-col font-sans antialiased`}>
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:bg-verify focus:px-3 focus:py-2 focus:font-bold">
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:bg-paper focus:text-ink focus:px-3 focus:py-2 focus:font-bold">
           Skip to content
         </a>
         <Nav />

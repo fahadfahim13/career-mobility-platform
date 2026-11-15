@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { loadProfile, loadTracker, saveProfile, setNote as storeNote, setStage as storeStage, toggleShortlist, type Stage, type TrackedItem } from "../lib/storage";
+import { currentAccount, signOut as storeSignOut, type Account } from "../lib/accounts";
 import type { Profile } from "../lib/types";
 
 // Same-tab change signal so every component reading storage re-syncs after a write.
@@ -70,4 +71,20 @@ export function useShortlist() {
 
 export function notifyStorageChange() {
   notify();
+}
+
+/** Signed-in demo account (browser-only). `ready` is false until storage has been read. */
+export function useAccount() {
+  const [account, setAccount] = useState<Account | null>(null);
+  const [ready, setReady] = useState(false);
+  const sync = useCallback(() => {
+    setAccount(currentAccount());
+    setReady(true);
+  }, []);
+  useStorageSync(sync);
+  const signOut = useCallback(() => {
+    storeSignOut();
+    notify();
+  }, []);
+  return { account, ready, signOut };
 }

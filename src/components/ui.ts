@@ -4,7 +4,7 @@ const base =
 
 export const btnPrimary = `${base} bg-field text-on-field hover:bg-field-deep`;
 /** For use on the ultramarine field. */
-export const btnOnField = `${base} bg-paper text-ink hover:bg-verify`;
+export const btnOnField = `${base} bg-paper text-ink hover:bg-field-tint`;
 export const btnOnFieldOutline = `${base} border border-on-field-muted text-on-field hover:bg-field-deep`;
 export const btnSecondary = `${base} border border-ink bg-paper text-ink hover:bg-ink hover:text-paper`;
 export const btnOutline = `${base} border border-field bg-paper text-field hover:bg-field-tint`;

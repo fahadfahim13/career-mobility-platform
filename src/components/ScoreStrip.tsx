@@ -86,7 +86,7 @@ export function ScoreStrip({
         </dl>
       )}
       {full && capped && (
-        <figcaption className={`mt-2 text-xs font-semibold ${onField ? "text-verify" : "text-blocked"}`}>
+        <figcaption className={`mt-2 text-xs font-semibold ${onField ? "text-on-field" : "text-blocked"}`}>
           Raw {raw}, capped at {CRITICAL_CAP} because a hard requirement is not met.
         </figcaption>
       )}

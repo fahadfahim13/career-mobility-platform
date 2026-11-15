@@ -2,26 +2,26 @@
 name: Pathway
 description: International career matching that shows its arithmetic, set in International Typographic Style.
 colors:
-  paper: "#fbfbf9"
+  paper: "#fafaf8"
   panel-white: "#ffffff"
-  ink: "#111111"
-  muted: "#57574f"
-  line: "#dcdcd5"
+  ink: "#15181e"
+  muted: "#5a5e66"
+  line: "#e1e1dc"
   neutral-wash: "#ecece7"
   neutral-stroke: "#c5c5bd"
   hatch-grey: "#9a9a91"
-  field: "#1f3fd1"
-  field-deep: "#172fa3"
-  field-tint: "#e9edfc"
+  field: "#1b2b48"
+  field-deep: "#111d33"
+  field-tint: "#edf0f5"
   on-field: "#ffffff"
-  on-field-muted: "#d3dbfb"
-  verify: "#ffd23f"
-  verify-tint: "#fff5cc"
-  verify-ink: "#4a3b00"
-  blocked: "#c62d26"
-  blocked-tint: "#fcebe9"
-  met: "#17773f"
-  met-tint: "#e5f2e9"
+  on-field-muted: "#bcc4d3"
+  verify: "#9a6a1c"
+  verify-tint: "#f5efe3"
+  verify-ink: "#5c4012"
+  blocked: "#9b3b34"
+  blocked-tint: "#f5ebe9"
+  met: "#2f6a4f"
+  met-tint: "#eaf1ec"
 typography:
   display:
     fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
@@ -203,6 +203,8 @@ components:
     height: "20px"
 ---
 
+> Palette revised 2026-11-15 after owner review: deep navy field, muted status colours used only in small tags and icons, no bright yellow.
+
 # Design System: Pathway
 
 ## Overview
@@ -211,12 +213,12 @@ components:
 
 Pathway is built like international signage: one strict 12-column grid, heavy Archivo set tight, big tabular numerals, and colour that only ever carries meaning. A visitor reads it the way they read an airport board. Every role is a line with a reference code (CA-01, SG-01), a score, and a status, and every line uses the same scale so lines compare at a glance.
 
-The surface is paper-white with ink type. One flat ultramarine field owns the hero and the major statement bands on the landing page (Persuade). The working pages (Operate: matches, role detail, profile, shortlist, how it works) stay on paper and use the field only for primary action, the active nav marker and rank numerals. Status colour is a fixed vocabulary, never decoration: green = met, yellow = verify, red = blocked, a neutral diagonal hatch = missing data. Each status always comes with a word or an icon.
+The surface is paper-white with ink type. One flat deep navy field owns the hero and the major statement bands on the landing page (Persuade). The working pages (Operate: matches, role detail, profile, shortlist, how it works) stay on paper and use the field only for primary action, the active nav marker and rank numerals. Status colour is a fixed vocabulary, never decoration: muted green = met, muted amber = verify, muted red = blocked, a neutral diagonal hatch = missing data. Each status always comes with a word or an icon.
 
 Depth is absent by design. Structure comes from ink rules (2px above each row and section, 1px hairlines between items), flat colour bands, and 1px gap grids. The world rejects the category default: a centred headline over a row of identical feature cards with a blue accent. All rasters are code-drawn (the route mark is inline SVG, the score strip is CSS). There are no image assets.
 
 **Key Characteristics:**
-- Paper ground, ink type, one flat ultramarine field.
+- Paper ground, ink type, one flat deep navy field.
 - Heavy display type (800) with negative tracking; numerals tabular everywhere.
 - Rows separated by rules, not cards. No shadows anywhere.
 - Square corners. Controls get a 2px radius; tags, chips, panels and bands get none.
@@ -225,12 +227,12 @@ Depth is absent by design. Structure comes from ink rules (2px above each row an
 
 ## Colors
 
-A warm paper-and-ink neutral system with one saturated ultramarine and three fixed-meaning status hues.
+A warm paper-and-ink neutral system with one deep navy and three muted, fixed-meaning status hues.
 
 ### Primary
-- **Signage Ultramarine** (field): the hero field, statement bands, the CTA band, primary buttons, the "Your profile" nav button, the active nav underline, rank numerals, text links, the filled part of every score strip, and the global focus outline.
-- **Deep Ultramarine** (field-deep): the hover state of everything set in the field; the unfilled track of a score strip set on the field.
-- **Ultramarine Wash** (field-tint): the "Pathway" column of the comparison table, a "visa support offered" fact chip, and the outline-button hover.
+- **Signage Deep navy** (field): the hero field, statement bands, the CTA band, primary buttons, the "Your profile" nav button, the active nav underline, rank numerals, text links, the filled part of every score strip, and the global focus outline.
+- **Deep Deep navy** (field-deep): the hover state of everything set in the field; the unfilled track of a score strip set on the field.
+- **Deep navy Wash** (field-tint): the "Pathway" column of the comparison table, a "visa support offered" fact chip, and the outline-button hover.
 - **On-Field White / On-Field Mist** (on-field, on-field-muted): primary and secondary text on the field. Mist also draws the outline of outline buttons and the hairline dividers inside field bands.
 
 ### Status (fixed meanings)
@@ -249,9 +251,9 @@ A warm paper-and-ink neutral system with one saturated ultramarine and three fix
 - **Stone Stroke** (neutral-stroke): input and filter-chip borders.
 
 ### Named Rules
-**The One Field Rule.** Ultramarine is a flat field or a functional mark (action, link, focus, active state, the strip fill). It is never a gradient, never a decorative accent, and never a tint wash behind content for mood.
+**The One Field Rule.** Deep navy is a flat field or a functional mark (action, link, focus, active state, the strip fill). It is never a gradient, never a decorative accent, and never a tint wash behind content for mood.
 
-**The Fixed Meaning Rule.** Green means met, yellow means verify, red means blocked, hatch means missing. These hues are never used for anything else, and none of them appears without its word or icon.
+**The Fixed Meaning Rule.** Muted green means met, muted amber means verify, muted red means blocked, hatch means missing. These hues are never used for anything else, and none of them appears without its word or icon.
 
 **The Warm Neutral Rule.** Neutrals are the warm stone scale (#f4f4f1 to #161612). They replace Tailwind's cool slate everywhere. A cool grey is a defect.
 
@@ -287,7 +289,7 @@ Containers query their own width. The full score strip shows its label row and p
 
 ## Elevation & Depth
 
-Fully flat. There is no box-shadow anywhere in the build. Depth comes from three devices: the ultramarine field as a flat plane, a 2px ink rule that opens every row, section and table, and the step from Paper to Panel White for inputs and panels. The sticky nav uses 95% paper with a light backdrop blur and an ink bottom rule, not a shadow.
+Fully flat. There is no box-shadow anywhere in the build. Depth comes from three devices: the deep navy field as a flat plane, a 2px ink rule that opens every row, section and table, and the step from Paper to Panel White for inputs and panels. The sticky nav uses 95% paper with a light backdrop blur and an ink bottom rule, not a shadow.
 
 ### Named Rules
 **The Flat Plane Rule.** Nothing casts a shadow. To separate something, use a rule, a flat field, or a 1px gap.
@@ -303,18 +305,18 @@ Square. Controls (buttons, inputs, selects) have a 2px radius, just enough to so
 ### Buttons
 Direct, signage-like: compact, bold, square.
 - **Shape:** near-square (2px), 44px tall, 16px side padding, 0.875rem semibold, 8px gap for an icon.
-- **Primary:** field with white text; hover goes to Deep Ultramarine. The saved state of the shortlist button uses it.
-- **On field:** a paper button whose hover turns Verify Yellow, paired with an outline button (Mist border, white text, hover Deep Ultramarine).
+- **Primary:** field with white text; hover goes to Deep Deep navy. The saved state of the shortlist button uses it.
+- **On field:** a paper button whose hover turns Verify Yellow, paired with an outline button (Mist border, white text, hover Deep Deep navy).
 - **Dark:** ink with paper text ("View details" in every match row).
 - **Secondary:** paper with a 1px ink border; on hover it inverts to ink.
-- **Outline:** paper with a field border and field text; hover adds the Ultramarine Wash. This is the unsaved shortlist button.
+- **Outline:** paper with a field border and field text; hover adds the Deep navy Wash. This is the unsaved shortlist button.
 - **Ghost:** Warm Graphite text; hover adds Stone Wash and ink text.
-- **Focus / disabled:** 2px field outline at 2px offset (yellow on the field). Disabled is 50% opacity. Colour transitions take 150ms.
+- **Focus / disabled:** 2px field outline at 2px offset (white on the field). Disabled is 50% opacity. Colour transitions take 150ms.
 
 ### Status tags
 - **Style:** uppercase label type, 2px by 8px padding, no radius, with a 14px icon where the meaning needs one.
 - **Band tags:** Strong (green, white text), Partial (ink), Weak (Hairline, ink text), Critical gap (red, white text).
-- **Eligibility tags:** stated (Met Wash, green text, check), to verify (yellow fill, ink text, shield-question), stated no (Blocked Wash, red text, octagon-X), not required (Stone Wash, grey text, check). The eligibility tag always sits next to the score, never inside it.
+- **Eligibility tags:** stated (Met Wash, green text, check), to verify (Verify Wash, umber text, shield-question), stated no (Blocked Wash, red text, octagon-X), not required (Stone Wash, grey text, check). The eligibility tag always sits next to the score, never inside it.
 
 ### Flags
 Full-width rows with 8px by 12px padding and no border: a 16px icon, a bold prefix ("Requirement not met." / "Verification required." / "Information missing."), then the message. Critical rows use Blocked Wash, verify rows Verify Wash, missing rows Stone Wash. Text stays ink; only the icon takes the status hue. The order is always critical, then verify, then missing.
@@ -323,7 +325,7 @@ Full-width rows with 8px by 12px padding and no border: a 16px icon, a bold pref
 Inline semibold word plus a 14px icon: Met (green), Partial (umber), Not met (red), Not provided (grey).
 
 ### Fact chips
-0.75rem semibold on Stone Wash with no radius: salary, visa support (Ultramarine Wash when offered), relocation count.
+0.75rem semibold on Stone Wash with no radius: salary, visa support (Deep navy Wash when offered), relocation count.
 
 ### Inputs / Fields
 - **Style:** Panel White, a 1px Stone Stroke border, 2px radius, 44px tall, 12px side padding. Text is 1rem on phones (no iOS zoom) and 0.875rem from sm.
@@ -334,10 +336,10 @@ Inline semibold word plus a 14px icon: Met (green), Partial (umber), Not met (re
 40px tall with no radius. Selected: ink fill, paper text, bold. Unselected: Panel White with a Stone Stroke border, which turns ink on hover. Each chip ends with a 70%-opacity tabular count.
 
 ### Navigation
-A sticky paper bar with a 1px ink bottom rule. The left side holds the route mark and "Pathway" (extrabold, 1.25rem). Links are 0.875rem in Warm Graphite, 44px tall; the active link is bold ink with a 3px field underline. The shortlist link carries a count on a yellow fill. "Your profile" is a field-filled button on the right, and turns ink when that page is current. On phones the links wrap to a horizontally scrolling second line, and "How matching works" becomes "How it works".
+A sticky paper bar with a 1px ink bottom rule. The left side holds the route mark and "Pathway" (extrabold, 1.25rem). Links are 0.875rem in Warm Graphite, 44px tall; the active link is bold ink with a 3px field underline. The shortlist link carries a count on an ink fill. "Your profile" is a field-filled button on the right, and turns ink when that page is current. On phones the links wrap to a horizontally scrolling second line, and "How matching works" becomes "How it works".
 
 ### Score Strip (signature)
-One unbroken bar on a fixed 0–100 scale. Each segment's width is the criterion weight (30/20/15/15/10/10). Its fill is the share of points earned: field on paper, or paper on the field. The track is Hairline, or Deep Ultramarine on the field. Segments are divided by 2px rules in the ground colour. Neutral credit for missing data is drawn with the hatch. A capped score shows a 2px red marker at 35, extending 4px above and below the bar, with a caption: "Raw N, capped at 35…". Compact rows use a 10px bar; the full variant uses 20px, with a bold 0.75rem label row and "points/weight" figures at @xl, and a 2-column legend below @xl. The strip reveals left to right once on first render (clip-path, 900ms, cubic-bezier(0.16, 1, 0.3, 1)). Reduced motion removes the reveal. Every strip on every surface uses the same scale.
+One unbroken bar on a fixed 0–100 scale. Each segment's width is the criterion weight (30/20/15/15/10/10). Its fill is the share of points earned: field on paper, or paper on the field. The track is Hairline, or Deep Deep navy on the field. Segments are divided by 2px rules in the ground colour. Neutral credit for missing data is drawn with the hatch. A capped score shows a 2px red marker at 35, extending 4px above and below the bar, with a caption: "Raw N, capped at 35…". Compact rows use a 10px bar; the full variant uses 20px, with a bold 0.75rem label row and "points/weight" figures at @xl, and a 2-column legend below @xl. The strip reveals left to right once on first render (clip-path, 900ms, cubic-bezier(0.16, 1, 0.3, 1)). Reduced motion removes the reveal. Every strip on every surface uses the same scale.
 
 ### Match row
 A 2px ink rule opens each row. Identity sits left (a field-coloured rank numeral, the title, the meta line, the ref code, fact chips). Score sits right (the score figure; the band tag stacked above the eligibility tag; the compact strip; skills coverage). Below a 1px Hairline come "Why it fits" (green, checks) and "What to review" (red, minus marks), then verify flags, then the Dark and Outline buttons.
@@ -346,18 +348,18 @@ A 2px ink rule opens each row. Identity sits left (a field-coloured rank numeral
 
 ### Do:
 - **Do** keep every score on the same 0–100 strip with segment widths equal to the weights (30/20/15/15/10/10).
-- **Do** pair every status colour with its word or icon: green = met, yellow = verify, red = blocked, hatch = missing.
+- **Do** pair every status colour with its word or icon: muted green = met, muted amber = verify, muted red = blocked, hatch = missing.
 - **Do** show eligibility as its own tag beside the score, never folded into it.
 - **Do** open rows and sections with a 2px ink rule, and separate items with 1px Hairlines.
-- **Do** set yellow as a fill with ink text; use Verify Umber (#4a3b00) when verify needs to be read as text.
-- **Do** switch the focus outline to yellow on the ultramarine field.
+- **Do** keep status colours muted and small: tags and icons only, never large fills.
+- **Do** switch the focus outline to white on the deep navy field.
 - **Do** give every role its reference code (country code plus two digits) on a 1px ink rule.
 - **Do** keep interactive targets at 44px or taller.
 
 ### Don't:
 - **Don't** use box-shadow, gradients or glows; the system is flat.
 - **Don't** round anything beyond 2px, and don't round tags, chips, flags, panels or strips at all.
-- **Don't** use green, yellow or red decoratively, or as the only signal of a status.
+- **Don't** use green, amber or red decoratively, or as the only signal of a status.
 - **Don't** put roles in boxed cards; they are ruled rows.
 - **Don't** introduce cool slate greys, a second typeface, or image assets; draw rasters in code.
 - **Don't** build a centred headline over a row of identical feature cards with a blue accent.

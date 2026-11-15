@@ -24,7 +24,7 @@ export function OpportunityMatch({ opp }: { opp: Opportunity }) {
       <section className="on-field bg-field p-6 text-on-field">
         <h2 className="text-2xl font-extrabold tracking-tight">See how you fit this role</h2>
         <p className="mt-2 text-on-field-muted">Create a profile, or load the sample one, to get a score with its full arithmetic.</p>
-        <Link href="/profile" className="mt-4 inline-flex min-h-11 items-center gap-2 bg-paper px-4 text-sm font-bold text-ink hover:bg-verify">
+        <Link href="/profile" className="mt-4 inline-flex min-h-11 items-center gap-2 bg-paper px-4 text-sm font-bold text-ink hover:bg-field-tint">
           Create your profile <ArrowRight className="size-4" aria-hidden />
         </Link>
       </section>

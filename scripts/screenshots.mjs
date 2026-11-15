@@ -15,6 +15,9 @@ const PAGES = [
   ["how", "/how-it-works"],
   ["detail2", "/opportunities/programme-assistant-ngo"],
   ["notfound", "/opportunities/does-not-exist"],
+  ["signup", "/signup?role=employer"],
+  ["signin", "/signin"],
+  ["employer", "/employer"],
 ];
 
 const b = await chromium.launch();

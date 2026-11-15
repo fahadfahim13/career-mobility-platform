@@ -4,10 +4,10 @@ import type { Band, CriterionStatus, Eligibility } from "../lib/matching/types";
 const tag = "inline-flex items-center gap-1.5 whitespace-nowrap px-2 py-0.5 text-xs font-bold uppercase tracking-wide";
 
 const BAND_STYLE: Record<Band, string> = {
-  Strong: "bg-met text-white",
-  Partial: "bg-ink text-paper",
-  Weak: "bg-slate-200 text-ink",
-  "Critical gap": "bg-blocked text-white",
+  Strong: "bg-field text-on-field",
+  Partial: "bg-field-tint text-field",
+  Weak: "bg-slate-100 text-muted",
+  "Critical gap": "bg-blocked-tint text-blocked",
 };
 
 const BAND_LABEL: Record<Band, string> = {
@@ -23,7 +23,7 @@ export function BandBadge({ band }: { band: Band }) {
 
 const ELIGIBILITY: Record<Eligibility, { label: string; cls: string; Icon: typeof Check }> = {
   clear: { label: "Right to work stated", cls: "bg-met-tint text-met", Icon: Check },
-  verify: { label: "Eligibility to verify", cls: "bg-verify text-ink", Icon: ShieldQuestion },
+  verify: { label: "Eligibility to verify", cls: "bg-verify-tint text-verify-ink", Icon: ShieldQuestion },
   blocked: { label: "You stated no right to work", cls: "bg-blocked-tint text-blocked", Icon: OctagonX },
 };
 

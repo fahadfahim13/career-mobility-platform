@@ -142,7 +142,7 @@ export function ProfileForm() {
           </p>
           <p className="mt-1 text-sm font-bold">Profile strength</p>
           <div className="mt-3 h-2 bg-field-deep" aria-hidden>
-            <div className="h-full bg-verify transition-[width] duration-500" style={{ width: `${strength.percent}%` }} />
+            <div className="h-full bg-on-field transition-[width] duration-500" style={{ width: `${strength.percent}%` }} />
           </div>
           <ul className="mt-4 space-y-1 text-sm">
             {RAIL.map((r) => {
@@ -150,7 +150,7 @@ export function ProfileForm() {
               return (
                 <li key={r.href}>
                   <a href={r.href} className="flex min-h-9 items-center gap-2 hover:underline">
-                    {ok ? <Check className="size-4 text-verify" aria-hidden /> : <Circle className="size-4 text-on-field-muted" aria-hidden />}
+                    {ok ? <Check className="size-4 text-on-field" aria-hidden /> : <Circle className="size-4 text-on-field-muted" aria-hidden />}
                     {r.label}
                     <span className="sr-only">{ok ? "(complete)" : "(incomplete)"}</span>
                   </a>

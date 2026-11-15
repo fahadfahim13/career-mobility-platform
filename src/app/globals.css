@@ -2,37 +2,37 @@
 
 /*
  * Pathway — International Style.
- * Paper ground, ink type, one ultramarine field for statements and action.
- * Status colours carry fixed meanings and are always paired with a word or icon:
- *   met = green, verify = yellow, blocked = red, unknown = neutral hatch.
+ * Paper ground, ink type, one deep navy field for statements and action.
+ * Status colours are muted, used only in small tags and icons, and always paired
+ * with a word: met = muted green, verify = muted amber, blocked = muted red.
  */
 @theme inline {
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 
-  --color-paper: #fbfbf9;
-  --color-canvas: #fbfbf9;
-  --color-ink: #111111;
-  --color-muted: #57574f;
-  --color-line: #dcdcd5;
-  --color-field: #1f3fd1;
-  --color-field-deep: #172fa3;
-  --color-field-tint: #e9edfc;
+  --color-paper: #fafaf8;
+  --color-canvas: #fafaf8;
+  --color-ink: #15181e;
+  --color-muted: #5a5e66;
+  --color-line: #e1e1dc;
+  --color-field: #1b2b48;
+  --color-field-deep: #111d33;
+  --color-field-tint: #edf0f5;
   --color-on-field: #ffffff;
-  --color-on-field-muted: #d3dbfb;
+  --color-on-field-muted: #bcc4d3;
 
-  --color-verify: #ffd23f;
-  --color-verify-tint: #fff5cc;
-  --color-verify-ink: #4a3b00;
-  --color-blocked: #c62d26;
-  --color-blocked-tint: #fcebe9;
-  --color-met: #17773f;
-  --color-met-tint: #e5f2e9;
+  --color-verify: #9a6a1c;
+  --color-verify-tint: #f5efe3;
+  --color-verify-ink: #5c4012;
+  --color-blocked: #9b3b34;
+  --color-blocked-tint: #f5ebe9;
+  --color-met: #2f6a4f;
+  --color-met-tint: #eaf1ec;
 
   /* Legacy brand names map onto the field colour. */
-  --color-brand-50: #e9edfc;
-  --color-brand-100: #d3dbfb;
-  --color-brand-600: #1f3fd1;
-  --color-brand-700: #172fa3;
+  --color-brand-50: #edf0f5;
+  --color-brand-100: #bcc4d3;
+  --color-brand-600: #1b2b48;
+  --color-brand-700: #111d33;
 
   /* Warm neutral scale replaces Tailwind's cool slate everywhere. */
   --color-slate-50: #f4f4f1;
@@ -67,7 +67,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-verify);
+  background: var(--color-field-tint);
   color: var(--color-ink);
 }
 
@@ -99,13 +99,13 @@ a {
   text-decoration-thickness: 1px;
 }
 
-/* Visible keyboard focus everywhere; yellow on the ultramarine field, ultramarine elsewhere. */
+/* Visible keyboard focus everywhere; white on the navy field, navy elsewhere. */
 :focus-visible {
   outline: 2px solid var(--color-field);
   outline-offset: 2px;
 }
 .on-field :focus-visible {
-  outline-color: var(--color-verify);
+  outline-color: var(--color-on-field);
 }
 
 /* Neutral credit: a criterion scored at 50% because data is missing. */

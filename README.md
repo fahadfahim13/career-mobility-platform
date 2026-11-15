@@ -25,6 +25,8 @@ Each feature below came out of the competitor research (relocation job boards, A
 - **Filters and sorting:** match band, country, right-to-work status and visa support; sort by best fit or eligibility first.
 - **Profile-strength meter** with section progress and a time estimate.
 - **Shortlist with application stages** (Saved → Applying → Applied → Interviewing → Offer → Closed) and notes.
+- **Two sides: job seekers and employers.** Sign up as either. Employers pick a role and see fictional candidates ranked by the same engine, with right to work shown separately and the full score behind each candidate.
+- **Sign in and sign up** with one-click demo accounts. This is a prototype: accounts live only in this browser, and passwords are stored as salted SHA-256 hashes. A production build would use a real identity provider.
 - **"How matching works" page** covering weights, bands, caps, what is *not* scored, an AI fact sheet and the data policy.
 
 ## Quick start

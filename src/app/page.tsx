@@ -1,10 +1,10 @@
-import { ArrowRight, Check, Minus, Plus } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, Check, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { BandBadge, EligibilityTag, ScoreFigure } from "../components/badges";
 import { opportunityMeta } from "../components/MatchCard";
 import { SampleProfileButton } from "../components/SampleProfileButton";
 import { ScoreStrip } from "../components/ScoreStrip";
-import { btnOnField, btnOnFieldOutline } from "../components/ui";
+import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary } from "../components/ui";
 import { getCountryGuide } from "../data/countryGuides";
 import { sampleProfile } from "../data/sampleProfile";
 import { getOpportunities, getOpportunity } from "../lib/data";
@@ -13,49 +13,46 @@ import { CRITICAL_CAP, matchOne } from "../lib/matching/engine";
 import { WEIGHTS, LABELS } from "../lib/matching/criteria";
 
 const STEPS = [
+  { title: "Build a profile", body: "Skills, experience, languages and target countries. About five minutes." },
+  { title: "Get scored matches", body: "Every role is scored 0–100 on six weighted criteria, with the working shown." },
+  { title: "Verify and apply", body: "Check the right to work with official sources, then track each application." },
+];
+
+const AUDIENCES = [
   {
-    title: "Tell us where you want to work",
-    body: "Your skills, experience, languages and the countries you would move to. For each country, say whether you have the right to work there, or answer “Not sure”.",
+    Icon: Briefcase,
+    title: "For job seekers",
+    points: ["See which roles abroad you qualify for", "Know why you fit, and what to improve", "Get official steps to verify your right to work"],
+    cta: "Find roles",
+    href: "/signup?role=seeker",
+    primary: true,
   },
   {
-    title: "We score every role, openly",
-    body: "Each role is scored on six weighted criteria. The strip under every score shows exactly where the points came from and where they were lost.",
-  },
-  {
-    title: "You decide what is next",
-    body: "Shortlist the roles worth pursuing, track each application, and work through the steps to verify, with links to the official sources.",
+    Icon: Building2,
+    title: "For employers",
+    points: ["See candidates ranked by fit for each role", "See who has stated the right to work", "Review the score behind every candidate"],
+    cta: "Find candidates",
+    href: "/signup?role=employer",
+    primary: false,
   },
 ];
 
 const COMPARE = [
-  ["The score", "A percentage, with no working shown", "The number and every point behind it, the same every time"],
-  ["Visa and work permits", "A “visa sponsorship” badge on the job", "Your own status per country, kept apart from the score, plus steps to verify"],
-  ["Gaps", "A list of missing keywords", "Missing skills, language levels and hard requirements, each with a next step"],
-  ["Languages", "Collected at sign-up, then ignored", "The role’s required level compared with yours"],
-  ["Your data", "An account and a CV upload", "No account. Your profile stays in this browser"],
+  ["Match score", "A number with no reasons", "Every point explained"],
+  ["Right to work", "A “visa sponsorship” badge", "Shown per person, per country"],
+  ["Gaps", "Missing keywords", "Each gap with a next step"],
+  ["Employers", "Applicants sorted by keywords", "Candidates ranked by fit, eligibility shown"],
 ];
 
 const FAQ = [
+  { q: "Is the score a hiring decision?", a: "No. It shows how a profile compares with a role’s stated requirements. People make the decision." },
   {
-    q: "Is the match score a hiring decision?",
-    a: "No. The score is feedback on how your profile compares with a role’s stated requirements. It is not an employer’s decision and not a prediction of an interview.",
+    q: "Does Pathway decide who can work in a country?",
+    a: "No. Right to work is self-stated. When it is unknown, the match is marked “to verify” with links to the official authority.",
   },
-  {
-    q: "Does Pathway decide whether I can work in a country?",
-    a: "Never. If you are not sure of your right to work, the role is marked “Eligibility to verify” and you get the official sources to check. Only the authority of that country can make that decision.",
-  },
-  {
-    q: "What does the AI do?",
-    a: "Only one thing: it rewrites the rule engine’s result as a two-sentence summary. It cannot change a score, a gap or a flag. If the AI is unavailable, a summary built from the rules is shown instead.",
-  },
-  {
-    q: "Where is my information stored?",
-    a: "Only in your browser’s local storage. There is no account and nothing is sent to an employer. “Clear my data” on the profile page removes it.",
-  },
-  {
-    q: "Are these real jobs?",
-    a: "No. This is a prototype built for a technical assessment. All twelve organisations, roles and salaries are fictional.",
-  },
+  { q: "What does the AI do?", a: "It writes a two-sentence summary of the result. It cannot change a score. If it is unavailable, a rules-based summary is shown." },
+  { q: "Where is my data stored?", a: "In this prototype, only in your browser. Nothing is sent to a server or shared with employers." },
+  { q: "Are these real jobs and candidates?", a: "No. All organisations, roles, salaries and candidates are fictional." },
 ];
 
 export default function Home() {
@@ -65,23 +62,26 @@ export default function Home() {
 
   return (
     <div className="-mt-8 space-y-20 sm:-mt-12 sm:space-y-28">
-      {/* Hero: the ultramarine field and a live score strip computed by the engine. */}
+      {/* Hero: the navy field and a live score strip computed by the engine. */}
       <section className="-mx-4 grid grid-cols-1 lg:mx-0 lg:grid-cols-12" aria-labelledby="hero-h">
         <div className="on-field bg-field px-5 py-12 text-on-field sm:px-10 sm:py-16 lg:col-span-7">
           <h1 id="hero-h" className="text-5xl font-extrabold leading-[0.95] tracking-tighter sm:text-7xl">
-            Work abroad.
+            Find work abroad.
             <br />
-            Know exactly why you fit.
+            Hire from abroad.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-on-field-muted">
-            Pathway ranks international roles against your profile and shows the arithmetic behind every score. Your
-            right to work is checked separately, and never assumed.
+            Every match gets a clear score. Right to work is shown separately, never assumed.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <SampleProfileButton className={btnOnField} />
-            <Link href="/profile" className={btnOnFieldOutline}>Build your profile</Link>
+            <Link href="/signup?role=seeker" className={btnOnField}>
+              I’m looking for work <ArrowRight className="size-4" aria-hidden />
+            </Link>
+            <Link href="/signup?role=employer" className={btnOnFieldOutline}>I’m hiring</Link>
           </div>
-          <p className="mt-6 text-sm text-on-field-muted">No account. About five minutes. Your data stays in this browser.</p>
+          <div className="mt-6 text-sm">
+            <SampleProfileButton className="inline-flex min-h-10 items-center gap-1.5 font-semibold text-on-field underline underline-offset-4 hover:no-underline" />
+          </div>
         </div>
 
         <div className="border-x-2 border-b-2 border-ink bg-white px-5 py-8 sm:px-8 lg:col-span-5 lg:border-l-0 lg:border-t-2 lg:py-10">
@@ -108,16 +108,38 @@ export default function Home() {
               <li key={g} className="flex gap-2"><Minus className="mt-0.5 size-4 shrink-0 text-blocked" aria-hidden />{g}</li>
             ))}
           </ul>
-          <p className="mt-4 text-xs font-semibold text-muted">Live example for the sample candidate, calculated by the same engine you will use.</p>
-          <p className="mt-2 bg-verify-tint px-3 py-2 text-xs">
-            A high score is not a right to work. This candidate has not confirmed work authorisation for {demoOpp.country},
-            so the role is marked for verification.
+          <p className="mt-4 text-xs text-muted">Live example, calculated by the matching engine.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="problem-h" className="grid gap-8 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <h2 id="problem-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">The right people for the right roles, across borders.</h2>
+          <p className="mt-4 text-muted">
+            Candidates can’t tell which roles abroad they qualify for. Employers can’t tell which applicants can work there.
+            Pathway shows both.
           </p>
+        </div>
+        <div className="grid grid-cols-1 gap-px bg-ink sm:grid-cols-2 lg:col-span-7">
+          {AUDIENCES.map((a) => (
+            <div key={a.title} className="flex flex-col bg-paper p-6">
+              <a.Icon className="size-6 text-field" aria-hidden />
+              <h3 className="mt-3 text-xl font-bold">{a.title}</h3>
+              <ul className="mt-3 flex-1 space-y-2 text-sm">
+                {a.points.map((p) => (
+                  <li key={p} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-field" aria-hidden />{p}</li>
+                ))}
+              </ul>
+              <Link href={a.href} className={`${a.primary ? btnPrimary : btnSecondary} mt-6 self-start`}>
+                {a.cta} <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </div>
+          ))}
         </div>
       </section>
 
       <section aria-labelledby="steps-h">
-        <h2 id="steps-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">From profile to shortlist in three steps</h2>
+        <h2 id="steps-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">How it works</h2>
         <ol className="mt-10 border-t-2 border-ink">
           {STEPS.map((s, i) => (
             <li key={s.title} className="grid gap-4 border-b border-line py-8 md:grid-cols-12 md:items-center">
@@ -158,15 +180,12 @@ export default function Home() {
       <section aria-labelledby="signals-h" className="on-field -mx-4 grid gap-10 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <h2 id="signals-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">Two signals, never blended</h2>
-          <p className="mt-4 text-on-field-muted">
-            Most tools fold everything into one percentage, so a role you cannot legally take looks as good as one you can.
-            Pathway keeps fit and eligibility apart.
-          </p>
+          <p className="mt-4 text-on-field-muted">A great fit you can’t legally take is not a great match. So we show both.</p>
         </div>
         <div className="grid gap-px bg-on-field-muted/40 sm:grid-cols-2 lg:col-span-8">
           <div className="bg-field p-6 sm:pl-0">
             <h3 className="text-xl font-bold">Fit score, 0 to 100</h3>
-            <p className="mt-2 text-sm text-on-field-muted">How your profile compares with the role’s stated requirements.</p>
+            <p className="mt-2 text-sm text-on-field-muted">Six weighted criteria.</p>
             <dl className="mt-5 divide-y divide-on-field-muted/40 text-sm">
               {Object.entries(WEIGHTS).map(([k, w]) => (
                 <div key={k} className="flex justify-between py-1.5">
@@ -175,36 +194,24 @@ export default function Home() {
                 </div>
               ))}
             </dl>
-            <p className="mt-4 text-sm">
-              An unmet hard requirement (language, enrolment, a stated lack of work authorisation) caps the score at{" "}
-              <strong>{CRITICAL_CAP}</strong>.
-            </p>
+            <p className="mt-4 text-sm">An unmet hard requirement caps the score at <strong>{CRITICAL_CAP}</strong>.</p>
           </div>
           <div className="bg-field p-6">
-            <h3 className="text-xl font-bold">Eligibility status</h3>
-            <p className="mt-2 text-sm text-on-field-muted">Your right to work in the role’s country, from your own answer.</p>
+            <h3 className="text-xl font-bold">Right to work</h3>
+            <p className="mt-2 text-sm text-on-field-muted">Self-stated, per country.</p>
             <ul className="mt-5 space-y-4 text-sm">
-              <li>
-                <EligibilityTag eligibility="clear" />
-                <p className="mt-1">You said you have the right to work there. Nothing is checked or confirmed by Pathway.</p>
-              </li>
-              <li>
-                <EligibilityTag eligibility="verify" />
-                <p className="mt-1">You are not sure. Nothing is assumed; you get steps to verify.</p>
-              </li>
-              <li>
-                <EligibilityTag eligibility="blocked" />
-                <p className="mt-1">You said you do not have it. The role is shown, but capped.</p>
-              </li>
+              <li><EligibilityTag eligibility="clear" /><p className="mt-1">Stated by the candidate.</p></li>
+              <li><EligibilityTag eligibility="verify" /><p className="mt-1">Unknown. Official steps provided.</p></li>
+              <li><EligibilityTag eligibility="blocked" /><p className="mt-1">Not held. Score capped.</p></li>
             </ul>
           </div>
         </div>
       </section>
 
       <section aria-labelledby="compare-h">
-        <h2 id="compare-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">What changes compared with today’s tools</h2>
+        <h2 id="compare-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Why Pathway</h2>
         <p className="mt-4 max-w-2xl text-muted">
-          Based on a review of relocation job boards, AI job-match tools and official visa checkers.{" "}
+          Based on a review of 23 job boards, match tools and visa checkers.{" "}
           <a href="https://github.com/fahadfahim13/career-mobility-platform/blob/main/docs/COMPETITOR_RESEARCH.md" className="font-semibold text-field underline">
             Read the research
           </a>
@@ -213,7 +220,7 @@ export default function Home() {
           {COMPARE.map(([topic, them, us]) => (
             <div key={topic} className="border-t-2 border-ink pt-3">
               <dt className="font-bold">{topic}</dt>
-              <dd className="mt-1 text-sm text-muted">Most tools: {them}</dd>
+              <dd className="mt-1 text-sm text-muted">Typical: {them}</dd>
               <dd className="mt-2 bg-field-tint px-3 py-2 text-sm font-semibold">Pathway: {us}</dd>
             </div>
           ))}
@@ -223,8 +230,8 @@ export default function Home() {
             <thead className="border-b-2 border-ink">
               <tr>
                 <th scope="col" className="w-1/5 py-3 pr-4 font-bold"><span className="sr-only">Topic</span></th>
-                <th scope="col" className="py-3 pr-4 font-bold text-muted">What most tools show</th>
-                <th scope="col" className="bg-field px-4 py-3 font-bold text-on-field">What Pathway shows</th>
+                <th scope="col" className="py-3 pr-4 font-bold text-muted">Typical tools</th>
+                <th scope="col" className="bg-field px-4 py-3 font-bold text-on-field">Pathway</th>
               </tr>
             </thead>
             <tbody>
@@ -243,10 +250,7 @@ export default function Home() {
       <section aria-labelledby="sources-h" className="grid gap-8 border-t-2 border-ink pt-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <h2 id="sources-h" className="text-3xl font-extrabold tracking-tight">Official sources on every role</h2>
-          <p className="mt-3 text-muted">
-            Each role links to the government authority for its country, with the questions to check before you apply. For
-            reference only; not legal advice.
-          </p>
+          <p className="mt-3 text-muted">Links to each country’s government authority. Reference only, not legal advice.</p>
         </div>
         <ul className="grid gap-px bg-line sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
           {countries.map((c) => {
@@ -282,11 +286,12 @@ export default function Home() {
       </section>
 
       <section className="on-field -mx-4 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10" aria-labelledby="cta-h">
-        <h2 id="cta-h" className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">See your first ranked list in one click.</h2>
-        <p className="mt-3 max-w-xl text-on-field-muted">Load the sample candidate from the brief, or build your own profile.</p>
+        <h2 id="cta-h" className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">Start matching in minutes.</h2>
         <div className="mt-6 flex flex-wrap gap-3">
-          <SampleProfileButton className={btnOnField} />
-          <Link href="/profile" className={btnOnFieldOutline}>Build your profile</Link>
+          <Link href="/signup?role=seeker" className={btnOnField}>
+            I’m looking for work <ArrowRight className="size-4" aria-hidden />
+          </Link>
+          <Link href="/signup?role=employer" className={btnOnFieldOutline}>I’m hiring</Link>
         </div>
       </section>
     </div>

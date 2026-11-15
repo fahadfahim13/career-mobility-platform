@@ -2,13 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useShortlist } from "../hooks/useLocalState";
+import { useAccount, useShortlist } from "../hooks/useLocalState";
+import { ROLE_LABEL } from "../lib/accounts";
 
-const LINKS: { href: string; label: string; short?: string }[] = [
+type NavLink = { href: string; label: string; short?: string };
+
+const SEEKER_LINKS: NavLink[] = [
   { href: "/matches", label: "Matches" },
   { href: "/opportunities", label: "All roles" },
   { href: "/shortlist", label: "Shortlist" },
-  { href: "/how-it-works", label: "How matching works", short: "How it works" },
+  { href: "/how-it-works", label: "How it works" },
+];
+
+const EMPLOYER_LINKS: NavLink[] = [
+  { href: "/employer", label: "Candidates" },
+  { href: "/opportunities", label: "Roles" },
+  { href: "/how-it-works", label: "How it works" },
+];
+
+const GUEST_LINKS: NavLink[] = [
+  { href: "/opportunities", label: "Roles" },
+  { href: "/employer", label: "For employers", short: "Employers" },
+  { href: "/how-it-works", label: "How it works" },
 ];
 
 /** Square route mark: a path that turns once, set in the field colour. */
@@ -25,6 +40,8 @@ export function Mark({ className = "size-7" }: { className?: string }) {
 export function Nav() {
   const pathname = usePathname();
   const { ids } = useShortlist();
+  const { account, ready, signOut } = useAccount();
+  const links = !account ? GUEST_LINKS : account.role === "employer" ? EMPLOYER_LINKS : SEEKER_LINKS;
   const profileActive = pathname.startsWith("/profile");
   return (
     <header className="sticky top-0 z-20 border-b border-ink bg-paper/95 backdrop-blur-sm">
@@ -33,17 +50,41 @@ export function Nav() {
           <Mark />
           Pathway
         </Link>
-        <Link
-          href="/profile"
-          aria-current={profileActive ? "page" : undefined}
-          className={`ml-auto inline-flex min-h-10 items-center px-3 text-sm font-bold sm:order-last ${
-            profileActive ? "bg-ink text-paper" : "bg-field text-on-field hover:bg-field-deep"
-          }`}
-        >
-          Your profile
-        </Link>
+        <div className={`ml-auto flex items-center gap-2 sm:order-last ${ready ? "" : "invisible"}`}>
+          {account ? (
+            <>
+              <span className="hidden text-right text-xs leading-tight md:block">
+                <span className="block font-bold text-ink">{account.name}</span>
+                <span className="text-muted">{ROLE_LABEL[account.role]}</span>
+              </span>
+              {account.role === "seeker" && (
+                <Link
+                  href="/profile"
+                  aria-current={profileActive ? "page" : undefined}
+                  className={`inline-flex min-h-10 items-center px-3 text-sm font-bold ${
+                    profileActive ? "bg-ink text-paper" : "bg-field text-on-field hover:bg-field-deep"
+                  }`}
+                >
+                  Your profile
+                </Link>
+              )}
+              <button type="button" onClick={signOut} className="inline-flex min-h-10 items-center px-2 text-sm font-semibold text-muted hover:text-ink">
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/signin" className="inline-flex min-h-10 items-center px-2 text-sm font-semibold text-ink hover:underline">
+                Sign in
+              </Link>
+              <Link href="/signup" className="inline-flex min-h-10 items-center bg-field px-3 text-sm font-bold text-on-field hover:bg-field-deep">
+                Get started
+              </Link>
+            </>
+          )}
+        </div>
         <ul className="-mx-2 flex w-full flex-nowrap overflow-x-auto whitespace-nowrap text-sm sm:w-auto">
-          {LINKS.map((l) => {
+          {links.map((l) => {
             const active = pathname === l.href || pathname.startsWith(l.href + "/");
             return (
               <li key={l.href}>
@@ -63,7 +104,7 @@ export function Nav() {
                     l.label
                   )}
                   {l.href === "/shortlist" && ids.length > 0 && (
-                    <span className="ml-1.5 bg-verify px-1.5 text-xs font-bold tabular-nums text-ink">
+                    <span className="ml-1.5 bg-ink px-1.5 text-xs font-bold tabular-nums text-paper">
                       {ids.length}
                       <span className="sr-only"> saved roles</span>
                     </span>
