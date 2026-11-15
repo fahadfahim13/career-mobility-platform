@@ -21,6 +21,6 @@ export default defineConfig({
         timeout: 180_000,
         reuseExistingServer: false,
         // Mock mode: no API key, so summaries are deterministic.
-        env: { ANTHROPIC_API_KEY: "" },
+        env: { OPENROUTER_API_KEY: "" },
       },
 });

@@ -8,7 +8,7 @@
 | Matching | Pure TypeScript module (`src/lib/matching`) | No I/O, fully unit-tested. Runs in the browser, so the profile never has to leave the device to be scored. |
 | Backend | One Next.js route handler, `POST /api/summary` | Only used for the optional AI summary. Receives the profile (validated with zod), recomputes the match on the server, rate-limited per client (20/min). Returns 400/404/429 on bad input or abuse. |
 | Data storage | Opportunities: versioned JSON file validated by zod at load. Profile and shortlist: browser `localStorage` under versioned keys (`cm.profile.v1`, `cm.shortlist.v1`). | No database is needed for the brief's scope. Corrupt or out-of-date stored data is discarded, not trusted. |
-| External service | Anthropic API (Claude Haiku 5.5), optional | Mock mode when no key is set. |
+| External service | OpenRouter chat completions API (default model `anthropic/claude-haiku-5.5`), optional | Mock mode when no key is set. Model is configurable with `OPENROUTER_MODEL`. |
 
 ## 2. Data model
 
@@ -54,15 +54,15 @@ The detail page shows every criterion's points, so any score can be traced to it
 
 ## 4. AI design
 
-- **What the model does:** Claude Haiku 5.5 rewrites the engine's output (band, strengths, gaps, flags)
+- **What the model does:** Claude Haiku 5.5 (through OpenRouter) rewrites the engine's output (band, strengths, gaps, flags)
   into a two-sentence summary. It does not score, rank or decide eligibility.
 - **What is sent:** role facts (title, organisation, country, type) and the rule output only. No free-text
   profile summary, names or contact details. The browser sends the structured profile; the server
   recomputes the match itself, so a client cannot inject its own strengths, gaps or flags into the prompt.
-- **Unreliable output:** structured output (zod schema) is requested; the response is then re-validated
+- **Unreliable output:** a strict JSON schema is requested (`response_format: json_schema`); the response is then re-validated
   (40–600 characters) and rejected if it contains any number not present in the input (for example an
   invented score) or if it leaves out the work-authorisation verification the rules raised. The system prompt forbids new facts and any visa or immigration conclusion.
-- **Service unavailable:** no key, a 6-second timeout, an API error, a refusal or invalid output all
+- **Service unavailable:** no key, an 8-second timeout, an API error, a refusal or invalid output all
   return the rule-based template summary. The page shows the template immediately and replaces it only
   if a valid AI summary arrives. The label states which source produced the text.
 

@@ -15,7 +15,7 @@ function post(body: unknown, ip = "203.0.113.7") {
 
 describe("POST /api/summary", () => {
   beforeEach(() => {
-    delete process.env.ANTHROPIC_API_KEY; // mock mode
+    delete process.env.OPENROUTER_API_KEY; // mock mode
     resetRateLimit();
   });
 

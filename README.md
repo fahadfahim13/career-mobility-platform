@@ -32,7 +32,8 @@ npm start
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | No | Enables the AI-written summary on the opportunity detail page (Claude Haiku 5.5). |
+| `OPENROUTER_API_KEY` | No | Enables the AI-written summary on the opportunity detail page, through OpenRouter. |
+| `OPENROUTER_MODEL` | No | OpenRouter model id. Default `anthropic/claude-haiku-5.5`. |
 
 Without a key the app runs in **mock mode**: every feature works, and the detail page shows a
 rule-based summary instead. Copy `.env.example` to `.env.local` to set the key. The score, ranking,
@@ -76,12 +77,12 @@ docs/                          technical note, test evidence, plan and design sp
 | Tool | Used for |
 |---|---|
 | **Claude Code (Anthropic, model Claude Opus 5.5)** | AI coding assistant used throughout development, under my direction: turning the brief into a design spec and task plan, writing code and tests (test-first), UI polish, and drafting this documentation. I reviewed the code, decided the matching approach, weights and data, and can explain and change every part of it. |
-| **Claude Haiku 5.5 via the Anthropic API** | Runtime, optional: rewrites the rule engine's output into a two-sentence summary. Details and safeguards are in the technical note. |
+| **Claude Haiku 5.5 via OpenRouter** | Runtime, optional: rewrites the rule engine's output into a two-sentence summary. Details and safeguards are in the technical note. |
 | Next.js 15, React 19, TypeScript, Tailwind CSS 4 | Application framework and styling |
+| OpenRouter API (plain `fetch`, no SDK) | Optional AI summary call |
 | zod | Validation of profile input, sample data, stored data, API input and AI output |
 | lucide-react | Icon set |
 | Vitest, Playwright, jsdom | Unit and end-to-end testing |
-| `@anthropic-ai/sdk` | Official Anthropic SDK for the optional summary call |
 
 No real personal data is used. All organisations, roles and the candidate are fictional.
 
