@@ -75,6 +75,11 @@ export function ProfileForm() {
       setP(stored);
       setYears(stored.yearsExperience === null ? "" : String(stored.yearsExperience));
     }
+    // Next steps link to #field anchors that only exist once the saved profile has rendered.
+    if (ready && window.location.hash) {
+      const id = window.location.hash.slice(1);
+      requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: "start" }));
+    }
   }, [ready, stored]);
 
   const set = <K extends keyof Profile>(key: K, value: Profile[K]) => setP((prev) => ({ ...prev, [key]: value }));
@@ -120,7 +125,7 @@ export function ProfileForm() {
     setP(EMPTY);
     setYears("");
     setErrors({});
-    setNotice("Your profile and shortlist have been removed from this browser.");
+    setNotice("Your profile, shortlist, stages and notes have been removed from this browser.");
   }
 
   const errorCount = Object.keys(errors).length;
@@ -131,11 +136,11 @@ export function ProfileForm() {
     <div className="grid gap-8 lg:grid-cols-12">
       <aside className="lg:order-last lg:col-span-4" aria-label="Profile progress">
         <div className="on-field bg-field p-5 text-on-field lg:sticky lg:top-24">
-          <p className="text-sm font-bold">Profile strength</p>
           <p className="text-6xl font-extrabold leading-none tracking-tighter">
             {strength.percent}
             <span className="text-2xl">%</span>
           </p>
+          <p className="mt-1 text-sm font-bold">Profile strength</p>
           <div className="mt-3 h-2 bg-field-deep" aria-hidden>
             <div className="h-full bg-verify transition-[width] duration-500" style={{ width: `${strength.percent}%` }} />
           </div>

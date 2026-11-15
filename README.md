@@ -16,7 +16,7 @@ opened in detail and saved to a shortlist.
 Each feature below came out of the competitor research (relocation job boards, AI job-match tools, and visa and talent-mobility tools):
 
 - **Score strip with full arithmetic.** Each score is split into six segments: the width is the weight and the fill is the points earned. The detail page shows weight × share = points for every criterion.
-- **Fit and eligibility kept apart.** The 0–100 fit score sits next to a separate right-to-work status: confirmed, to verify, or not held. An unknown status is never assumed.
+- **Fit and eligibility kept apart.** The 0–100 fit score sits next to a separate right-to-work status taken from your own answer: stated, to verify, or stated as not held. An unknown status is never assumed.
 - **Steps to verify** for each country, with links to the official government sources, plus a reference-only disclaimer.
 - **Next steps for each gap**, each linking to the profile field to update.
 - **Required-skill count** on every card ("3 of 4 required skills").

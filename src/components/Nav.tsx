@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useShortlist } from "../hooks/useLocalState";
 
-const LINKS = [
+const LINKS: { href: string; label: string; short?: string }[] = [
   { href: "/matches", label: "Matches" },
   { href: "/opportunities", label: "All roles" },
   { href: "/shortlist", label: "Shortlist" },
-  { href: "/how-it-works", label: "How matching works" },
+  { href: "/how-it-works", label: "How matching works", short: "How it works" },
 ];
 
 /** Square route mark: a path that turns once, set in the field colour. */
@@ -42,7 +42,7 @@ export function Nav() {
         >
           Your profile
         </Link>
-        <ul className="-mx-2 flex w-full flex-wrap text-sm sm:w-auto">
+        <ul className="-mx-2 flex w-full flex-nowrap overflow-x-auto whitespace-nowrap text-sm sm:w-auto">
           {LINKS.map((l) => {
             const active = pathname === l.href || pathname.startsWith(l.href + "/");
             return (
@@ -54,9 +54,19 @@ export function Nav() {
                     active ? "border-field font-bold text-ink" : "border-transparent font-medium text-muted hover:text-ink"
                   }`}
                 >
-                  {l.label}
+                  {l.short ? (
+                    <>
+                      <span className="sm:hidden">{l.short}</span>
+                      <span className="hidden sm:inline">{l.label}</span>
+                    </>
+                  ) : (
+                    l.label
+                  )}
                   {l.href === "/shortlist" && ids.length > 0 && (
-                    <span className="ml-1.5 bg-verify px-1.5 text-xs font-bold tabular-nums text-ink">{ids.length}</span>
+                    <span className="ml-1.5 bg-verify px-1.5 text-xs font-bold tabular-nums text-ink">
+                      {ids.length}
+                      <span className="sr-only"> saved roles</span>
+                    </span>
                   )}
                 </Link>
               </li>

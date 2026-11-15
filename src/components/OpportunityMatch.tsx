@@ -36,7 +36,7 @@ export function OpportunityMatch({ opp }: { opp: Opportunity }) {
       <section aria-labelledby="match-h" className="on-field bg-field p-5 text-on-field sm:p-7">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 id="match-h" className="text-sm font-bold uppercase tracking-wider text-on-field-muted">Your fit for this role</h2>
+            <h2 id="match-h" className="sr-only">Your fit for this role</h2>
             <ScoreFigure score={result.score} size="lg" onField />
           </div>
           <div className="flex flex-col items-start gap-1.5 sm:items-end">
@@ -48,7 +48,7 @@ export function OpportunityMatch({ opp }: { opp: Opportunity }) {
           <ScoreStrip result={result} variant="full" onField animate />
         </div>
         <p className="mt-4 text-xs text-on-field-muted">
-          This score covers this role only. It is feedback, not an employer&apos;s decision and not an eligibility decision.
+          Your fit for this role. This score covers this role only. It is feedback, not an employer&apos;s decision and not an eligibility decision.
         </p>
       </section>
 

@@ -62,20 +62,10 @@ export default function MatchesPage() {
             <Link href="/how-it-works" className={textLink}>How matching works</Link>
           </p>
         </div>
-        <dl className="grid grid-cols-3 gap-px self-end bg-line text-center md:col-span-4">
-          <div className="bg-paper p-3">
-            <dt className="text-xs font-bold uppercase tracking-wide text-muted">Strong</dt>
-            <dd className="text-3xl font-extrabold">{bandCount("Strong")}</dd>
-          </div>
-          <div className="bg-paper p-3">
-            <dt className="text-xs font-bold uppercase tracking-wide text-muted">To verify</dt>
-            <dd className="text-3xl font-extrabold">{verifyCount}</dd>
-          </div>
-          <div className="bg-paper p-3">
-            <dt className="text-xs font-bold uppercase tracking-wide text-muted">Profile</dt>
-            <dd className="text-3xl font-extrabold">{strength.percent}%</dd>
-          </div>
-        </dl>
+        <p className="self-end text-lg md:col-span-4 md:text-right">
+          <strong className="text-4xl font-extrabold tracking-tight">{bandCount("Strong")}</strong> strong matches,{" "}
+          <strong className="font-extrabold">{verifyCount}</strong> with right to work to verify.
+        </p>
       </header>
 
       {strength.missing.length > 0 && (
@@ -117,7 +107,7 @@ export default function MatchesPage() {
             <label htmlFor="f-elig" className={fieldLabel}>Right to work</label>
             <select id="f-elig" className={field} value={filters.eligibility} onChange={(e) => set("eligibility", e.target.value as MatchFilters["eligibility"])}>
               <option value="all">Any status</option>
-              <option value="clear">Confirmed or not required</option>
+              <option value="clear">Stated by you, or not required</option>
               <option value="verify">Needs verification</option>
               <option value="blocked">Not held</option>
             </select>
@@ -140,7 +130,7 @@ export default function MatchesPage() {
         Showing {shown.length} of {rows.length} roles
       </p>
 
-      <div className="space-y-6">
+      <div className="border-b-2 border-ink">
         {shown.map((r) => (
           <MatchCard key={r.result.opportunityId} opp={r.opp} result={r.result} rank={rankOf.get(r.result.opportunityId)} />
         ))}

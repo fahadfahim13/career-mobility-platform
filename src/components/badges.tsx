@@ -22,9 +22,9 @@ export function BandBadge({ band }: { band: Band }) {
 }
 
 const ELIGIBILITY: Record<Eligibility, { label: string; cls: string; Icon: typeof Check }> = {
-  clear: { label: "Right to work confirmed", cls: "bg-met-tint text-met", Icon: Check },
+  clear: { label: "Right to work stated", cls: "bg-met-tint text-met", Icon: Check },
   verify: { label: "Eligibility to verify", cls: "bg-verify text-ink", Icon: ShieldQuestion },
-  blocked: { label: "No right to work stated", cls: "bg-blocked-tint text-blocked", Icon: OctagonX },
+  blocked: { label: "You stated no right to work", cls: "bg-blocked-tint text-blocked", Icon: OctagonX },
 };
 
 /**
@@ -53,7 +53,8 @@ export function EligibilityTag({ eligibility, required = true }: { eligibility: 
 export function ScoreFigure({ score, size = "md", onField = false }: { score: number; size?: "md" | "lg"; onField?: boolean }) {
   const big = size === "lg" ? "text-7xl sm:text-8xl" : "text-5xl";
   return (
-    <span className={`inline-flex items-baseline font-extrabold leading-none tracking-tighter ${big}`} aria-label={`Match score ${score} out of 100`}>
+    <span className={`inline-flex items-baseline font-extrabold leading-none tracking-tighter ${big}`}>
+      <span className="sr-only">Match score {score} out of 100</span>
       <span aria-hidden>{score}</span>
       <span aria-hidden className={`ml-1 text-sm font-semibold tracking-normal ${onField ? "text-on-field-muted" : "text-muted"}`}>/100</span>
     </span>

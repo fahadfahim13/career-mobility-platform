@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { sampleProfile } from "../data/sampleProfile";
 import {
   clearAll,
@@ -12,6 +12,7 @@ import {
   setStage,
   SHORTLIST_KEY,
   toggleShortlist,
+  TRACKER_BACKUP_KEY,
   TRACKER_KEY,
 } from "./storage";
 
@@ -93,5 +94,38 @@ describe("application tracker", () => {
   it("drops corrupt tracker data", () => {
     window.localStorage.setItem(TRACKER_KEY, JSON.stringify([{ id: "a", stage: "Unknown" }]));
     expect(loadTracker()).toEqual([]);
+  });
+});
+
+describe("application tracker — resilience", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("keeps valid items when one stored item is invalid", () => {
+    const good = { id: "a", stage: "Applied", note: "", savedAt: "2026-11-15T00:00:00.000Z" };
+    window.localStorage.setItem(TRACKER_KEY, JSON.stringify([good, { id: "b", stage: "Unknown" }]));
+    expect(loadTracker()).toEqual([good]);
+  });
+
+  it("backs up unreadable tracker data before anything can overwrite it", () => {
+    window.localStorage.setItem(TRACKER_KEY, "{bad");
+    expect(loadTracker()).toEqual([]);
+    expect(window.localStorage.getItem(TRACKER_BACKUP_KEY)).toBe("{bad");
+  });
+
+  it("removes duplicate ids", () => {
+    window.localStorage.setItem(SHORTLIST_KEY, JSON.stringify(["a", "a", "b"]));
+    expect(loadShortlist()).toEqual(["a", "b"]);
+  });
+
+  it("keeps the legacy shortlist when the tracker cannot be written", () => {
+    window.localStorage.setItem(SHORTLIST_KEY, JSON.stringify(["a"]));
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("QuotaExceededError");
+    });
+    expect(loadShortlist()).toEqual(["a"]);
+    expect(window.localStorage.getItem(SHORTLIST_KEY)).toBe(JSON.stringify(["a"]));
   });
 });

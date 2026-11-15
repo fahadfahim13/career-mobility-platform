@@ -7,20 +7,33 @@ export const PROFILE_KEY = "cm.profile.v1";
 /** Legacy v1 shortlist (array of ids). Migrated into the tracker on first read. */
 export const SHORTLIST_KEY = "cm.shortlist.v1";
 export const TRACKER_KEY = "cm.tracker.v1";
+/** Holds unreadable tracker data so a later write cannot silently destroy it. */
+export const TRACKER_BACKUP_KEY = "cm.tracker.v1.backup";
 
 export const STAGES = ["Saved", "Applying", "Applied", "Interviewing", "Offer", "Closed"] as const;
 export type Stage = (typeof STAGES)[number];
 
 const shortlistSchema = z.array(z.string());
-const trackerSchema = z.array(
-  z.object({
-    id: z.string(),
-    stage: z.enum(STAGES),
-    note: z.string().max(500),
-    savedAt: z.string(),
-  }),
-);
-export type TrackedItem = z.infer<typeof trackerSchema>[number];
+const trackedItemSchema = z.object({
+  id: z.string(),
+  stage: z.enum(STAGES),
+  note: z.string().max(500),
+  savedAt: z.string(),
+});
+export type TrackedItem = z.infer<typeof trackedItemSchema>;
+
+function uniqueById<T extends { id: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  return items.filter((i) => (seen.has(i.id) ? false : (seen.add(i.id), true)));
+}
+
+function rawItem(key: string): string | null {
+  try {
+    return storage()?.getItem(key) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 function storage(): Storage | null {
   try {
@@ -61,26 +74,44 @@ function migrateShortlist(): TrackedItem[] | null {
   const legacy = read(SHORTLIST_KEY, shortlistSchema);
   if (!legacy) return null;
   const savedAt = new Date().toISOString();
-  const items = legacy.map((id) => ({ id, stage: "Saved" as const, note: "", savedAt }));
+  const items = uniqueById(legacy.map((id) => ({ id, stage: "Saved" as const, note: "", savedAt })));
   write(TRACKER_KEY, items);
-  try {
-    storage()?.removeItem(SHORTLIST_KEY);
-  } catch {
-    // Old key stays; the tracker key now wins.
+  // Remove the legacy key only once the tracker copy is safely stored.
+  if (rawItem(TRACKER_KEY) !== null) {
+    try {
+      storage()?.removeItem(SHORTLIST_KEY);
+    } catch {
+      // Old key stays; the tracker key now wins.
+    }
   }
   return items;
 }
 
+/**
+ * Reads the tracker item by item: one invalid entry is dropped instead of discarding the whole list.
+ * Data that cannot be read at all is copied to a backup key before any later write replaces it.
+ */
 export function loadTracker(): TrackedItem[] {
-  const hasTracker = (() => {
+  const raw = rawItem(TRACKER_KEY);
+  if (raw === null) return migrateShortlist() ?? [];
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = null;
+  }
+  if (!Array.isArray(parsed)) {
     try {
-      return storage()?.getItem(TRACKER_KEY) != null;
+      storage()?.setItem(TRACKER_BACKUP_KEY, raw);
     } catch {
-      return false;
+      // Nothing more can be done; the original value is still in place until the next write.
     }
-  })();
-  if (hasTracker) return read(TRACKER_KEY, trackerSchema) ?? [];
-  return migrateShortlist() ?? [];
+    return [];
+  }
+  return uniqueById(parsed.flatMap((x) => {
+    const r = trackedItemSchema.safeParse(x);
+    return r.success ? [r.data] : [];
+  }));
 }
 
 export function loadShortlist(): string[] {

@@ -32,11 +32,12 @@ export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: Mat
   const { matched, missing } = result.skillCoverage;
   const total = matched.length + missing.length;
   return (
-    <article className="border-t-2 border-ink bg-white px-4 pb-5 pt-4 sm:px-6" data-testid="match-card" aria-labelledby={`t-${opp.id}`}>
+    <article className="border-t-2 border-ink px-1 pb-5 pt-4 sm:px-2" data-testid="match-card" aria-labelledby={`t-${opp.id}`}>
       <div className="grid gap-4 md:grid-cols-12 md:gap-6">
         <div className="flex gap-4 md:col-span-7">
           {rank !== undefined && (
-            <span className="w-8 shrink-0 text-3xl font-extrabold leading-none tracking-tighter text-field" aria-label={`Rank ${rank}`}>
+            <span className="w-8 shrink-0 text-3xl font-extrabold leading-none tracking-tighter text-field">
+              <span className="sr-only">Rank </span>
               {rank}
             </span>
           )}
@@ -71,9 +72,9 @@ export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: Mat
 
       <div className="mt-4 grid gap-4 border-t border-line pt-4 sm:grid-cols-2">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-met">Why it fits</h3>
+          <h3 className="text-sm font-bold text-met">Why it fits</h3>
           <ul className="mt-1.5 space-y-1 text-sm">
-            {result.strengths.slice(0, 3).map((s) => (
+            {result.strengths.slice(0, 2).map((s) => (
               <li key={s} className="flex gap-2">
                 <Check className="mt-0.5 size-4 shrink-0 text-met" aria-hidden />
                 {s}
@@ -83,9 +84,9 @@ export function MatchCard({ opp, result, rank }: { opp: Opportunity; result: Mat
           </ul>
         </div>
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-blocked">What to review</h3>
+          <h3 className="text-sm font-bold text-blocked">What to review</h3>
           <ul className="mt-1.5 space-y-1 text-sm">
-            {result.gaps.slice(0, 3).map((g) => (
+            {result.gaps.slice(0, 2).map((g) => (
               <li key={g} className="flex gap-2">
                 <Minus className="mt-0.5 size-4 shrink-0 text-blocked" aria-hidden />
                 {g}

@@ -1,10 +1,10 @@
-import { Check, Minus } from "lucide-react";
+import { ArrowRight, Check, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { BandBadge, EligibilityTag, ScoreFigure } from "../components/badges";
 import { opportunityMeta } from "../components/MatchCard";
 import { SampleProfileButton } from "../components/SampleProfileButton";
 import { ScoreStrip } from "../components/ScoreStrip";
-import { btnOnField, btnOnFieldOutline, btnPrimary, btnSecondary } from "../components/ui";
+import { btnOnField, btnOnFieldOutline } from "../components/ui";
 import { getCountryGuide } from "../data/countryGuides";
 import { sampleProfile } from "../data/sampleProfile";
 import { getOpportunities, getOpportunity } from "../lib/data";
@@ -85,9 +85,8 @@ export default function Home() {
         </div>
 
         <div className="border-x-2 border-b-2 border-ink bg-white px-5 py-8 sm:px-8 lg:col-span-5 lg:border-l-0 lg:border-t-2 lg:py-10">
-          <h2 className="text-sm font-bold">Live example, calculated by the same engine you will use</h2>
-          <div className="mt-5 border-t-2 border-ink pt-4">
-            <p className="text-xl font-bold leading-snug tracking-tight">{demoOpp.title}</p>
+          <div className="border-t-2 border-ink pt-4">
+            <h2 className="text-xl font-bold leading-snug tracking-tight">{demoOpp.title}</h2>
             <p className="text-sm text-muted">{opportunityMeta(demoOpp)}</p>
             <p className="mt-2 inline-block border-t border-ink pt-0.5 text-xs font-bold tracking-wider">Ref. {refCode(demoOpp)}</p>
           </div>
@@ -109,7 +108,8 @@ export default function Home() {
               <li key={g} className="flex gap-2"><Minus className="mt-0.5 size-4 shrink-0 text-blocked" aria-hidden />{g}</li>
             ))}
           </ul>
-          <p className="mt-4 bg-verify-tint px-3 py-2 text-xs">
+          <p className="mt-4 text-xs font-semibold text-muted">Live example for the sample candidate, calculated by the same engine you will use.</p>
+          <p className="mt-2 bg-verify-tint px-3 py-2 text-xs">
             A high score is not a right to work. This candidate has not confirmed work authorisation for {demoOpp.country},
             so the role is marked for verification.
           </p>
@@ -118,30 +118,56 @@ export default function Home() {
 
       <section aria-labelledby="steps-h">
         <h2 id="steps-h" className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">From profile to shortlist in three steps</h2>
-        <ol className="mt-10 grid gap-px bg-ink sm:grid-cols-3">
+        <ol className="mt-10 border-t-2 border-ink">
           {STEPS.map((s, i) => (
-            <li key={s.title} className="bg-paper p-6 sm:p-8">
-              <span className="text-6xl font-extrabold leading-none tracking-tighter text-field" aria-hidden>{i + 1}</span>
-              <h3 className="mt-4 text-xl font-bold tracking-tight">{s.title}</h3>
-              <p className="mt-2 text-muted">{s.body}</p>
+            <li key={s.title} className="grid gap-4 border-b border-line py-8 md:grid-cols-12 md:items-center">
+              <span className="text-7xl font-extrabold leading-none tracking-tighter md:col-span-1" aria-hidden>{i + 1}</span>
+              <div className="md:col-span-5">
+                <h3 className="text-2xl font-bold tracking-tight">{s.title}</h3>
+                <p className="mt-2 max-w-lg text-muted">{s.body}</p>
+              </div>
+              <div className="md:col-span-5 md:col-start-8" aria-hidden>
+                {i === 0 && (
+                  <div className="space-y-2 text-sm">
+                    {[["Germany", "Not sure"], ["Canada", "Not sure"], ["Singapore", "Not sure"]].map(([c, a]) => (
+                      <div key={c} className="flex items-center justify-between border border-line bg-white px-3 py-2 font-semibold">
+                        {c}
+                        <span className="border border-slate-300 px-2 py-0.5 font-normal">{a}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {i === 1 && <ScoreStrip result={demo} variant="full" />}
+                {i === 2 && (
+                  <p className="flex flex-wrap items-center gap-2 text-sm font-bold">
+                    <span className="bg-ink px-2.5 py-1 text-paper">Saved</span>
+                    <ArrowRight className="size-4" />
+                    <span className="border border-ink px-2.5 py-1">Applied</span>
+                    <ArrowRight className="size-4" />
+                    <span className="border border-ink px-2.5 py-1">Interviewing</span>
+                    <ArrowRight className="size-4" />
+                    <span className="border border-ink px-2.5 py-1">Offer</span>
+                  </p>
+                )}
+              </div>
             </li>
           ))}
         </ol>
       </section>
 
-      <section aria-labelledby="signals-h" className="grid gap-10 lg:grid-cols-12">
+      <section aria-labelledby="signals-h" className="on-field -mx-4 grid gap-10 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <h2 id="signals-h" className="text-3xl font-extrabold tracking-tight sm:text-5xl">Two signals, never blended</h2>
-          <p className="mt-4 text-muted">
+          <p className="mt-4 text-on-field-muted">
             Most tools fold everything into one percentage, so a role you cannot legally take looks as good as one you can.
             Pathway keeps fit and eligibility apart.
           </p>
         </div>
-        <div className="grid gap-px bg-ink sm:grid-cols-2 lg:col-span-8">
-          <div className="bg-paper p-6">
+        <div className="grid gap-px bg-on-field-muted/40 sm:grid-cols-2 lg:col-span-8">
+          <div className="bg-field p-6 sm:pl-0">
             <h3 className="text-xl font-bold">Fit score, 0 to 100</h3>
-            <p className="mt-2 text-sm text-muted">How your profile compares with the role’s stated requirements.</p>
-            <dl className="mt-5 divide-y divide-line text-sm">
+            <p className="mt-2 text-sm text-on-field-muted">How your profile compares with the role’s stated requirements.</p>
+            <dl className="mt-5 divide-y divide-on-field-muted/40 text-sm">
               {Object.entries(WEIGHTS).map(([k, w]) => (
                 <div key={k} className="flex justify-between py-1.5">
                   <dt>{LABELS[k as keyof typeof LABELS]}</dt>
@@ -154,13 +180,13 @@ export default function Home() {
               <strong>{CRITICAL_CAP}</strong>.
             </p>
           </div>
-          <div className="bg-paper p-6">
+          <div className="bg-field p-6">
             <h3 className="text-xl font-bold">Eligibility status</h3>
-            <p className="mt-2 text-sm text-muted">Your right to work in the role’s country, from your own answer.</p>
+            <p className="mt-2 text-sm text-on-field-muted">Your right to work in the role’s country, from your own answer.</p>
             <ul className="mt-5 space-y-4 text-sm">
               <li>
                 <EligibilityTag eligibility="clear" />
-                <p className="mt-1">You said you have the right to work there.</p>
+                <p className="mt-1">You said you have the right to work there. Nothing is checked or confirmed by Pathway.</p>
               </li>
               <li>
                 <EligibilityTag eligibility="verify" />
@@ -247,7 +273,7 @@ export default function Home() {
             <details key={f.q} className="group">
               <summary className="flex min-h-14 items-center justify-between gap-4 py-3 text-lg font-bold">
                 {f.q}
-                <span className="text-2xl font-normal text-field transition-transform duration-200 group-open:rotate-45" aria-hidden>+</span>
+                <Plus className="size-5 shrink-0 text-field transition-transform duration-200 group-open:rotate-45" aria-hidden />
               </summary>
               <p className="pb-5 text-muted">{f.a}</p>
             </details>
@@ -255,12 +281,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="on-field -mx-4 bg-ink px-5 py-12 text-paper sm:mx-0 sm:px-10" aria-labelledby="cta-h">
+      <section className="on-field -mx-4 bg-field px-5 py-12 text-on-field sm:mx-0 sm:px-10" aria-labelledby="cta-h">
         <h2 id="cta-h" className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">See your first ranked list in one click.</h2>
-        <p className="mt-3 max-w-xl text-slate-300">Load the sample candidate from the brief, or build your own profile.</p>
+        <p className="mt-3 max-w-xl text-on-field-muted">Load the sample candidate from the brief, or build your own profile.</p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <SampleProfileButton className={btnPrimary} />
-          <Link href="/profile" className={`${btnSecondary} border-paper bg-ink text-paper hover:bg-paper hover:text-ink`}>Build your profile</Link>
+          <SampleProfileButton className={btnOnField} />
+          <Link href="/profile" className={btnOnFieldOutline}>Build your profile</Link>
         </div>
       </section>
     </div>

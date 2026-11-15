@@ -46,7 +46,7 @@ export default function ShortlistPage() {
 
   return (
     <div className="space-y-8">
-      <header className="border-b-2 border-ink pb-8">
+      <header className="pb-2">
         <h1 className={pageTitle}>Your shortlist</h1>
         <p className="mt-3 max-w-2xl text-muted">
           Track each saved role from first look to offer. Stages and notes are stored only in this browser.
@@ -54,14 +54,11 @@ export default function ShortlistPage() {
       </header>
 
       {rows.length > 0 && (
-        <ol className="grid grid-cols-3 gap-px bg-line sm:grid-cols-6" aria-label="Roles by stage">
-          {STAGES.map((s) => (
-            <li key={s} className="bg-paper p-3">
-              <span className="block text-xs font-bold uppercase tracking-wide text-muted">{s}</span>
-              <span className="text-2xl font-extrabold tabular-nums">{countFor(s)}</span>
-            </li>
-          ))}
-        </ol>
+        <p className="text-sm font-semibold">
+          {STAGES.filter((s) => countFor(s) > 0)
+            .map((s) => `${s} ${countFor(s)}`)
+            .join(" · ")}
+        </p>
       )}
 
       {rows.length === 0 ? (
@@ -73,7 +70,7 @@ export default function ShortlistPage() {
           <Link href="/matches" className={`${textLink} mt-4 inline-block text-sm`}>Review your matches</Link>
         </div>
       ) : (
-        <ul className="space-y-6">
+        <ul className="border-b-2 border-ink">
           {rows.map(({ item, opp }) => {
             const r = profile ? matchOne(profile, opp) : null;
             return (

@@ -6,8 +6,8 @@ const SHORT: Record<string, string> = {
   experience: "Experience",
   education: "Education",
   location: "Location",
-  language: "Lang.",
-  interests: "Int.",
+  language: "Language",
+  interests: "Interests",
 };
 
 /** Full names for the phone legend, where space is not a constraint. */
@@ -38,12 +38,12 @@ export function ScoreStrip({
   const desc = result.criteria.map((c) => `${c.label} ${c.points} of ${c.weight}`).join(", ");
 
   return (
-    <figure className="w-full" aria-label={`Score breakdown: ${desc}. Total ${raw}${capped ? `, capped at ${CRITICAL_CAP}` : ""}.`}>
+    <figure className="@container w-full" aria-label={`Score breakdown: ${desc}. Total ${raw}${capped ? `, capped at ${CRITICAL_CAP}` : ""}.`}>
       {full && (
-        <div className="hidden sm:flex" aria-hidden>
+        <div className="hidden items-end @xl:flex" aria-hidden>
           {result.criteria.map((c) => (
             <div key={c.key} style={{ width: `${c.weight}%` }} className="min-w-0 pr-1">
-              <span className={`block truncate text-[11px] font-bold uppercase tracking-wide ${onField ? "text-on-field-muted" : "text-muted"}`}>
+              <span className={`block truncate text-xs font-bold leading-tight ${onField ? "text-on-field-muted" : "text-muted"}`}>
                 {SHORT[c.key]}
               </span>
             </div>
@@ -64,7 +64,7 @@ export function ScoreStrip({
         )}
       </div>
       {full && (
-        <div className="mt-1.5 hidden sm:flex" aria-hidden>
+        <div className="mt-1.5 hidden @xl:flex" aria-hidden>
           {result.criteria.map((c) => (
             <div key={c.key} style={{ width: `${c.weight}%` }} className="min-w-0 pr-1">
               <span className={`block text-sm font-bold tabular-nums ${onField ? "text-on-field" : "text-ink"}`}>
@@ -76,7 +76,7 @@ export function ScoreStrip({
         </div>
       )}
       {full && (
-        <dl className={`mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:hidden ${onField ? "text-on-field" : "text-ink"}`} aria-hidden>
+        <dl className={`mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm @xl:hidden ${onField ? "text-on-field" : "text-ink"}`} aria-hidden>
           {result.criteria.map((c) => (
             <div key={c.key} className="flex justify-between border-b border-current/20 py-0.5">
               <dt className={onField ? "text-on-field-muted" : "text-muted"}>{LEGEND[c.key]}</dt>
