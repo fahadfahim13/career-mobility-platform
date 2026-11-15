@@ -1,0 +1,556 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T09:57:26.269Z",
+  "title": "Design System: Pathway",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#fbfbf9",
+        "oklch": "oklch(98.8% 0.003 106.4)",
+        "tonalRamp": [
+          "oklch(15% 0.003 106.4)",
+          "oklch(25% 0.003 106.4)",
+          "oklch(35% 0.003 106.4)",
+          "oklch(48% 0.003 106.4)",
+          "oklch(60% 0.003 106.4)",
+          "oklch(72% 0.003 106.4)",
+          "oklch(84% 0.003 106.4)",
+          "oklch(95% 0.003 106.4)"
+        ]
+      },
+      "panel-white": {
+        "role": "neutral",
+        "displayName": "Panel White",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(25% 0.000 89.9)",
+          "oklch(35% 0.000 89.9)",
+          "oklch(48% 0.000 89.9)",
+          "oklch(60% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#111111",
+        "oklch": "oklch(17.8% 0.000 89.9)",
+        "tonalRamp": [
+          "#161612",
+          "#26261f",
+          "#3d3d37",
+          "#57574f",
+          "#9a9a91",
+          "#c5c5bd",
+          "#dcdcd5",
+          "#f4f4f1"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Warm Graphite",
+        "canonical": "#57574f",
+        "oklch": "oklch(45.4% 0.013 106.9)",
+        "tonalRamp": [
+          "#161612",
+          "#26261f",
+          "#3d3d37",
+          "#57574f",
+          "#9a9a91",
+          "#c5c5bd",
+          "#dcdcd5",
+          "#f4f4f1"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#dcdcd5",
+        "oklch": "oklch(89.3% 0.009 106.6)",
+        "tonalRamp": [
+          "#161612",
+          "#26261f",
+          "#3d3d37",
+          "#57574f",
+          "#9a9a91",
+          "#c5c5bd",
+          "#dcdcd5",
+          "#f4f4f1"
+        ]
+      },
+      "neutral-wash": {
+        "role": "neutral",
+        "displayName": "Stone Wash",
+        "canonical": "#ecece7",
+        "oklch": "oklch(94.2% 0.007 106.5)",
+        "tonalRamp": [
+          "#161612",
+          "#26261f",
+          "#3d3d37",
+          "#57574f",
+          "#9a9a91",
+          "#c5c5bd",
+          "#dcdcd5",
+          "#f4f4f1"
+        ]
+      },
+      "neutral-stroke": {
+        "role": "neutral",
+        "displayName": "Stone Stroke",
+        "canonical": "#c5c5bd",
+        "oklch": "oklch(82.1% 0.011 106.6)",
+        "tonalRamp": [
+          "#161612",
+          "#26261f",
+          "#3d3d37",
+          "#57574f",
+          "#9a9a91",
+          "#c5c5bd",
+          "#dcdcd5",
+          "#f4f4f1"
+        ]
+      },
+      "hatch-grey": {
+        "role": "neutral",
+        "displayName": "Missing Hatch",
+        "canonical": "#9a9a91",
+        "oklch": "oklch(68.4% 0.013 106.7)",
+        "tonalRamp": [
+          "#161612",
+          "#26261f",
+          "#3d3d37",
+          "#57574f",
+          "#9a9a91",
+          "#c5c5bd",
+          "#dcdcd5",
+          "#f4f4f1"
+        ]
+      },
+      "field": {
+        "role": "primary",
+        "displayName": "Signage Ultramarine",
+        "canonical": "#1f3fd1",
+        "oklch": "oklch(45.6% 0.225 266.4)",
+        "tonalRamp": [
+          "oklch(15% 0.200 266.4)",
+          "oklch(25% 0.200 266.4)",
+          "oklch(35% 0.200 266.4)",
+          "oklch(48% 0.200 266.4)",
+          "oklch(60% 0.200 266.4)",
+          "oklch(72% 0.200 266.4)",
+          "oklch(84% 0.200 266.4)",
+          "oklch(95% 0.200 266.4)"
+        ]
+      },
+      "field-deep": {
+        "role": "primary",
+        "displayName": "Deep Ultramarine",
+        "canonical": "#172fa3",
+        "oklch": "oklch(38.0% 0.187 266.7)",
+        "tonalRamp": [
+          "oklch(15% 0.187 266.7)",
+          "oklch(25% 0.187 266.7)",
+          "oklch(35% 0.187 266.7)",
+          "oklch(48% 0.187 266.7)",
+          "oklch(60% 0.187 266.7)",
+          "oklch(72% 0.187 266.7)",
+          "oklch(84% 0.187 266.7)",
+          "oklch(95% 0.187 266.7)"
+        ]
+      },
+      "field-tint": {
+        "role": "primary",
+        "displayName": "Ultramarine Wash",
+        "canonical": "#e9edfc",
+        "oklch": "oklch(94.7% 0.021 274.0)",
+        "tonalRamp": [
+          "oklch(15% 0.021 274.0)",
+          "oklch(25% 0.021 274.0)",
+          "oklch(35% 0.021 274.0)",
+          "oklch(48% 0.021 274.0)",
+          "oklch(60% 0.021 274.0)",
+          "oklch(72% 0.021 274.0)",
+          "oklch(84% 0.021 274.0)",
+          "oklch(95% 0.021 274.0)"
+        ]
+      },
+      "on-field": {
+        "role": "primary",
+        "displayName": "On-Field White",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(25% 0.000 89.9)",
+          "oklch(35% 0.000 89.9)",
+          "oklch(48% 0.000 89.9)",
+          "oklch(60% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ]
+      },
+      "on-field-muted": {
+        "role": "primary",
+        "displayName": "On-Field Mist",
+        "canonical": "#d3dbfb",
+        "oklch": "oklch(89.5% 0.045 274.4)",
+        "tonalRamp": [
+          "oklch(15% 0.045 274.4)",
+          "oklch(25% 0.045 274.4)",
+          "oklch(35% 0.045 274.4)",
+          "oklch(48% 0.045 274.4)",
+          "oklch(60% 0.045 274.4)",
+          "oklch(72% 0.045 274.4)",
+          "oklch(84% 0.045 274.4)",
+          "oklch(95% 0.045 274.4)"
+        ]
+      },
+      "verify": {
+        "role": "status",
+        "displayName": "Verify Yellow",
+        "canonical": "#ffd23f",
+        "oklch": "oklch(87.9% 0.162 90.9)",
+        "tonalRamp": [
+          "oklch(15% 0.162 90.9)",
+          "oklch(25% 0.162 90.9)",
+          "oklch(35% 0.162 90.9)",
+          "oklch(48% 0.162 90.9)",
+          "oklch(60% 0.162 90.9)",
+          "oklch(72% 0.162 90.9)",
+          "oklch(84% 0.162 90.9)",
+          "oklch(95% 0.162 90.9)"
+        ]
+      },
+      "verify-tint": {
+        "role": "status",
+        "displayName": "Verify Wash",
+        "canonical": "#fff5cc",
+        "oklch": "oklch(96.8% 0.054 95.9)",
+        "tonalRamp": [
+          "oklch(15% 0.054 95.9)",
+          "oklch(25% 0.054 95.9)",
+          "oklch(35% 0.054 95.9)",
+          "oklch(48% 0.054 95.9)",
+          "oklch(60% 0.054 95.9)",
+          "oklch(72% 0.054 95.9)",
+          "oklch(84% 0.054 95.9)",
+          "oklch(95% 0.054 95.9)"
+        ]
+      },
+      "verify-ink": {
+        "role": "status",
+        "displayName": "Verify Umber",
+        "canonical": "#4a3b00",
+        "oklch": "oklch(35.8% 0.073 92.8)",
+        "tonalRamp": [
+          "oklch(15% 0.073 92.8)",
+          "oklch(25% 0.073 92.8)",
+          "oklch(35% 0.073 92.8)",
+          "oklch(48% 0.073 92.8)",
+          "oklch(60% 0.073 92.8)",
+          "oklch(72% 0.073 92.8)",
+          "oklch(84% 0.073 92.8)",
+          "oklch(95% 0.073 92.8)"
+        ]
+      },
+      "blocked": {
+        "role": "status",
+        "displayName": "Blocked Red",
+        "canonical": "#c62d26",
+        "oklch": "oklch(54.2% 0.190 28.2)",
+        "tonalRamp": [
+          "oklch(15% 0.190 28.2)",
+          "oklch(25% 0.190 28.2)",
+          "oklch(35% 0.190 28.2)",
+          "oklch(48% 0.190 28.2)",
+          "oklch(60% 0.190 28.2)",
+          "oklch(72% 0.190 28.2)",
+          "oklch(84% 0.190 28.2)",
+          "oklch(95% 0.190 28.2)"
+        ]
+      },
+      "blocked-tint": {
+        "role": "status",
+        "displayName": "Blocked Wash",
+        "canonical": "#fcebe9",
+        "oklch": "oklch(95.3% 0.019 25.6)",
+        "tonalRamp": [
+          "oklch(15% 0.019 25.6)",
+          "oklch(25% 0.019 25.6)",
+          "oklch(35% 0.019 25.6)",
+          "oklch(48% 0.019 25.6)",
+          "oklch(60% 0.019 25.6)",
+          "oklch(72% 0.019 25.6)",
+          "oklch(84% 0.019 25.6)",
+          "oklch(95% 0.019 25.6)"
+        ]
+      },
+      "met": {
+        "role": "status",
+        "displayName": "Met Green",
+        "canonical": "#17773f",
+        "oklch": "oklch(50.2% 0.122 152.1)",
+        "tonalRamp": [
+          "oklch(15% 0.122 152.1)",
+          "oklch(25% 0.122 152.1)",
+          "oklch(35% 0.122 152.1)",
+          "oklch(48% 0.122 152.1)",
+          "oklch(60% 0.122 152.1)",
+          "oklch(72% 0.122 152.1)",
+          "oklch(84% 0.122 152.1)",
+          "oklch(95% 0.122 152.1)"
+        ]
+      },
+      "met-tint": {
+        "role": "status",
+        "displayName": "Met Wash",
+        "canonical": "#e5f2e9",
+        "oklch": "oklch(94.9% 0.018 155.8)",
+        "tonalRamp": [
+          "oklch(15% 0.018 155.8)",
+          "oklch(25% 0.018 155.8)",
+          "oklch(35% 0.018 155.8)",
+          "oklch(48% 0.018 155.8)",
+          "oklch(60% 0.018 155.8)",
+          "oklch(72% 0.018 155.8)",
+          "oklch(84% 0.018 155.8)",
+          "oklch(95% 0.018 155.8)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing hero headline on the ultramarine field only."
+      },
+      "score": {
+        "displayName": "Score",
+        "purpose": "The 0-100 figure and landing step numerals; tabular, followed by a small /100."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Landing section headings and Operate page titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Role titles, step titles, sidebar headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text with tabular figures at a 36-42rem measure."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase status tags, fact labels and table headers only."
+      },
+      "ref-code": {
+        "displayName": "Reference code",
+        "purpose": "Ref. CA-01 under every role title, on a 1px ink rule."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "strip-fill",
+        "value": "clip-path inset(0 100% 0 0) to inset(0), 900ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The one authored moment: the score strip fills left to right on first render."
+      },
+      {
+        "name": "colour-change",
+        "value": "150ms",
+        "purpose": "Hover colour transitions on buttons, nav links, fields and filter chips."
+      },
+      {
+        "name": "disclosure",
+        "value": "200ms rotate(45deg)",
+        "purpose": "FAQ plus icon turning into a close mark."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "All animation and transition durations collapse under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "container-xl",
+        "value": "36rem (container query on the score strip: label row and points above, 2-column legend below)"
+      }
+    ],
+    "textures": [
+      {
+        "name": "missing-hatch",
+        "value": "repeating-linear-gradient(-45deg, #9a9a91 0 2px, transparent 2px 6px)",
+        "purpose": "Neutral credit for missing data inside a strip segment."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action on paper; also the saved state of the shortlist button.",
+      "html": "<button class=\"ds-btn-primary\">Create profile</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:2px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;border:0;cursor:pointer;transition:background-color 150ms,color 150ms,border-color 150ms;background:#1f3fd1;color:#fff;}.ds-btn-primary:hover{background:#172fa3;}.ds-btn-primary:focus-visible{outline:2px solid #1f3fd1;outline-offset:2px;}"
+    },
+    {
+      "name": "On-Field Button Pair",
+      "kind": "button",
+      "refersTo": "button-on-field",
+      "description": "Paper action plus outline action, used only on the ultramarine field; focus turns yellow there.",
+      "html": "<div class=\"ds-field-band\"><button class=\"ds-btn-onfield\">Try with a sample profile</button><button class=\"ds-btn-onfield-outline\">Build your profile</button></div>",
+      "css": ".ds-field-band{background:#1f3fd1;padding:24px;display:flex;gap:12px;flex-wrap:wrap;}.ds-btn-onfield{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:2px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;border:0;cursor:pointer;transition:background-color 150ms,color 150ms,border-color 150ms;background:#fbfbf9;color:#111;}.ds-btn-onfield:hover{background:#ffd23f;}.ds-btn-onfield-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:2px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;border:0;cursor:pointer;transition:background-color 150ms,color 150ms,border-color 150ms;background:transparent;color:#fff;border:1px solid #d3dbfb;}.ds-btn-onfield-outline:hover{background:#172fa3;}.ds-field-band :focus-visible{outline:2px solid #ffd23f;outline-offset:2px;}"
+    },
+    {
+      "name": "Dark Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "Row-level navigation such as View details.",
+      "html": "<button class=\"ds-btn-dark\">View details <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-dark{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:2px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;border:0;cursor:pointer;transition:background-color 150ms,color 150ms,border-color 150ms;background:#111;color:#fbfbf9;}.ds-btn-dark:hover{background:#26261f;}.ds-btn-dark:focus-visible{outline:2px solid #1f3fd1;outline-offset:2px;}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Field-coloured secondary action; the unsaved shortlist button.",
+      "html": "<button class=\"ds-btn-outline\">Shortlist</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:2px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;border:0;cursor:pointer;transition:background-color 150ms,color 150ms,border-color 150ms;background:#fbfbf9;color:#1f3fd1;border:1px solid #1f3fd1;}.ds-btn-outline:hover{background:#e9edfc;}.ds-btn-outline:focus-visible{outline:2px solid #1f3fd1;outline-offset:2px;}"
+    },
+    {
+      "name": "Select Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled form field on panel white, 44px tall, 2px corners, red border when invalid.",
+      "html": "<label class=\"ds-label\">Country<select class=\"ds-input\"><option>All countries</option></select></label>",
+      "css": ".ds-label{display:block;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;color:#111;}.ds-input{display:block;margin-top:4px;width:100%;min-height:44px;padding:0 12px;border:1px solid #c5c5bd;border-radius:2px;background:#fff;color:#111;font:inherit;font-weight:400;transition:border-color 150ms;}.ds-input:hover{border-color:#6f6f66;}.ds-input:focus-visible{outline:2px solid #1f3fd1;outline-offset:2px;}.ds-input[aria-invalid=true]{border-color:#c62d26;}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky paper bar with an ink rule, a 3px field underline on the active link, and a yellow shortlist count.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-brand\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" aria-hidden=\"true\"><rect width=\"28\" height=\"28\" fill=\"#1f3fd1\"/><path d=\"M7 21V12h14\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3.2\" stroke-linecap=\"square\"/><path d=\"M16.5 7.5 21 12l-4.5 4.5\" fill=\"none\" stroke=\"#ffd23f\" stroke-width=\"3.2\" stroke-linecap=\"square\"/></svg>Pathway</span><a class=\"ds-nav-link is-active\" href=\"#\">Matches</a><a class=\"ds-nav-link\" href=\"#\">All roles</a><a class=\"ds-nav-link\" href=\"#\">Shortlist<span class=\"ds-count\">1</span></a><a class=\"ds-nav-cta\" href=\"#\">Your profile</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:8px 24px;padding:0 16px;background:rgba(251,251,249,.95);border-bottom:1px solid #111;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;}.ds-brand{display:flex;align-items:center;gap:10px;min-height:56px;font-size:20px;font-weight:800;letter-spacing:-0.025em;color:#111;}.ds-nav-link{display:flex;align-items:center;min-height:44px;padding:0 8px;border-bottom:3px solid transparent;font-size:14px;font-weight:500;color:#57574f;text-decoration:none;transition:color 150ms;}.ds-nav-link:hover{color:#111;}.ds-nav-link.is-active{border-color:#1f3fd1;font-weight:700;color:#111;}.ds-count{margin-left:6px;padding:0 6px;background:#ffd23f;color:#111;font-size:12px;font-weight:700;}.ds-nav-cta{margin-left:auto;display:inline-flex;align-items:center;min-height:40px;padding:0 12px;background:#1f3fd1;color:#fff;font-size:14px;font-weight:700;text-decoration:none;}.ds-nav-cta:hover{background:#172fa3;}.ds-nav a:focus-visible{outline:2px solid #1f3fd1;outline-offset:2px;}"
+    },
+    {
+      "name": "Status Tags",
+      "kind": "chip",
+      "refersTo": "tag-eligibility-verify",
+      "description": "Band and eligibility tags: fixed hues, always worded, with an icon where meaning needs one.",
+      "html": "<div class=\"ds-tags\"><span class=\"ds-tag ds-strong\">Strong match</span><span class=\"ds-tag ds-partial\">Partial match</span><span class=\"ds-tag ds-critical\">Critical gap</span><span class=\"ds-tag ds-verify\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/></svg>Eligibility to verify</span><span class=\"ds-tag ds-clear\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Right to work stated</span></div>",
+      "css": ".ds-tags{display:flex;flex-wrap:wrap;gap:6px;}.ds-tag{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:2px 8px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:12px;line-height:16px;font-weight:700;text-transform:uppercase;letter-spacing:0.025em;}.ds-strong{background:#17773f;color:#fff;}.ds-partial{background:#111;color:#fbfbf9;}.ds-critical{background:#c62d26;color:#fff;}.ds-verify{background:#ffd23f;color:#111;}.ds-clear{background:#e5f2e9;color:#17773f;}"
+    },
+    {
+      "name": "Flag Row",
+      "kind": "custom",
+      "refersTo": "flag-critical",
+      "description": "Worded status rows: wash ground, ink text, status-hued icon, ordered critical > verify > missing.",
+      "html": "<ul class=\"ds-flags\"><li class=\"ds-flag ds-flag-critical\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z\"/><path d=\"m15 9-6 6\"/><path d=\"m9 9 6 6\"/></svg><span><b>Requirement not met.</b> Requires German at professional level.</span></li><li class=\"ds-flag ds-flag-verify\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/></svg><span><b>Verification required.</b> Work authorisation not confirmed.</span></li></ul>",
+      "css": ".ds-flags{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-size:14px;color:#111;}.ds-flag{display:flex;gap:8px;padding:8px 12px;}.ds-flag svg{flex-shrink:0;margin-top:2px;}.ds-flag-critical{background:#fcebe9;}.ds-flag-critical svg{color:#c62d26;}.ds-flag-verify{background:#fff5cc;}.ds-flag-verify svg{color:#4a3b00;}"
+    },
+    {
+      "name": "Score Strip",
+      "kind": "custom",
+      "refersTo": "score-strip-full",
+      "description": "Signature: one 0-100 bar, segment widths = weights, fill = points earned, hatch = neutral credit for missing data.",
+      "html": "<figure class=\"ds-strip-wrap\"><div class=\"ds-score\">80<span>/100</span></div><div class=\"ds-strip\"><div class=\"ds-seg\" style=\"width:30%\"><div class=\"ds-fill\" style=\"width:60%\"></div></div><div class=\"ds-seg\" style=\"width:20%\"><div class=\"ds-fill\" style=\"width:100%\"></div></div><div class=\"ds-seg\" style=\"width:15%\"><div class=\"ds-fill\" style=\"width:100%\"></div></div><div class=\"ds-seg\" style=\"width:15%\"><div class=\"ds-hatch\" style=\"width:50%\"></div></div><div class=\"ds-seg\" style=\"width:10%\"><div class=\"ds-fill\" style=\"width:100%\"></div></div><div class=\"ds-seg\" style=\"width:10%\"><div class=\"ds-fill\" style=\"width:100%\"></div></div></div><dl class=\"ds-legend\"><div><dt>Skills</dt><dd>18/30</dd></div><div><dt>Experience</dt><dd>20/20</dd></div><div><dt>Education</dt><dd>15/15</dd></div><div><dt>Location</dt><dd>7/15</dd></div><div><dt>Language</dt><dd>10/10</dd></div><div><dt>Interests</dt><dd>10/10</dd></div></dl></figure>",
+      "css": ".ds-strip-wrap{margin:0;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#111;}.ds-score{font-size:48px;font-weight:800;line-height:1;letter-spacing:-0.05em;}.ds-score span{margin-left:4px;font-size:14px;font-weight:600;letter-spacing:0;color:#57574f;}.ds-strip{display:flex;height:20px;margin-top:12px;animation:ds-fill 900ms cubic-bezier(0.16,1,0.3,1) both;}.ds-seg{height:100%;background:#dcdcd5;border-right:2px solid #fbfbf9;box-sizing:border-box;}.ds-seg:last-child{border-right:0;}.ds-fill{height:100%;background:#1f3fd1;}.ds-hatch{height:100%;background-image:repeating-linear-gradient(-45deg,#9a9a91 0 2px,transparent 2px 6px);}.ds-legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin:12px 0 0;font-size:14px;}.ds-legend div{display:flex;justify-content:space-between;border-bottom:1px solid rgba(17,17,17,.2);padding:2px 0;}.ds-legend dt{color:#57574f;}.ds-legend dd{margin:0;font-weight:700;}@keyframes ds-fill{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}@media (prefers-reduced-motion:reduce){.ds-strip{animation:none;}}"
+    },
+    {
+      "name": "Ruled Role Row",
+      "kind": "card",
+      "refersTo": "fact-chip",
+      "description": "A role opened by a 2px ink rule, with field rank numeral, ref code and fact chips: rows, not cards.",
+      "html": "<article class=\"ds-row\"><span class=\"ds-rank\">2</span><div><h3 class=\"ds-title\">Operations Coordinator</h3><p class=\"ds-meta\">Harbourline Logistics · Singapore · Full-time</p><p class=\"ds-ref\">Ref. SG-01</p><ul class=\"ds-chips\"><li>SGD 48,000–60,000 / year</li><li class=\"ds-chip-field\">Visa support offered</li></ul></div></article>",
+      "css": ".ds-row{display:flex;gap:16px;border-top:2px solid #111;padding:16px 8px 20px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;color:#111;}.ds-rank{width:32px;flex-shrink:0;font-size:30px;font-weight:800;line-height:1;letter-spacing:-0.05em;color:#1f3fd1;}.ds-title{margin:0;font-size:20px;font-weight:700;letter-spacing:-0.025em;}.ds-meta{margin:2px 0 0;font-size:14px;color:#57574f;}.ds-ref{display:inline-block;margin:8px 0 0;border-top:1px solid #111;padding-top:2px;font-size:12px;font-weight:700;letter-spacing:0.05em;}.ds-chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:12px 0 0;padding:0;font-size:12px;font-weight:600;}.ds-chips li{background:#ecece7;padding:4px 8px;}.ds-chips .ds-chip-field{background:#e9edfc;color:#172fa3;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Departures Board",
+    "overview": "Pathway is built like international signage: one strict 12-column grid, heavy Archivo set tight, big tabular numerals, and colour that only ever carries meaning. A visitor reads it the way they read an airport board. Every role is a line with a reference code (CA-01, SG-01), a score, and a status, and every line uses the same scale so lines compare at a glance.\n\nThe surface is paper-white with ink type. One flat ultramarine field owns the hero and the major statement bands on the landing page (Persuade). The working pages (Operate: matches, role detail, profile, shortlist, how it works) stay on paper and use the field only for primary action, the active nav marker and rank numerals. Status colour is a fixed vocabulary, never decoration: green = met, yellow = verify, red = blocked, a neutral diagonal hatch = missing data. Each status always comes with a word or an icon.\n\nDepth is absent by design. Structure comes from ink rules (2px above each row and section, 1px hairlines between items), flat colour bands, and 1px gap grids. The world rejects the category default: a centred headline over a row of identical feature cards with a blue accent. All rasters are code-drawn (the route mark is inline SVG, the score strip is CSS). There are no image assets.",
+    "keyCharacteristics": [
+      "Paper ground, ink type, one flat ultramarine field.",
+      "Heavy display type (800) with negative tracking; numerals tabular everywhere.",
+      "Rows separated by rules, not cards. No shadows anywhere.",
+      "Square corners. Controls get a 2px radius; tags, chips, panels and bands get none.",
+      "A fixed status vocabulary, always paired with a word or an icon.",
+      "The score strip, one unbroken bar whose segment widths are the criterion weights, is the reusable signature."
+    ],
+    "rules": [
+      {
+        "name": "The One Field Rule",
+        "body": "Ultramarine is a flat field or a functional mark (action, link, focus, active state, the strip fill). It is never a gradient, never a decorative accent, and never a tint wash behind content for mood.",
+        "section": "colors"
+      },
+      {
+        "name": "The Fixed Meaning Rule",
+        "body": "Green means met, yellow means verify, red means blocked, hatch means missing. These hues are never used for anything else, and none of them appears without its word or icon.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm Neutral Rule",
+        "body": "Neutrals are the warm stone scale (#f4f4f1 to #161612). They replace Tailwind's cool slate everywhere. A cool grey is a defect.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "All numerals are tabular (set on the body). Scores, weights, counts and points must line up in columns.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight-Not-Family Rule",
+        "body": "Hierarchy comes from weight and size in Archivo. Do not add a second display face or a serif.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Plane Rule",
+        "body": "Nothing casts a shadow. To separate something, use a rule, a flat field, or a 1px gap.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Rules Not Cards Rule",
+        "body": "Ranked roles, listings, shortlist items, FAQ entries and steps are rows opened by a 2px ink rule and closed by the next one. They are not boxed in cards. Bordered panels are kept for forms, the hero score card and empty states.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep every score on the same 0–100 strip with segment widths equal to the weights (30/20/15/15/10/10).",
+      "Do pair every status colour with its word or icon: green = met, yellow = verify, red = blocked, hatch = missing.",
+      "Do show eligibility as its own tag beside the score, never folded into it.",
+      "Do open rows and sections with a 2px ink rule, and separate items with 1px Hairlines.",
+      "Do set yellow as a fill with ink text; use Verify Umber (#4a3b00) when verify needs to be read as text.",
+      "Do switch the focus outline to yellow on the ultramarine field.",
+      "Do give every role its reference code (country code plus two digits) on a 1px ink rule.",
+      "Do keep interactive targets at 44px or taller."
+    ],
+    "donts": [
+      "Don't use box-shadow, gradients or glows; the system is flat.",
+      "Don't round anything beyond 2px, and don't round tags, chips, flags, panels or strips at all.",
+      "Don't use green, yellow or red decoratively, or as the only signal of a status.",
+      "Don't put roles in boxed cards; they are ruled rows.",
+      "Don't introduce cool slate greys, a second typeface, or image assets; draw rasters in code.",
+      "Don't build a centred headline over a row of identical feature cards with a blue accent."
+    ]
+  }
+}
